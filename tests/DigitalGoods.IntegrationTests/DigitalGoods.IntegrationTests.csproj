@@ -21,8 +21,4 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\DigitalGoods.Infrastructure\DigitalGoods.Infrastructure.csproj" />
-  </ItemGroup>
-
 </Project>
