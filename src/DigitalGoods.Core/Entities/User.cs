@@ -8,9 +8,9 @@
 
         public string Password { get; private set; } = null!;
 
-        public ICollection<Sale> Purchases { get; private set; } = new List<Sale>();
+        public ICollection<Order> Purchases { get; private set; } = null!;
 
-        public ICollection<Offer> Offers { get; private set; } = new List<Offer>();
+        public ICollection<Offer> Offers { get; private set; } = null!;
 
         public ICollection<BankAccount> BankAccounts { get; private set; } = new List<BankAccount>();
 
@@ -22,6 +22,8 @@
             Email = email;
             Login = login;
             Password = password;
+            Purchases = new List<Order>();
+            Offers = new List<Offer>();
         }
     }
 }

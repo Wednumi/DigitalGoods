@@ -14,7 +14,7 @@
 
         public bool Active { get; private set; }
 
-        public int UserId { get; private set; }
+        public int? UserId { get; private set; }
 
         public User User { get; private set; } = null!;
 
@@ -30,24 +30,23 @@
 
         public ICollection<Media>? Medias { get; private set; }
 
-        public ICollection<ActivationCode>? ActivationCodes { get; private set; }
+        public ICollection<ActivationCode> ActivationCodes { get; private set; } = null!;
 
-        public ICollection<Sale>? Sales { get; private set; } = new List<Sale>();
+        public ICollection<Order> Sales { get; private set; } = null!;
 
         private Offer() 
         { }
 
         public Offer(string name, float? price, int? discount, string? discription, 
-            int amount, bool active, User user, BankAccount? bankAccount, 
-            Source? source, ICollection<Tag>? tags, ICollection<Media>? medias,
-            ICollection<ActivationCode>? activationCodes)
+            int amount, User user, BankAccount? bankAccount, 
+            Source? source, ICollection<Tag>? tags, ICollection<Media>? medias)
         {
+            Active = false;
             Name = name;
             Price = price;
             Discount = discount;
             Discription = discription;
             Amount = amount;
-            Active = active;
             UserId = user.Id;
             User = user;
             BankAccountId = bankAccount?.Id;
@@ -56,7 +55,8 @@
             Source = source;
             Tags = tags;
             Medias = medias;
-            ActivationCodes = activationCodes;
+            ActivationCodes = new List<ActivationCode>();
+            Sales = new List<Order>();
         }
     }
 }

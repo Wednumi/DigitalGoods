@@ -1,12 +1,12 @@
 ﻿namespace DigitalGoods.Core.Entities
 {
-    public class Sale : BaseEntity
+    public class Order : BaseEntity
     {
-        public int OfferId { get; private set; }
+        public int? OfferId { get; private set; }
 
         public Offer Offer { get; private set; } = null!;
 
-        public int BuyerId { get; private set; }
+        public int? BuyerId { get; private set; }
 
         public User Buyer { get; private set; } = null!;
 
@@ -14,10 +14,10 @@
 
         public ActivationCode ActivationCode { get; private set; } = null!;
 
-        private Sale() 
+        private Order() 
         { }
 
-        public Sale(Offer offer, User buyer, DateTime date, ActivationCode activationCode)
+        public Order(Offer offer, User buyer, DateTime date, ActivationCode activationCode)
         {
             OfferId = offer.Id;
             Offer = offer;
