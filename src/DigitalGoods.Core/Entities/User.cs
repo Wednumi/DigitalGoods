@@ -14,6 +14,8 @@
 
         public ICollection<BankAccount> BankAccounts { get; private set; } = new List<BankAccount>();
 
+        public double MoneyAccount { get; private set; }
+
         private User()
         { }
 

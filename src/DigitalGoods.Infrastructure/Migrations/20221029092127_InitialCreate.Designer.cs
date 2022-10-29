@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DigitalGoods.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20221019232304_InitialCreate")]
+    [Migration("20221029092127_InitialCreate")]
     partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -93,6 +93,28 @@ namespace DigitalGoods.Infrastructure.Migrations
                     b.ToTable("BankAccountTypes");
                 });
 
+            modelBuilder.Entity("DigitalGoods.Core.Entities.Comment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("Comment");
+                });
+
             modelBuilder.Entity("DigitalGoods.Core.Entities.Media", b =>
                 {
                     b.Property<int>("Id")
@@ -129,9 +151,6 @@ namespace DigitalGoods.Infrastructure.Migrations
                     b.Property<int>("Amount")
                         .HasColumnType("int");
 
-                    b.Property<int?>("BankAccountId")
-                        .HasColumnType("int");
-
                     b.Property<int?>("Discount")
                         .HasColumnType("int");
 
@@ -145,6 +164,9 @@ namespace DigitalGoods.Infrastructure.Migrations
                     b.Property<float?>("Price")
                         .HasColumnType("real");
 
+                    b.Property<int?>("ReceiveMethodId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("SourceId")
                         .HasColumnType("int");
 
@@ -153,7 +175,7 @@ namespace DigitalGoods.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BankAccountId");
+                    b.HasIndex("ReceiveMethodId");
 
                     b.HasIndex("SourceId");
 
@@ -162,7 +184,7 @@ namespace DigitalGoods.Infrastructure.Migrations
                     b.ToTable("Offers");
                 });
 
-            modelBuilder.Entity("DigitalGoods.Core.Entities.Sale", b =>
+            modelBuilder.Entity("DigitalGoods.Core.Entities.OfferChange", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -170,7 +192,37 @@ namespace DigitalGoods.Infrastructure.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("ActivationCodeId")
+                    b.Property<string>("NewValue")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("OfferId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OldValue")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PropertyName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OfferId");
+
+                    b.ToTable("OfferChanges");
+                });
+
+            modelBuilder.Entity("DigitalGoods.Core.Entities.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int?>("ActivationCodeId")
                         .HasColumnType("int");
 
                     b.Property<int?>("BuyerId")
@@ -182,6 +234,12 @@ namespace DigitalGoods.Infrastructure.Migrations
                     b.Property<int?>("OfferId")
                         .HasColumnType("int");
 
+                    b.Property<int>("Rate")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("ReceiveConfirmed")
+                        .HasColumnType("bit");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ActivationCodeId");
@@ -190,7 +248,24 @@ namespace DigitalGoods.Infrastructure.Migrations
 
                     b.HasIndex("OfferId");
 
-                    b.ToTable("Sales");
+                    b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("DigitalGoods.Core.Entities.ReceiveMethod", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Method")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ReceiveMethods");
                 });
 
             modelBuilder.Entity("DigitalGoods.Core.Entities.Source", b =>
@@ -258,6 +333,9 @@ namespace DigitalGoods.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<double>("MoneyAccount")
+                        .HasColumnType("float");
+
                     b.Property<string>("Password")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -296,6 +374,17 @@ namespace DigitalGoods.Infrastructure.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("DigitalGoods.Core.Entities.Comment", b =>
+                {
+                    b.HasOne("DigitalGoods.Core.Entities.Order", "Order")
+                        .WithMany("Comments")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+                });
+
             modelBuilder.Entity("DigitalGoods.Core.Entities.Media", b =>
                 {
                     b.HasOne("DigitalGoods.Core.Entities.Offer", "Offer")
@@ -309,9 +398,9 @@ namespace DigitalGoods.Infrastructure.Migrations
 
             modelBuilder.Entity("DigitalGoods.Core.Entities.Offer", b =>
                 {
-                    b.HasOne("DigitalGoods.Core.Entities.BankAccount", "BankAccount")
+                    b.HasOne("DigitalGoods.Core.Entities.ReceiveMethod", "ReceiveMethod")
                         .WithMany()
-                        .HasForeignKey("BankAccountId");
+                        .HasForeignKey("ReceiveMethodId");
 
                     b.HasOne("DigitalGoods.Core.Entities.Source", "Source")
                         .WithMany()
@@ -321,20 +410,29 @@ namespace DigitalGoods.Infrastructure.Migrations
                         .WithMany("Offers")
                         .HasForeignKey("UserId");
 
-                    b.Navigation("BankAccount");
+                    b.Navigation("ReceiveMethod");
 
                     b.Navigation("Source");
 
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("DigitalGoods.Core.Entities.Sale", b =>
+            modelBuilder.Entity("DigitalGoods.Core.Entities.OfferChange", b =>
+                {
+                    b.HasOne("DigitalGoods.Core.Entities.Offer", "Offer")
+                        .WithMany("OfferChanges")
+                        .HasForeignKey("OfferId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Offer");
+                });
+
+            modelBuilder.Entity("DigitalGoods.Core.Entities.Order", b =>
                 {
                     b.HasOne("DigitalGoods.Core.Entities.ActivationCode", "ActivationCode")
                         .WithMany()
-                        .HasForeignKey("ActivationCodeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ActivationCodeId");
 
                     b.HasOne("DigitalGoods.Core.Entities.User", "Buyer")
                         .WithMany("Purchases")
@@ -383,9 +481,16 @@ namespace DigitalGoods.Infrastructure.Migrations
 
                     b.Navigation("Medias");
 
+                    b.Navigation("OfferChanges");
+
                     b.Navigation("Sales");
 
                     b.Navigation("Tags");
+                });
+
+            modelBuilder.Entity("DigitalGoods.Core.Entities.Order", b =>
+                {
+                    b.Navigation("Comments");
                 });
 
             modelBuilder.Entity("DigitalGoods.Core.Entities.Source", b =>

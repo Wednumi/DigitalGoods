@@ -23,6 +23,19 @@ namespace DigitalGoods.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ReceiveMethods",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Method = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ReceiveMethods", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Sources",
                 columns: table => new
                 {
@@ -49,7 +62,8 @@ namespace DigitalGoods.Infrastructure.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Login = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    MoneyAccount = table.Column<double>(type: "float", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -96,16 +110,16 @@ namespace DigitalGoods.Infrastructure.Migrations
                     Amount = table.Column<int>(type: "int", nullable: false),
                     Active = table.Column<bool>(type: "bit", nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: true),
-                    BankAccountId = table.Column<int>(type: "int", nullable: true),
-                    SourceId = table.Column<int>(type: "int", nullable: true)
+                    SourceId = table.Column<int>(type: "int", nullable: true),
+                    ReceiveMethodId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Offers", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Offers_BankAccounts_BankAccountId",
-                        column: x => x.BankAccountId,
-                        principalTable: "BankAccounts",
+                        name: "FK_Offers_ReceiveMethods_ReceiveMethodId",
+                        column: x => x.ReceiveMethodId,
+                        principalTable: "ReceiveMethods",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_Offers_Sources_SourceId",
@@ -161,6 +175,28 @@ namespace DigitalGoods.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "OfferChanges",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OfferId = table.Column<int>(type: "int", nullable: false),
+                    PropertyName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    OldValue = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    NewValue = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OfferChanges", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OfferChanges_Offers_OfferId",
+                        column: x => x.OfferId,
+                        principalTable: "Offers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Tags",
                 columns: table => new
                 {
@@ -187,7 +223,7 @@ namespace DigitalGoods.Infrastructure.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Sales",
+                name: "Orders",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -195,29 +231,50 @@ namespace DigitalGoods.Infrastructure.Migrations
                     OfferId = table.Column<int>(type: "int", nullable: true),
                     BuyerId = table.Column<int>(type: "int", nullable: true),
                     Date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    ActivationCodeId = table.Column<int>(type: "int", nullable: false)
+                    ActivationCodeId = table.Column<int>(type: "int", nullable: true),
+                    ReceiveConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    Rate = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Sales", x => x.Id);
+                    table.PrimaryKey("PK_Orders", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Sales_ActivationCodes_ActivationCodeId",
+                        name: "FK_Orders_ActivationCodes_ActivationCodeId",
                         column: x => x.ActivationCodeId,
                         principalTable: "ActivationCodes",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
-                        name: "FK_Sales_Offers_OfferId",
+                        name: "FK_Orders_Offers_OfferId",
                         column: x => x.OfferId,
                         principalTable: "Offers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.SetNull);
                     table.ForeignKey(
-                        name: "FK_Sales_Users_BuyerId",
+                        name: "FK_Orders_Users_BuyerId",
                         column: x => x.BuyerId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.SetNull);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Comment",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    OrderId = table.Column<int>(type: "int", nullable: false),
+                    Text = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Comment", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Comment_Orders_OrderId",
+                        column: x => x.OrderId,
+                        principalTable: "Orders",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
@@ -236,14 +293,24 @@ namespace DigitalGoods.Infrastructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Comment_OrderId",
+                table: "Comment",
+                column: "OrderId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Medias_OfferId",
                 table: "Medias",
                 column: "OfferId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Offers_BankAccountId",
+                name: "IX_OfferChanges_OfferId",
+                table: "OfferChanges",
+                column: "OfferId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Offers_ReceiveMethodId",
                 table: "Offers",
-                column: "BankAccountId");
+                column: "ReceiveMethodId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Offers_SourceId",
@@ -256,18 +323,18 @@ namespace DigitalGoods.Infrastructure.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Sales_ActivationCodeId",
-                table: "Sales",
+                name: "IX_Orders_ActivationCodeId",
+                table: "Orders",
                 column: "ActivationCodeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Sales_BuyerId",
-                table: "Sales",
+                name: "IX_Orders_BuyerId",
+                table: "Orders",
                 column: "BuyerId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Sales_OfferId",
-                table: "Sales",
+                name: "IX_Orders_OfferId",
+                table: "Orders",
                 column: "OfferId");
 
             migrationBuilder.CreateIndex(
@@ -289,13 +356,25 @@ namespace DigitalGoods.Infrastructure.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "BankAccounts");
+
+            migrationBuilder.DropTable(
+                name: "Comment");
+
+            migrationBuilder.DropTable(
                 name: "Medias");
 
             migrationBuilder.DropTable(
-                name: "Sales");
+                name: "OfferChanges");
 
             migrationBuilder.DropTable(
                 name: "Tags");
+
+            migrationBuilder.DropTable(
+                name: "BankAccountTypes");
+
+            migrationBuilder.DropTable(
+                name: "Orders");
 
             migrationBuilder.DropTable(
                 name: "ActivationCodes");
@@ -304,13 +383,10 @@ namespace DigitalGoods.Infrastructure.Migrations
                 name: "Offers");
 
             migrationBuilder.DropTable(
-                name: "BankAccounts");
+                name: "ReceiveMethods");
 
             migrationBuilder.DropTable(
                 name: "Sources");
-
-            migrationBuilder.DropTable(
-                name: "BankAccountTypes");
 
             migrationBuilder.DropTable(
                 name: "Users");

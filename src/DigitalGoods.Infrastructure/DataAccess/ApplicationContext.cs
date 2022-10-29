@@ -17,13 +17,19 @@ namespace DigitalGoods.Infrastructure.DataAccess
 
         public DbSet<Offer> Offers { get; set; } = null!;
 
-        public DbSet<Order> Sales { get; set; } = null!;
+        public DbSet<Order> Orders { get; set; } = null!;
 
         public DbSet<Source> Sources { get; set; } = null!;
 
         public DbSet<Tag> Tags { get; set; } = null!;
 
         public DbSet<User> Users { get; set; } = null!;
+
+        public DbSet<OfferChange> OfferChanges { get; set; } = null!;
+
+        public DbSet<ReceiveMethod> ReceiveMethods { get; set; } = null!;
+
+        public DbSet<Comment> Comment { get; set; } = null!;
 
         public ApplicationContext()
         {

@@ -18,13 +18,13 @@
 
         public User User { get; private set; } = null!;
 
-        public int? BankAccountId { get; private set; }
-
-        public BankAccount? BankAccount { get; private set; }
-
         public int? SourceId { get; private set; }
 
         public Source? Source { get; private set; }
+
+        public int? ReceiveMethodId { get; private set; }
+
+        public ReceiveMethod? ReceiveMethod { get; private set; }
 
         public ICollection<Tag>? Tags { get; private set; }
 
@@ -34,12 +34,14 @@
 
         public ICollection<Order> Sales { get; private set; } = null!;
 
+        public ICollection<OfferChange> OfferChanges { get; private set; } = null!;
+
         private Offer() 
         { }
 
         public Offer(string name, float? price, int? discount, string? discription, 
-            int amount, User user, BankAccount? bankAccount, 
-            Source? source, ICollection<Tag>? tags, ICollection<Media>? medias)
+            int amount, User user, Source? source, ICollection<Tag>? tags, 
+            ICollection<Media>? medias, ReceiveMethod? receiveMethod)
         {
             Active = false;
             Name = name;
@@ -49,14 +51,15 @@
             Amount = amount;
             UserId = user.Id;
             User = user;
-            BankAccountId = bankAccount?.Id;
-            BankAccount = bankAccount;
             SourceId = source?.Id;
             Source = source;
             Tags = tags;
             Medias = medias;
             ActivationCodes = new List<ActivationCode>();
             Sales = new List<Order>();
+            OfferChanges = new List<OfferChange>();
+            ReceiveMethod = receiveMethod;
+            ReceiveMethodId = receiveMethod?.Id;
         }
     }
 }
