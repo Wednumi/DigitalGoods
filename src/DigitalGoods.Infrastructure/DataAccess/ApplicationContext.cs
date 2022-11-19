@@ -2,44 +2,45 @@
 using System.Reflection;
 using DigitalGoods.Core.Entities;
 using DigitalGoods.Infrastructure.DataAccess.Configurations;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace DigitalGoods.Infrastructure.DataAccess
 {
-    public class ApplicationContext : DbContext
+    public class ApplicationContext : IdentityDbContext<User>
     {
-        public DbSet<ActivationCode> ActivationCodes { get; set; } = null!;
+        public DbSet<ActivationCode> ActivationCodes { get; set; }
 
-        public DbSet<BankAccount> BankAccounts { get; set; } = null!;
+        public DbSet<BankAccount> BankAccounts { get; set; }
 
-        public DbSet<BankAccountType> BankAccountTypes { get; set; } = null!;
+        public DbSet<BankAccountType> BankAccountTypes { get; set; }
 
-        public DbSet<Media> Medias { get; set; } = null!;
+        public DbSet<Media> Medias { get; set; }
 
-        public DbSet<Offer> Offers { get; set; } = null!;
+        public DbSet<Offer> Offers { get; set; }
 
-        public DbSet<Order> Orders { get; set; } = null!;
+        public DbSet<Order> Orders { get; set; }
 
-        public DbSet<Source> Sources { get; set; } = null!;
+        public DbSet<Source> Sources { get; set; }
 
-        public DbSet<Tag> Tags { get; set; } = null!;
+        public DbSet<Tag> Tags { get; set; }
 
-        public DbSet<User> Users { get; set; } = null!;
+        public DbSet<OfferChange> OfferChanges { get; set; }
 
-        public DbSet<OfferChange> OfferChanges { get; set; } = null!;
+        public DbSet<ReceiveMethod> ReceiveMethods { get; set; }
 
-        public DbSet<ReceiveMethod> ReceiveMethods { get; set; } = null!;
+        public DbSet<Comment> Comment { get; set; }
 
-        public DbSet<Comment> Comment { get; set; } = null!;
-
-        public ApplicationContext()
-        {
-            Database.EnsureDeleted();
-            Database.EnsureCreated();
-        }
+        public ApplicationContext(DbContextOptions<ApplicationContext> options)
+            : base(options)
+        { }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(@"server=DESKTOP-98E3VKN\SQLEXPRESS;database=DigitalGoodsTest;trusted_connection=true;");
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseSqlServer(@"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=DigitalGoods;Integrated Security=True;");
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

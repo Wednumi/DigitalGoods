@@ -2,7 +2,7 @@
 {
     public class BankAccount : BaseEntity
     {
-        public int UserId { get; private set; }
+        public string UserId { get; private set; } = null!;
 
         public User User { get; private set; } = null!;
 

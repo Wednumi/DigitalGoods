@@ -1,31 +1,25 @@
-﻿namespace DigitalGoods.Core.Entities
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+
+namespace DigitalGoods.Core.Entities
 {
-    public class User : BaseEntity
+    public class User : IdentityUser
     {
-        public string Email { get; private set; } = null!;
+        public double MoneyAccount { get; private set; }
 
-        public string Login { get; private set; } = null!;
+        public ICollection<Order> Purchases { get; private set; } = new List<Order>();
 
-        public string Password { get; private set; } = null!;
-
-        public ICollection<Order> Purchases { get; private set; } = null!;
-
-        public ICollection<Offer> Offers { get; private set; } = null!;
+        public ICollection<Offer> Offers { get; private set; } = new List<Offer>();
 
         public ICollection<BankAccount> BankAccounts { get; private set; } = new List<BankAccount>();
-
-        public double MoneyAccount { get; private set; }
 
         private User()
         { }
 
-        public User(string email, string login, string password)
+        public User(string email, string userName)
         {
             Email = email;
-            Login = login;
-            Password = password;
-            Purchases = new List<Order>();
-            Offers = new List<Offer>();
+            UserName = userName;
         }
     }
 }

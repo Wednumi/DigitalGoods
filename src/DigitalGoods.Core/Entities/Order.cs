@@ -6,7 +6,7 @@
 
         public Offer Offer { get; private set; } = null!;
 
-        public int? BuyerId { get; private set; }
+        public string? BuyerId { get; private set; }
 
         public User Buyer { get; private set; } = null!;
 
