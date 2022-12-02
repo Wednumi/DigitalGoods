@@ -24,7 +24,7 @@ namespace DigitalGoods.Web.BlazorServer.Pages.Account
         {
             if (!ModelState.IsValid) return Page();
 
-            var result = await _accountManager.SignIn(this.LoginCredential.UserName,
+            var result = await _accountManager.SignInAsync(this.LoginCredential.UserName,
                 this.LoginCredential.Password,
                 this.LoginCredential.RememberMe);
 

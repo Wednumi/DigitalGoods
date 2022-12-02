@@ -11,12 +11,11 @@ namespace DigitalGoods.Infrastructure.ServiceConfiguration
         public static void AddInfrastructureServices(this IServiceCollection services, IConfiguration config,
             string connectionStringName = "Default")
         {
-            services.AddDbContext<ApplicationContext>(options =>
-            {
-                options.UseSqlServer(config.GetConnectionString(connectionStringName));
-            });
+            services.AddDbAccess(config, connectionStringName);
 
             services.AddAccountManager();
+
+            services.AddCoreServices();
         }
     }
 }

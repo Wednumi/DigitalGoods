@@ -9,7 +9,7 @@ namespace DigitalGoods.Infrastructure.DataAccess
 {
     public class ApplicationContext : IdentityDbContext<User>
     {
-        public DbSet<ActivationCode> ActivationCodes { get; set; }
+        public DbSet<Core.Entities.ActivationCode> ActivationCodes { get; set; }
 
         public DbSet<BankAccount> BankAccounts { get; set; }
 
@@ -19,9 +19,9 @@ namespace DigitalGoods.Infrastructure.DataAccess
 
         public DbSet<Offer> Offers { get; set; }
 
-        public DbSet<Order> Orders { get; set; }
+        public DbSet<Core.Entities.Order> Orders { get; set; }
 
-        public DbSet<Source> Sources { get; set; }
+        public DbSet<Core.Entities.Source> Sources { get; set; }
 
         public DbSet<Tag> Tags { get; set; }
 

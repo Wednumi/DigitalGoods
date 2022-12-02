@@ -1,12 +1,11 @@
-﻿using DigitalGoods.Core.Entities;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace DigitalGoods.Infrastructure.DataAccess.Configurations
 {
-    public class OrderConfiguration : IEntityTypeConfiguration<Order>
+    public class Order : IEntityTypeConfiguration<Core.Entities.Order>
     {
-        public void Configure(EntityTypeBuilder<Order> builder)
+        public void Configure(EntityTypeBuilder<Core.Entities.Order> builder)
         {
             builder.HasOne(s => s.Buyer)
                 .WithMany(b => b.Purchases)
@@ -16,8 +15,8 @@ namespace DigitalGoods.Infrastructure.DataAccess.Configurations
 
             builder.HasOne(s => s.Offer)
                 .WithMany(o => o.Sales)
-                .IsRequired(false)
-                .OnDelete(DeleteBehavior.SetNull);
+                .IsRequired(true)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

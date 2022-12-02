@@ -2,33 +2,31 @@
 {
     public class Offer : BaseEntity
     {
-        public string Name { get; private set; } = null!;
+        public string Name { get; set; } = "NO NAME";
 
-        public float? Price { get; private set; }
+        public float? Price { get; set; }
 
-        public int? Discount { get; private set; }
+        public int? Discount { get; set; }
 
-        public string? Discription { get; private set; }
+        public string? Discription { get; set; }
 
-        public int Amount { get; private set; }
+        public int Amount { get; set; }
 
-        public bool Active { get; private set; }
+        public bool Active { get; set; }
 
-        public string? UserId { get; private set; }
+        public string UserId { get; private set; } = null!;
 
-        public User User { get; private set; } = null!;
+        public int? SourceId { get; set; }
 
-        public int? SourceId { get; private set; }
+        public Source? Source { get; set; }
 
-        public Source? Source { get; private set; }
+        public int? ReceiveMethodId { get; set; }
 
-        public int? ReceiveMethodId { get; private set; }
+        public ReceiveMethod? ReceiveMethod { get; set; }
 
-        public ReceiveMethod? ReceiveMethod { get; private set; }
+        public ICollection<Tag>? Tags { get; set; }
 
-        public ICollection<Tag>? Tags { get; private set; }
-
-        public ICollection<Media>? Medias { get; private set; }
+        public ICollection<Media>? Medias { get; set; }
 
         public ICollection<ActivationCode> ActivationCodes { get; private set; } = null!;
 
@@ -39,27 +37,20 @@
         private Offer() 
         { }
 
-        public Offer(string name, float? price, int? discount, string? discription, 
-            int amount, User user, Source? source, ICollection<Tag>? tags, 
-            ICollection<Media>? medias, ReceiveMethod? receiveMethod)
+        public Offer(User user)
         {
-            Active = false;
-            Name = name;
-            Price = price;
-            Discount = discount;
-            Discription = discription;
-            Amount = amount;
             UserId = user.Id;
-            User = user;
-            SourceId = source?.Id;
-            Source = source;
-            Tags = tags;
-            Medias = medias;
+            Active = false;
+            Tags = new List<Tag>();
+            Medias = new List<Media>();
             ActivationCodes = new List<ActivationCode>();
             Sales = new List<Order>();
             OfferChanges = new List<OfferChange>();
-            ReceiveMethod = receiveMethod;
-            ReceiveMethodId = receiveMethod?.Id;
+        }
+
+        public bool IsOwnerValid(User owner)
+        {
+            return UserId == owner.Id;
         }
     }
 }

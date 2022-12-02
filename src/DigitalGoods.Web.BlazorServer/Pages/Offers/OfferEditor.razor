@@ -1,0 +1,140 @@
+﻿@page "/offers/editor/{InputOfferId}"
+@page "/offers/editor"
+
+@using DigitalGoods.Core.Entities;
+@using DigitalGoods.Core.Services;
+@using DigitalGoods.Web.BlazorServer.Models;
+@using System.ComponentModel.DataAnnotations;
+@using WednumiComponents.Menu.Items;
+
+@inject AuthenticationStateProvider StateProvider
+@inject OfferService OfferService
+@inject IAccountManager AccountManager
+
+@layout _OffersLayout
+
+@if(_offerModel is null){
+    <LoadingMessage></LoadingMessage>
+}
+else
+{
+    <div class="form-container">
+        <EditForm Model="_offerModel" OnValidSubmit="TrySave">
+            <DataAnnotationsValidator />
+            <div class="form-item">
+                <label>Product name</label>
+                <InputText @bind-Value=_offerModel.Name class="form-control" placeholder="Enter name"></InputText>
+                <div class="valid-message">
+                    <ValidationMessage For="@(() => _offerModel.Name)" />
+                </div>
+            </div>
+            <div class="form-item">
+                <label>Medias</label>
+                <h1 class="border border-secondary">TO DO</h1>
+            </div>
+            <div class="d-flex flex-row justify-content-between">
+                <div class="form-item flex-fill pe-2">
+                    <label>Price $</label>
+                    <InputNumber @bind-Value=_offerModel.Price class="form-control" placeholder="Enter Price"></InputNumber>
+                    <div class="valid-message">
+                        <ValidationMessage For="@(() => _offerModel.Price)" />
+                    </div>
+                </div>
+                <div class="form-item flex-fill ps-2">
+                    <label>Discount %</label>
+                    <InputNumber @bind-Value=_offerModel.Discount class="form-control"></InputNumber>
+                    <div class="valid-message">
+                        <ValidationMessage For="@(() => _offerModel.Discount)" />
+                    </div>
+                </div>
+                <div class="form-item flex-fill ps-2">
+                    <label>Amount</label>
+                    <InputNumber @bind-Value=_offerModel.Amount class="form-control"></InputNumber>
+                    <div class="valid-message">
+                        <ValidationMessage For="@(() => _offerModel.Amount)" />
+                    </div>
+                </div>
+            </div>
+            <div class="form-item">
+                <label>Discription</label>
+                <InputTextArea @bind-Value=_offerModel.Discription class="form-control"></InputTextArea>
+            </div>
+            <div class="form-item">
+                <label>Category</label>
+                <h3 class="border border-secondary">TO DO</h3>
+            </div>
+            <div class="form-item">
+                <label>Tags</label>
+                <h3 class="border border-secondary">TO DO</h3>
+            </div>
+            <div class="form-item">
+                <label>Receive method</label>
+                <h3 class="border border-secondary">TO DO</h3>
+            </div>
+            <div class="form-item submit-buttons">
+                <div class="align-self-center">@_saveResult</div>
+                <div class="accept">
+                    <InputItem type="submit" value="Accept"></InputItem>
+                </div>
+                <div class="cancel">
+                    <MenuItem href="offers/list">Cancel</MenuItem>
+                </div>
+            </div>
+        </EditForm>
+    </div>
+}
+
+@code {
+    private User _currentUser = null!;
+
+    private Offer _offer = null!;
+
+    private OfferModel? _offerModel;
+
+    private string? _saveResult;
+
+    [Parameter]
+    public string? InputOfferId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await IdentificateUser();
+        await RetrieveOffer();
+        _offerModel = ModelMapper.Map<Offer, OfferModel>(_offer);
+    }
+
+    private async Task IdentificateUser()
+    {
+        var state = await StateProvider.GetAuthenticationStateAsync();
+        _currentUser = await AccountManager.GetUserByClaimsAsync(state.User);
+    }
+
+    private async Task RetrieveOffer()
+    {
+        var offerId = GetParsedOfferId();
+        _offer = await OfferService.GetVerifiedOffer(_currentUser, offerId);
+    }
+
+    private int? GetParsedOfferId()
+    {
+        if (int.TryParse(InputOfferId, out int offerId))
+        {
+            return offerId;
+        }
+        return null;
+    }
+
+    private async Task TrySave()
+    {
+        ModelMapper.Map<OfferModel, Offer>(_offerModel!, _offer);
+        var result = await OfferService.Save();
+        SetSaveResult(result);
+    }
+
+    private void SetSaveResult(ActionResult actionResult)
+    {
+        _saveResult = actionResult.Success
+            ? "Successfully saved"
+            : "Saving failed";
+    }
+}

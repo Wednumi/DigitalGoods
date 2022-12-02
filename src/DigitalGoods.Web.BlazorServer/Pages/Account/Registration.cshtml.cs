@@ -27,7 +27,7 @@ namespace DigitalGoods.Web.BlazorServer.Pages.Account
             {
                 var user = new User(SignUpCredential.Email, SignUpCredential.UserName);
 
-                var result = await accountManager.Register(user, SignUpCredential.Password);
+                var result = await accountManager.RegisterAsync(user, SignUpCredential.Password);
                 if (result.Succeeded)
                 {
                     return LocalRedirect("/");

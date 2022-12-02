@@ -8,81 +8,81 @@ namespace DigitalGoods.IntegrationTests.Tests
 {
     public class Account : ConfiguredTest
     {
+        [Fact]
+        public void Registration_with_valid_data_succeeded()
+        {
+            var validUser = CreateUser();
+
+            var result = Registrate(validUser);
+
+            Assert.True(result.Succeeded);
+        }
+
+        [Fact]
+        public void Regstration_with_same_email_fails()
+        {
+            var firstUser = CreateUser(userName: "first");
+            var secondUser = CreateUser(userName: "second");
+
+            Registrate(firstUser);
+            var result = Registrate(secondUser);
+
+            Assert.False(result.Succeeded);
+        }
+
+        [Fact]
+        public void Regstration_with_same_username_fails()
+        {
+            var firstUser = CreateUser(email: "first@mail.com");
+            var secondUser = CreateUser(email: "second@mail.com");
+
+            Registrate(firstUser);
+            var result = Registrate(secondUser);
+
+            Assert.False(result.Succeeded);
+        }
+
+        [Fact]
+        public void SignIn_with_valid_data_succeeded()
+        {
+            var user = CreateUser();
+            var password = "12345678";
+            Registrate(user, password);
+
+            var result = Authenticate(user, password);
+
+            Assert.True(result.Succeeded);
+        }
+
+        [Fact]
+        public void SignIn_with_invalid_password_fails()
+        {
+            var user = CreateUser();
+            var password = "12345678";
+            Registrate(user, password);
+
+            var result = Authenticate(user, "invalid password");
+
+            Assert.False(result.Succeeded);
+        }
+
         private User CreateUser(string email = "testmail@mail.test", string userName = "TestUser")
         {
             return new User(email, userName);
         }
 
-        private async Task<IdentityResult> Registrate(User user, string password = "12345678")
+        private IdentityResult Registrate(User user, string password = "12345678")
         {
             var accountManager = ServiceProvider.GetRequiredService<IAccountManager>();
 
-            return await accountManager.Register(user, password);
+            return accountManager.RegisterAsync(user, password).Result;
         }
 
-        private async Task<SignInResult> Authenticate(User user, string password)
+        private SignInResult Authenticate(User user, string password)
         {
             var accountManager = ServiceProvider.GetRequiredService<IAccountManager>();
 
-            return await accountManager.CheckForSignInAsync(user, password);
-        }
-
-        [Fact]
-        public async Task Registration_with_valid_data_succeededAsync()
-        {
-            var validUser = CreateUser();
-
-            var result = await Registrate(validUser);
-
-            Assert.True(result.Succeeded);
-        }
-
-        [Fact]
-        public async Task Regstration_with_same_email_failsAsync()
-        {
-            var firstUser = CreateUser(userName: "first");
-            var secondUser = CreateUser(userName: "second");
-
-            await Registrate(firstUser);
-            var result = await Registrate(secondUser);
-
-            Assert.False(result.Succeeded);
-        }
-
-        [Fact]
-        public async Task Regstration_with_same_username_failsAsync()
-        {
-            var firstUser = CreateUser(email: "first@mail.com");
-            var secondUser = CreateUser(email: "second@mail.com");
-
-            await Registrate(firstUser);
-            var result = await Registrate(secondUser);
-
-            Assert.False(result.Succeeded);
-        }
-
-        [Fact]
-        public async Task SignIn_with_valid_data_succeededAsync()
-        {
-            var user = CreateUser();
-            var password = "12345678";
-            await Registrate(user, password);
-
-            var result = await Authenticate(user, password);
-
-            Assert.True(result.Succeeded);
-        }
-
-        [Fact]
-        public async Task SignIn_with_invalid_password_failsAsync()
-        {
-            var user = CreateUser();
-            var password = "12345678";
-            await Registrate(user, password);
-
-            var result = await Authenticate(user, "87654321");
-
-            Assert.False(result.Succeeded);
+            return accountManager.CheckForSignInAsync(user, password).Result;
         }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using DigitalGoods.Core.Entities;
 using DigitalGoods.Core.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using System.Security.Claims;
 
 namespace DigitalGoods.Infrastructure.Data
 {
@@ -16,21 +17,31 @@ namespace DigitalGoods.Infrastructure.Data
             _signInManager = signInManager;
         }
 
-        public async Task<IdentityResult> Register(User user, string password)
+        public async Task<IdentityResult> RegisterAsync(User user, string password)
         {
             return await _userManager.CreateAsync(user, password);
         }
 
-        public async Task<SignInResult> SignIn(string userName, string password, bool isPersistent = false)
+        public async Task<SignInResult> SignInAsync(string userName, string password, bool isPersistent = false)
         {
             var result = await _signInManager.PasswordSignInAsync(userName, password, isPersistent, false);
             return result;
+        }
+
+        public async Task SignOutAsync()
+        {
+            await _signInManager.SignOutAsync();
         }
 
         public async Task<SignInResult> CheckForSignInAsync(User user, string password)
         {
             var result = await _signInManager.CheckPasswordSignInAsync(user, password, false);
             return result;
+        }
+
+        public async Task<User> GetUserByClaimsAsync(ClaimsPrincipal principal)
+        {
+            return await _userManager.GetUserAsync(principal);
         }
     }
 }

@@ -11,6 +11,8 @@
     <link rel="stylesheet" href="css/bootstrap/bootstrap.min.css" />
     <link href="css/site.css" rel="stylesheet" />
     <link href="DigitalGoods.Web.BlazorServer.styles.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Kanit">
     <component type="typeof(HeadOutlet)" render-mode="ServerPrerendered" />
 </head>
 <body>
@@ -30,3 +32,25 @@
     <script src="_framework/blazor.server.js"></script>
 </body>
 </html>
+
+<style>
+    :root {
+        --back-color: #1c0118;
+        --element-back-color: #370926;
+        --element-front-color: #F12E41;
+        --light-color: #FFE5D4;
+        --highlight-color: #DDFFFE;
+        --side-panel-color: #151D36;
+        --off-element-hover-color: #F12E41;
+        --accept-color: forestgreen;
+        --cancel-color: red;
+        --main-panel-color: darkgray;
+        --head-font: Kanit, "Trebuchet MS";
+        --main-font: Tahoma;
+    }
+
+    body{
+        background-color: var(--back-color);
+        font-family: var(--main-font);
+    }
+</style>
