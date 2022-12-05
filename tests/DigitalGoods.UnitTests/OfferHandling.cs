@@ -2,7 +2,7 @@
 
 namespace DigitalGoods.UnitTests
 {
-    public class ServicesTests
+    public class OfferHandling
     {
         [Fact]
         public void OfferService_retrieve_offer_for_owner()

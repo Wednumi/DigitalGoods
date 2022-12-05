@@ -12,8 +12,8 @@ namespace DigitalGoods.Infrastructure.ServiceConfiguration
             string connectionStringName = "Default")
         {
             services.AddDbAccess(config, connectionStringName);
-
             services.AddAccountManager();
+            services.AddFileManager();
 
             services.AddCoreServices();
         }

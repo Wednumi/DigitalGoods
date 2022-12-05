@@ -31,6 +31,9 @@ namespace DigitalGoods.Infrastructure.DataAccess
 
         public DbSet<Comment> Comment { get; set; }
 
+        public ApplicationContext()
+        { }
+
         public ApplicationContext(DbContextOptions<ApplicationContext> options)
             : base(options)
         { }

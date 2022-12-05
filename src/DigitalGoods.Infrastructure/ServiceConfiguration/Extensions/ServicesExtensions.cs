@@ -8,6 +8,7 @@ namespace DigitalGoods.Infrastructure.ServiceConfiguration.Extensions
         public static void AddCoreServices(this IServiceCollection services)
         {
             services.AddTransient<OfferService>();
+            services.AddTransient<MediaService>();
         }
     }
 }

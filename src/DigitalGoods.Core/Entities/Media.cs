@@ -2,20 +2,27 @@
 {
     public class Media : BaseEntity
     {
-        public string Code { get; private set; } = null!;
+        public string FileName { get; set; } = null!;
+
+        public string Path { get; set; } = null!;
+
+        public string ContentType { get; set; } = null!;
+
+        public long Size { get; set; }
 
         public int OfferId { get; private set; }
 
-        public Offer Offer { get; private set; } = null!;
+        public Offer? Offer { get; private set; }
 
         private Media() 
         { }
 
-        public Media(string code, Offer offer)
+        public Media(string fileName, string contentType, long size, Offer offer)
         {
-            Code = code;
+            FileName = fileName;
+            ContentType = contentType;
+            Size = size;
             OfferId = offer.Id;
-            Offer = offer;
         }
     }
 }

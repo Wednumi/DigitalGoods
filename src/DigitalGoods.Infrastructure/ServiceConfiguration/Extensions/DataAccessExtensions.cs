@@ -40,5 +40,10 @@ namespace DigitalGoods.Infrastructure.ServiceConfiguration.Extensions
 
             services.AddScoped<IAccountManager, IdentityAccountManager>();
         }
+
+        public static void AddFileManager(this IServiceCollection services)
+        {
+            services.AddTransient<IFileManager, FileManager>();
+        }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using DigitalGoods.Core.Entities;
 using DigitalGoods.Core.Interfaces;
-using Microsoft.AspNetCore.Identity;
+using DigitalGoods.Core.Specifications;
 
 namespace DigitalGoods.Core.Services
 {
@@ -48,6 +48,13 @@ namespace DigitalGoods.Core.Services
             {
                 return new ActionResult(false, e.Message);
             }
+        }
+
+        public async Task<ICollection<Offer>> OfferByUser(User user)
+        {
+            var specification = new OfferByUserSpec(user);
+            var offers = await _offerRepository.ListAsync(specification);
+            return offers;
         }
     }
 }

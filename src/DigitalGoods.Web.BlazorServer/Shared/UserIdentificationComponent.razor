@@ -1,0 +1,17 @@
+﻿@inject AuthenticationStateProvider StateProvider
+@inject IAccountManager AccountManager
+
+@code {
+    protected User CurrentUser = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await IdentificateUser();
+    }
+
+    private async Task IdentificateUser()
+    {
+        var state = await StateProvider.GetAuthenticationStateAsync();
+        CurrentUser = await AccountManager.GetUserByClaimsAsync(state.User);
+    }
+}

@@ -2,11 +2,20 @@
     width: 100%;
 }
 
-.add-button ::deep .item {
+    .add-button ::deep .item {
+        background-color: var(--accept-color);
+        --hover-brightness: 0.8;
+        border-bottom-left-radius: 1rem;
+        border-bottom-right-radius: 1rem;
+        text-align: center;
+        font-size: 1.2rem;
+        margin-left: 0;
+        margin-right: 0;
+    }
+
+.edit-button ::deep .item {
     background-color: var(--accept-color);
     --hover-brightness: 0.8;
-    border-bottom-left-radius: 1rem;
-    border-bottom-right-radius: 1rem;
+    border-radius: 0.25rem;
     text-align: center;
-    font-size: 1.2rem;
 }

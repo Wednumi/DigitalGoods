@@ -1,4 +1,4 @@
-﻿namespace DigitalGoods.Core.Services
+﻿namespace DigitalGoods.Core
 {
     public class ActionResult
     {
