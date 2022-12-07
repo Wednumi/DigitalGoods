@@ -47,7 +47,9 @@ namespace DigitalGoods.UnitTests
             var factoryMock = new Mock<IRepositoryFactory>();
             factoryMock.Setup(x => x.CreateRepository<Offer>()).Returns(repositoryMock.Object);
 
-            return (new OfferService(factoryMock.Object), userMock.Object);
+            var fileManagerMock = new Mock<IFileManager>();
+            var MediaServiceMock = new Mock<MediaService>(factoryMock.Object, fileManagerMock.Object);
+            return (new OfferService(factoryMock.Object, MediaServiceMock.Object), userMock.Object);
         }
     }
 }

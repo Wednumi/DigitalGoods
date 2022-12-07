@@ -73,13 +73,13 @@ namespace DigitalGoods.IntegrationTests.Tests
 
         private string ExtenalPath()
         {
-            return Path.Combine(Directory.GetCurrentDirectory(), "MediaStore");
+            return Path.Combine(Directory.GetCurrentDirectory(), @"wwwroot\MediaStore");
         }
 
         private void ClearMainFolder()
         {
             var currentPath = Directory.GetCurrentDirectory();
-            var folderPath = currentPath + @"\MediaStore";
+            var folderPath = currentPath + @"\wwwroot\MediaStore";
             if (Directory.Exists(folderPath))
             {
                 Directory.Delete(folderPath, true);

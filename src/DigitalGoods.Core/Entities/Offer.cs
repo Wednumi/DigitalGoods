@@ -1,4 +1,6 @@
-﻿namespace DigitalGoods.Core.Entities
+﻿using AutoMapper;
+
+namespace DigitalGoods.Core.Entities
 {
     public class Offer : BaseEntity
     {
@@ -6,7 +8,7 @@
 
         public float? Price { get; set; }
 
-        public int? Discount { get; set; }
+        public int Discount { get; set; }
 
         public string? Discription { get; set; }
 
@@ -15,6 +17,8 @@
         public bool Active { get; set; }
 
         public string UserId { get; private set; } = null!;
+
+        public User User { get; private set; } = null!;
 
         public int? SourceId { get; set; }
 
@@ -34,12 +38,13 @@
 
         public ICollection<OfferChange> OfferChanges { get; private set; } = null!;
 
-        private Offer() 
+        public Offer() 
         { }
 
         public Offer(User user)
         {
             UserId = user.Id;
+            User = user;
             Active = false;
             Tags = new List<Tag>();
             Medias = new List<Media>();
@@ -51,6 +56,26 @@
         public bool IsOwnerValid(User owner)
         {
             return UserId == owner.Id;
+        }
+
+        public Offer GetCopy()
+        {
+            var copy = new Offer();
+            var mapper = GetMapper();
+            return mapper.Map<Offer, Offer>(this, copy);
+        }
+
+        public void Map(Offer offer)
+        {
+            var mapper = GetMapper();
+            mapper.Map<Offer, Offer>(offer, this);
+        }
+
+        private Mapper GetMapper()
+        {
+            var config = new MapperConfiguration(cfg => cfg.CreateMap<Offer, Offer>());
+            var mapper = new Mapper(config);
+            return mapper;
         }
     }
 }

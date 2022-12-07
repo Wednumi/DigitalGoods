@@ -35,3 +35,7 @@ label {
             --bg-color: var(--cancel-color);
             --hover-color: var(--cancel-color);
         }
+
+img{
+    height: 200px;
+}

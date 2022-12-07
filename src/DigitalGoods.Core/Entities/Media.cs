@@ -14,14 +14,22 @@
 
         public Offer? Offer { get; private set; }
 
+        public bool IsPreview { get; set; }
+
         private Media() 
         { }
 
-        public Media(string fileName, string contentType, long size, Offer offer)
+        public Media(string fileName, string contentType, long size)
         {
+            IsPreview = false;
             FileName = fileName;
             ContentType = contentType;
             Size = size;
+        }
+
+        public void SetOffer(Offer offer)
+        {
+            Offer = offer;
             OfferId = offer.Id;
         }
     }

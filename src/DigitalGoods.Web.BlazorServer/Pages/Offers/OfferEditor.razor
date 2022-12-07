@@ -11,7 +11,7 @@
 @inherits UserIdentificationComponent
 
 @inject OfferService OfferService
-@inject MediaService MediaService
+@inject IFileManager FileManager
 
 @layout _OffersLayout
 
@@ -32,8 +32,16 @@ else
             </div>
             <div class="form-item">
                 <label>Medias</label>
-                <InputFile OnChange="@LoadFiles" multiple/>
-                <div>@_mediaSetResult</div>
+                <InputFile OnChange="@AddFiles" class="form-control" multiple />
+                @if(_medias is not null){
+                    foreach (var media in _medias)
+                    {
+                        <img src="@FileManager.FilePath(media)">
+                    }
+                }
+                @if (_results.ContainsKey("mediaSet")){
+                    <div>@_results["mediaSet"]</div>
+                }
             </div>
             <div class="d-flex flex-row justify-content-between">
                 <div class="form-item flex-fill pe-2">
@@ -75,12 +83,14 @@ else
                 <h3 class="border border-secondary">TO DO</h3>
             </div>
             <div class="form-item submit-buttons">
-                <div class="align-self-center">@_saveResult</div>
+                @if(_results.ContainsKey("save")){
+                    <div class="align-self-center">@_results["save"]</div>
+                }
                 <div class="accept">
                     <InputItem type="submit" value="Accept"></InputItem>
                 </div>
-                <div class="cancel">
-                    <MenuItem href="offers/list">Cancel</MenuItem>
+                <div @onclick="Cancel" class="cancel">
+                    <MenuItem NavigationForceLoad=true href="offers/list">Cancel</MenuItem>
                 </div>
             </div>
         </EditForm>
@@ -92,9 +102,9 @@ else
 
     private OfferModel? _offerModel;
 
-    private string? _saveResult;
+    private Dictionary<string, string> _results = new Dictionary<string, string>();
 
-    private string? _mediaSetResult;
+    private List<Media>? _medias;
 
     [Parameter]
     public string? InputOfferId { get; set; }
@@ -104,6 +114,7 @@ else
         await base.OnInitializedAsync();
         await RetrieveOffer();
         _offerModel = ModelMapper.Map<Offer, OfferModel>(_offer);
+        _medias = await OfferService.GetMedias();
     }
 
     private async Task RetrieveOffer()
@@ -130,33 +141,36 @@ else
 
     private void SetSaveResult(ActionResult actionResult)
     {
-        _saveResult = actionResult.Success
+        var saveResult = actionResult.Success
             ? "Successfully saved"
             : "Saving failed";
+        _results["save"] = saveResult;
     }
 
-    private async Task LoadFiles(InputFileChangeEventArgs e)
+    private async Task AddFiles(InputFileChangeEventArgs e)
     {
         int maxAllowedFiles = 5;
         int maxSize = 1024 * 1000;
-        var results = new List<ActionResult>();
         foreach (var file in e.GetMultipleFiles(maxAllowedFiles))
         {
             var saveAction = async (FileStream fileStream) 
                 => await file.OpenReadStream(maxSize).CopyToAsync(fileStream);
 
-            var media = new Media(file.Name, file.ContentType, file.Size, _offer);
+            var media = new Media(file.Name, file.ContentType, file.Size);
 
-            var result = await MediaService.Store(media, saveAction);
-            results.Add(result);
-        }
-        SetSaveResult(results);
+            await OfferService.RegisterMedia(media, saveAction);
+        }        
     }
 
     private void SetSaveResult(List<ActionResult> actionResults)
     {
-        _mediaSetResult = actionResults.Any(r => r.Failed)
+        var mediaSetResult = actionResults.Any(r => r.Failed)
             ? "Adding failed"
             : "Adding succeeded";
+        _results["mediaSet"] = mediaSetResult;
+    }
+
+    private async Task Cancel(){
+        await OfferService.Rollback();
     }
 }
