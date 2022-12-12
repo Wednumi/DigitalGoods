@@ -10,7 +10,7 @@
 
         public long Size { get; set; }
 
-        public int OfferId { get; private set; }
+        public int? OfferId { get; private set; }
 
         public Offer? Offer { get; private set; }
 

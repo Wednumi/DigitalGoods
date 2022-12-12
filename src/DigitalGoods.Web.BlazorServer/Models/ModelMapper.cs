@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using Azure.Core;
 
 namespace DigitalGoods.Web.BlazorServer.Models
 {
@@ -19,7 +18,8 @@ namespace DigitalGoods.Web.BlazorServer.Models
 
         private static Mapper GetConfiguredMapper<TSource, TResult>()
         {
-            var config = new MapperConfiguration(cfg => cfg.CreateMap<TSource, TResult>());
+            var config = new MapperConfiguration(cfg => cfg.CreateMap<TSource, TResult>()
+                .IgnoreAllPropertiesWithAnInaccessibleSetter());
             return new Mapper(config);
         }
     }

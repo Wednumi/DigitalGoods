@@ -10,6 +10,8 @@ namespace DigitalGoods.Core.Services
 
         private readonly IRepository<Offer> _offerRepository;
 
+        private readonly IRepository<Category> _categoryRepository;
+
         private readonly MediaService _mediaService;
 
         private Offer? _previousOffer;
@@ -20,27 +22,23 @@ namespace DigitalGoods.Core.Services
         {
             _repositoryFactory = repositoryFactory;
             _offerRepository = _repositoryFactory.CreateRepository<Offer>();
+            _categoryRepository = _repositoryFactory.CreateRepository<Category>();
             _mediaService = mediaService;
         }
 
-        public async Task<Offer> GetVerifiedOffer(User owner, int? offerId)
+        public async Task<Offer> GetConfiguredOffer(User owner, int? offerId)
         {
             if (offerId.HasValue)
             {
-                _offer = await _offerRepository.GetByIdAsync((int)offerId);
-                if (OwnerFaked(owner))
-                {
-                    _offer = null;
-                }
+                OfferForEditingSpec specification = new (owner, (int)offerId);
+                _offer = await _offerRepository.FirstOrDefaultAsync(specification);
             }
             _previousOffer = _offer?.GetCopy();
-            _offer ??= new Offer(owner);            
-            return _offer;
-        }
+            _offer ??= new Offer(owner);
 
-        private bool OwnerFaked(User owner)
-        {
-            return _offer is not null && !_offer.IsOwnerValid(owner);
+            _mediaService.SetMedias(_offer.Medias);
+
+            return _offer;
         }
 
         public async Task<ActionResult> Save()
@@ -59,7 +57,7 @@ namespace DigitalGoods.Core.Services
 
         public async Task<ICollection<Offer>> OfferByUser(User user)
         {
-            var specification = new OfferByUserSpec(user);
+            var specification = new OffersByUserSpec(user);
             var offers = await _offerRepository.ListAsync(specification);
             return offers;
         }
@@ -68,11 +66,6 @@ namespace DigitalGoods.Core.Services
         {
             media.SetOffer(_offer!);
             return await _mediaService.Save(media, saveAction);
-        }
-
-        public async Task<List<Media>> GetMedias()
-        {
-            return await _mediaService.InitializedMedias(_offer!);
         }
 
         public async Task Rollback()
@@ -92,6 +85,11 @@ namespace DigitalGoods.Core.Services
                 _offer!.Map(_previousOffer);
                 await _offerRepository.UpdateAsync(_offer);
             }
+        }
+
+        public async Task DeleteMedia(Media media)
+        {
+            await _mediaService.Delete(media);
         }
     }
 }

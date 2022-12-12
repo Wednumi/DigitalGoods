@@ -10,7 +10,7 @@ namespace DigitalGoods.Infrastructure.DataAccess.Configurations
             builder.HasOne(m => m.Offer)
                 .WithMany(o => o.Medias)
                 .HasForeignKey(m => m.OfferId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

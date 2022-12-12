@@ -12,21 +12,17 @@ namespace DigitalGoods.Infrastructure.DataAccess
 
         public DbSet<BankAccount> BankAccounts { get; set; }
 
-        public DbSet<BankAccountType> BankAccountTypes { get; set; }
-
         public DbSet<Media> Medias { get; set; }
 
         public DbSet<Offer> Offers { get; set; }
 
         public DbSet<Core.Entities.Order> Orders { get; set; }
 
-        public DbSet<Core.Entities.Source> Sources { get; set; }
+        public DbSet<Core.Entities.Category> Categories { get; set; }
 
         public DbSet<Tag> Tags { get; set; }
 
         public DbSet<OfferChange> OfferChanges { get; set; }
-
-        public DbSet<ReceiveMethod> ReceiveMethods { get; set; }
 
         public DbSet<Comment> Comment { get; set; }
 

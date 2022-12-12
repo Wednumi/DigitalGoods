@@ -14,9 +14,9 @@ namespace DigitalGoods.Core.Services
 
         private readonly PathGenerator _pathGenerator;
 
-        private List<Media> _medias;
+        private ICollection<Media> _medias = null!;
 
-        private List<Media> _mediasBefore;
+        private ICollection<Media> _mediasBefore = null!;
 
         public MediaService(IRepositoryFactory repositoryFactory, IFileManager fileManager)
         {
@@ -24,15 +24,12 @@ namespace DigitalGoods.Core.Services
             _mediaRepository = _repositoryFactory.CreateRepository<Media>();
             _fileManager = fileManager;
             _pathGenerator = new PathGenerator(fileManager);
-            _medias = new List<Media>();
-            _mediasBefore = new List<Media>();
         }
 
-        public async Task<List<Media>> InitializedMedias(Offer offer)
+        public void SetMedias(ICollection<Media> medias)
         {
-            _medias = await _mediaRepository.ListAsync(new MediaByOfferSpec(offer)) ?? _medias;
+            _medias = medias;
             _mediasBefore = new List<Media>(_medias);
-            return _medias;
         }
 
         public async Task<ActionResult> Save(Media media, Func<FileStream, Task> saveAction)
@@ -44,7 +41,6 @@ namespace DigitalGoods.Core.Services
             {
                 await _fileManager.Save(media.Path, saveAction);
                 savedToDb = await SaveToDbResult(media);
-                _medias.Add(media);
                 return new ActionResult(true);
             }
             catch(Exception ex)

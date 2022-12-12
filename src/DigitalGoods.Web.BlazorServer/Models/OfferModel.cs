@@ -1,4 +1,4 @@
-﻿using AutoMapper;
+﻿using DigitalGoods.Core.Enums;
 using DigitalGoods.Core.Entities;
 using System.ComponentModel.DataAnnotations;
 
@@ -22,12 +22,9 @@ namespace DigitalGoods.Web.BlazorServer.Models
         [Range(0, double.PositiveInfinity, ErrorMessage = "Amount can't be less than 0")]
         public int Amount { get; set; } = 0;
 
-        public Source? Source { get; set; }
+        public Category? Category { get; set; }
 
         public ReceiveMethod? ReceiveMethod { get; set; }
 
-        public List<Tag>? Tags { get; set; }
-
-        public List<Media>? Medias { get; set; }
     }
 }

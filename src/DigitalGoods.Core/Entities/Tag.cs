@@ -4,18 +4,18 @@
     {
         public string Name { get; private set; } = null!;
 
-        public int SourceId { get; set; }
+        public int CategoryId { get; set; }
 
-        public Source Source { get; private set; } = null!;
+        public Category Category { get; private set; } = null!;
 
         private Tag()
         { }
 
-        public Tag(string name, Source source)
+        public Tag(string name, Category category)
         {
             Name = name;
-            SourceId = source.Id;
-            Source = source;
+            CategoryId = category.Id;
+            Category = category;
         }
     }
 }

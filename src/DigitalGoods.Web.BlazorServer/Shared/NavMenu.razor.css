@@ -36,7 +36,7 @@
 }
 .sign-items ::deep .item {
     --bg-color: var(--element-front-color);
-    --hover-brightness: 0.85;
+    --hover-brightness: 1.25;
     flex: 1;
 }
 

@@ -1,12 +1,8 @@
 ﻿@page "/offers/editor/{InputOfferId}"
 @page "/offers/editor"
 
-@using DigitalGoods.Core.Entities;
-@using DigitalGoods.Core.Services;
-@using DigitalGoods.Web.BlazorServer.Models;
-@using System.ComponentModel.DataAnnotations;
-@using WednumiComponents.Menu.Items;
-@using DigitalGoods.Core;
+@using System.ComponentModel.DataAnnotations
+@using DigitalGoods.Web.BlazorServer.Models
 
 @inherits UserIdentificationComponent
 
@@ -32,16 +28,20 @@ else
             </div>
             <div class="form-item">
                 <label>Medias</label>
-                <InputFile OnChange="@AddFiles" class="form-control" multiple />
-                @if(_medias is not null){
-                    foreach (var media in _medias)
+                <InputFile OnChange="@AddFiles" class="form-control mb-1" multiple />
+                <div>
+                    @foreach (var media in _offer.Medias)
                     {
-                        <img src="@FileManager.FilePath(media)">
+                        <div class="media-container">
+                            <img class="offer-image" src="@FileManager.FilePath(media)">
+                            <i @onclick="() => DeleteMedia(media)" class="delete-image bi bi-dash-circle-fill"></i>
+                        </div>
                     }
-                }
-                @if (_results.ContainsKey("mediaSet")){
-                    <div>@_results["mediaSet"]</div>
-                }
+                    @if (_results.ContainsKey("mediaSet"))
+                    {
+                        <div>@_results["mediaSet"]</div>
+                    }
+                </div>
             </div>
             <div class="d-flex flex-row justify-content-between">
                 <div class="form-item flex-fill pe-2">
@@ -72,7 +72,7 @@ else
             </div>
             <div class="form-item">
                 <label>Category</label>
-                <h3 class="border border-secondary">TO DO</h3>
+                <CategoryPicker @bind-Value="_offerModel.Category" @bind-Value:event="ValueChanged" />
             </div>
             <div class="form-item">
                 <label>Tags</label>
@@ -80,7 +80,12 @@ else
             </div>
             <div class="form-item">
                 <label>Receive method</label>
-                <h3 class="border border-secondary">TO DO</h3>
+                <InputSelect class="form-select" @bind-Value="_offerModel.ReceiveMethod">
+                    @foreach (var method in Enum.GetValues(typeof(ReceiveMethod)))
+                    {
+                        <option value="@method">@method</option>
+                    }
+                </InputSelect>
             </div>
             <div class="form-item submit-buttons">
                 @if(_results.ContainsKey("save")){
@@ -104,23 +109,21 @@ else
 
     private Dictionary<string, string> _results = new Dictionary<string, string>();
 
-    private List<Media>? _medias;
-
     [Parameter]
     public string? InputOfferId { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
+
         await RetrieveOffer();
         _offerModel = ModelMapper.Map<Offer, OfferModel>(_offer);
-        _medias = await OfferService.GetMedias();
     }
 
     private async Task RetrieveOffer()
     {
         var offerId = GetParsedOfferId();
-        _offer = await OfferService.GetVerifiedOffer(CurrentUser, offerId);
+        _offer = await OfferService.GetConfiguredOffer(CurrentUser, offerId);
     }
 
     private int? GetParsedOfferId()
@@ -149,8 +152,10 @@ else
 
     private async Task AddFiles(InputFileChangeEventArgs e)
     {
-        int maxAllowedFiles = 5;
+        int maxAllowedFiles = 10;
         int maxSize = 1024 * 1000;
+
+        var results = new List<ActionResult>();
         foreach (var file in e.GetMultipleFiles(maxAllowedFiles))
         {
             var saveAction = async (FileStream fileStream) 
@@ -158,11 +163,13 @@ else
 
             var media = new Media(file.Name, file.ContentType, file.Size);
 
-            await OfferService.RegisterMedia(media, saveAction);
-        }        
+            var result = await OfferService.RegisterMedia(media, saveAction);
+            results.Add(result);
+        }
+        SetFileAddResult(results);
     }
 
-    private void SetSaveResult(List<ActionResult> actionResults)
+    private void SetFileAddResult(List<ActionResult> actionResults)
     {
         var mediaSetResult = actionResults.Any(r => r.Failed)
             ? "Adding failed"
@@ -172,5 +179,9 @@ else
 
     private async Task Cancel(){
         await OfferService.Rollback();
+    }
+
+    private async Task DeleteMedia(Media media){
+        await OfferService.DeleteMedia(media);
     }
 }

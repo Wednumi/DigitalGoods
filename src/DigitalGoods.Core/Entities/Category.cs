@@ -1,19 +1,19 @@
 ﻿namespace DigitalGoods.Core.Entities
 {
-    public class Source : BaseEntity
+    public class Category : BaseEntity
     {
         public string Name { get; private set; } = null!;
 
         public int? ParentId { get; private set; }
 
-        public Source? Parent { get; private set; }
+        public Category? Parent { get; private set; }
 
-        public ICollection<Source>? Childs { get; private set; }
+        public ICollection<Category>? Childs { get; private set; }
 
-        private Source()
+        private Category()
         { }
 
-        public Source(string name, Source? parent = null)
+        public Category(string name, Category? parent = null)
         {
             Name = name;
             Parent = parent;

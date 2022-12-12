@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DigitalGoods.Core.Enums;
 
 namespace DigitalGoods.Core.Entities
 {
@@ -20,17 +21,15 @@ namespace DigitalGoods.Core.Entities
 
         public User User { get; private set; } = null!;
 
-        public int? SourceId { get; set; }
+        public int? CategoryId { get; set; }
 
-        public Source? Source { get; set; }
-
-        public int? ReceiveMethodId { get; set; }
+        public Category? Category { get; set; }
 
         public ReceiveMethod? ReceiveMethod { get; set; }
 
-        public ICollection<Tag>? Tags { get; set; }
+        public ICollection<Tag> Tags { get; set; } = null!;
 
-        public ICollection<Media>? Medias { get; set; }
+        public ICollection<Media> Medias { get; private set; } = null!;
 
         public ICollection<ActivationCode> ActivationCodes { get; private set; } = null!;
 
@@ -38,7 +37,7 @@ namespace DigitalGoods.Core.Entities
 
         public ICollection<OfferChange> OfferChanges { get; private set; } = null!;
 
-        public Offer() 
+        private Offer() 
         { }
 
         public Offer(User user)
@@ -51,11 +50,6 @@ namespace DigitalGoods.Core.Entities
             ActivationCodes = new List<ActivationCode>();
             Sales = new List<Order>();
             OfferChanges = new List<OfferChange>();
-        }
-
-        public bool IsOwnerValid(User owner)
-        {
-            return UserId == owner.Id;
         }
 
         public Offer GetCopy()
