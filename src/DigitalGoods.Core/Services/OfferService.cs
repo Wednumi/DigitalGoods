@@ -26,19 +26,26 @@ namespace DigitalGoods.Core.Services
             _mediaService = mediaService;
         }
 
-        public async Task<Offer> GetConfiguredOffer(User owner, int? offerId)
+        public async Task<Offer> InitializedOffer(User owner, int? offerId)
         {
-            if (offerId.HasValue)
-            {
-                OfferForEditingSpec specification = new (owner, (int)offerId);
-                _offer = await _offerRepository.FirstOrDefaultAsync(specification);
-            }
-            _previousOffer = _offer?.GetCopy();
-            _offer ??= new Offer(owner);
+            var retreived = await GetOffer(owner, offerId);
+
+            _previousOffer = retreived?.GetCopy();
+            _offer = retreived ?? new Offer(owner);
 
             _mediaService.SetMedias(_offer.Medias);
 
             return _offer;
+        }
+
+        private async Task<Offer?> GetOffer(User owner, int? offerId)
+        {
+            if (offerId.HasValue)
+            {
+                var specification = new OfferForEditingSpec(owner, (int)offerId);
+                return await _offerRepository.FirstOrDefaultAsync(specification);
+            }
+            return null;
         }
 
         public async Task<ActionResult> Save()

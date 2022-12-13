@@ -1,17 +1,17 @@
 ﻿@inject CategoryService CategoryService
 
 <div class="wrapper">
-    <div class="d-flex flex-row-reverse justify-content-end my-2">
+    <div class="d-flex flex-row-reverse justify-content-end">
         @if (Value is not null)
         {
-            <div class="category-label mx-0 py-2">
+            <div class="category-label">
                 @Value.Name
             </div>
         }
         @foreach (var category in CategoryService.Parents)
         {
             <i class="bi bi-caret-right-fill align-self-center"></i>
-            <div class="category-label mx-0 py-2">
+            <div class="category-label">
                 @category.Name
             </div>
         }

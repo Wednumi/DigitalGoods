@@ -2,7 +2,6 @@
 @page "/offers/editor"
 
 @using System.ComponentModel.DataAnnotations
-@using DigitalGoods.Web.BlazorServer.Models
 
 @inherits UserIdentificationComponent
 
@@ -123,7 +122,7 @@ else
     private async Task RetrieveOffer()
     {
         var offerId = GetParsedOfferId();
-        _offer = await OfferService.GetConfiguredOffer(CurrentUser, offerId);
+        _offer = await OfferService.InitializedOffer(CurrentUser, offerId);
     }
 
     private int? GetParsedOfferId()

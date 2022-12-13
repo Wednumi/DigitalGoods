@@ -36,32 +36,22 @@ namespace DigitalGoods.Core.Services
         {
             media.Path = _pathGenerator.Generate(media.ContentType);
 
-            var savedToDb = false;
             try
             {
                 await _fileManager.Save(media.Path, saveAction);
-                savedToDb = await SaveToDbResult(media);
+                await _mediaRepository.UpdateAsync(media);
                 return new ActionResult(true);
             }
             catch(Exception ex)
             {
-                await Delete(media, savedToDb);
+                await _fileManager.Delete(media.Path);
                 return new ActionResult(false, ex.Message);
             }
         }
 
-        private async Task<bool> SaveToDbResult(Media media)
+        public async Task Delete(Media media)
         {
-            await _mediaRepository.UpdateAsync(media);
-            return true;
-        }
-
-        public async Task Delete(Media media, bool deleteFromDb = true)
-        {
-            if (deleteFromDb)
-            {
-                await _mediaRepository.DeleteAsync(media);
-            }
+            await _mediaRepository.DeleteAsync(media);
             await _fileManager.Delete(media.Path);
         }
 
