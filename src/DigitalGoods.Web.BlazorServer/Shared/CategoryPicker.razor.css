@@ -38,3 +38,58 @@
     margin: 0;
     border-radius: 0.25rem;
 }
+
+.overlay {
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.wrapper {
+    position: relative;
+}
+
+.overlay-info {
+    font-size: 1rem;
+    display: inline-flex;
+    border-radius: 0.5rem;
+    background-color: #B8F2E6;
+    margin: 0 1rem 0 1rem;
+    padding: 0.5rem;
+    white-space: nowrap;
+}
+
+.overlay-info ::deep input{
+    padding: 0;
+    margin: 0;
+}
+
+.submit-buttons {
+    display: inline-flex;
+    padding: 0;
+}
+
+    .submit-buttons ::deep .item {
+        --hover-brightness: 1.2;
+        border-radius: 0.5rem;
+        color: var(--light-color);
+        margin: 0 1rem 0 1rem;
+        padding: 0.5rem;
+    }
+
+    .submit-buttons .accept ::deep .item {
+        --bg-color: var(--accept-color);
+        --hover-color: var(--accept-color);
+    }
+    
+    .submit-buttons .close ::deep .item {
+        --bg-color: var(--cancel-color);
+        --hover-color: var(--cancel-color);
+    }

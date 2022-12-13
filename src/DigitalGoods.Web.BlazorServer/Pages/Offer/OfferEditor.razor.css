@@ -23,7 +23,7 @@ label {
     justify-content: end;
 }
     .submit-buttons ::deep .item {
-        --hover-brightness: 0.85;
+        --hover-brightness: 1.2;
         border-radius: 0.25rem;
         color: var(--light-color);
     }

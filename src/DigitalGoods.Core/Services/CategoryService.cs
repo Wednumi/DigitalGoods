@@ -10,60 +10,96 @@ namespace DigitalGoods.Core.Services
 
         private readonly IRepository<Category> _repository;
 
-        public Stack<Category> Parents { get; private set; } = new Stack<Category>();
+        public Stack<Category> Parents { get; private set; } 
 
-        public ICollection<Category> Childs { get; private set; } = null!;
+        public ICollection<Category> Childs { get; private set; } 
+
+        public Category? Current { get; set; }
+
+        public Func<Category?, Task> CurrentChanged { get; set; } = null!;
 
         public CategoryService(IRepositoryFactory repositoryFactory)
         {
             _repositoryFactory = repositoryFactory;
             _repository = _repositoryFactory.CreateRepository<Category>();
+
+            Parents = new Stack<Category>();
+            Childs = new List<Category>();
         }
 
-        public async Task MoveCurrentTo(Category? category)
+        public async Task Initialize(Category? category, Func<Category?, Task> currentChaned)
         {
-            await SetChilds(category);
-            await SetParents(category);
+            CurrentChanged += currentChaned;
+            await ChangeCurrent(category);
+            await SetChilds();
+            await SetParents();
         }
 
-        private async Task SetChilds(Category? parent)
+        private async Task ChangeCurrent(Category? current)
         {
-            int? parentId = parent?.Id;
+            Current = current;
+            await CurrentChanged.Invoke(Current);
+            await SetChilds();
+        } 
+
+        private async Task SetChilds()
+        {
+            int? parentId = Current?.Id;
             Childs = await _repository.ListAsync(new ChildsForCategorySpec(parentId));
         }
 
-        private async Task SetParents(Category? category)
+        private async Task SetParents()
         {
-            if(category is null)
+            if(Current is null)
             {
-                Parents = new Stack<Category>();
                 return;
             }
 
-            Parents.TryPeek(out Category? lastParent);
+            var parent = await GetParent(Current);
 
-            var findedParents = new List<Category>();
-            
-            while (category!.ParentId != lastParent?.Id)
-            {                
-                CategoryParentSpec specification = new(category);
-                category = await _repository.FirstOrDefaultAsync(specification);
-                if(category is null)
-                {
-                    break;
-                }
-                findedParents.Add(category);
+            while (parent is not null)
+            {
+                Parents.Push(parent);
+                parent = await GetParent(parent);
             }
-
-            findedParents.Reverse();
-            findedParents.ForEach(p => Parents.Push(p));
+            Parents.Reverse();
         }
 
-        public async Task<Category?> ReturnToLast()
+        private async Task<Category?> GetParent(Category category)
+        {
+            var specification = new CategoryParentSpec(category);
+            var parent = await _repository.FirstOrDefaultAsync(specification);
+            return parent;
+        }
+
+        public async Task MoveTo(Category category)
+        {
+            if(Current is not null)
+            {
+                Parents.Push(Current);
+            }
+            await ChangeCurrent(category);
+        }
+
+        public async Task ReturnToLast()
         {
             Parents.TryPop(out Category? last);
-            await SetChilds(last);
-            return last;
+            await ChangeCurrent(last);
+        }
+
+        public async Task MoveToAdded(Category toAdd)
+        {
+            await _repository.UpdateAsync(toAdd);
+            await AlterTreeAfterAdding(toAdd);
+        }
+
+        private async Task AlterTreeAfterAdding(Category added)
+        {
+            if(Current is not null)
+            {
+                Parents.Push(Current);
+            }
+            await ChangeCurrent(added);
         }
     }
 }

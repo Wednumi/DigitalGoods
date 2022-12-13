@@ -1,41 +1,70 @@
 ﻿@inject CategoryService CategoryService
 
-<div class="d-flex flex-row category-menu">
-    @if (CategoryService.Childs is not null)
-    {
+<div class="wrapper">
+    <div class="d-flex flex-row-reverse justify-content-end my-2">
+        @if (Value is not null)
+        {
+            <div class="category-label mx-0 py-2">
+                @Value.Name
+            </div>
+        }
+        @foreach (var category in CategoryService.Parents)
+        {
+            <i class="bi bi-caret-right-fill align-self-center"></i>
+            <div class="category-label mx-0 py-2">
+                @category.Name
+            </div>
+        }
+    </div>
+    <div class="d-flex flex-row category-menu">
         <DropDown>
             <Head>
                 <button class="btn btn-primary me-1">Pick category</button>
             </Head>
             <Content>
-                <input @bind="_filter" @bind:event="oninput"
-               placeholder="search" class="form-control" />
-                @foreach (var category in _filteredCategoryChilds)
+                <div class="d-inline-flex">
+                    <input @bind="_filter" @bind:event="oninput"
+                       placeholder="search" class="form-control" />
+                    <Item @onclick="TogleOverlay">
+                        <i class="bi bi-plus-square-fill"></i>
+                    </Item>
+                </div>
+                @if (CategoryService.Childs is not null)
                 {
-                    <Item @onclick="() => SetCategory(category)">@category.Name</Item>
+                    @foreach (var category in _filteredCategoryChilds)
+                    {
+                        <Item @onclick="() => MoveTo(category)">@category.Name</Item>
+                    }
                 }
             </Content>
-        </DropDown>
-    }
-    <div class="delete-category-btn mx-1">
-        <Item @onclick="ReturnToLast">
-            <i class="bi bi-backspace-fill"></i>
-        </Item>
+        </DropDown>        
+        <div class="delete-category-btn mx-1">
+            <Item @onclick="CategoryService.ReturnToLast">
+                <i class="bi bi-backspace-fill"></i>
+            </Item>
+        </div>
     </div>
-</div>
-<div class="d-flex flex-row-reverse justify-content-end my-2">
-    @if(Value is not null){
-        <div class="category-label mx-0 py-2">
-            @Value.Name
-        </div>
-    }
-    @foreach (var category in CategoryService.Parents)
-    {
-        <i class="bi bi-caret-right-fill align-self-center"></i>
-        <div class="category-label mx-0 py-2">
-            @category.Name
-        </div>
-    }
+    <div class="overlay @_overlayCss">
+        <EditForm Model="_categoryModel" OnValidSubmit="MoveToAdded">
+            <DataAnnotationsValidator />
+                <div class="overlay-info">
+                    <div class="me-1">Parent category</div>
+                    <input class="form-control" type="text" placeholder="@Value?.Name" readonly />
+                </div>
+                <div class="overlay-info">
+                    <div class="me-2">Enter new category</div>
+                    <InputText @bind-Value="_categoryModel.Name" class="form-control" placeholder="Category name"/>
+                </div>
+                <div class="submit-buttons">
+                    <div class="accept">
+                        <InputItem type="submit" value="Add"></InputItem>
+                    </div>
+                    <div class="close">
+                        <Item @onclick="TogleOverlay">Close</Item>
+                    </div>
+                </div>
+        </EditForm>  
+    </div>
 </div>
 
 @code {
@@ -45,10 +74,15 @@
     {
         get
         {
-            var filtered = CategoryService.Childs.Where(c => c.Name.Contains(_filter, StringComparison.OrdinalIgnoreCase));
+            var filtered = CategoryService.Childs
+                .Where(c => c.Name.Contains(_filter, StringComparison.OrdinalIgnoreCase));
             return filtered.ToList();
         }
     }
+
+    private CategoryModel _categoryModel = new CategoryModel();
+
+    private string _overlayCss = "invisible";
 
     [Parameter]
     public Category? Value { get; set; }
@@ -58,25 +92,38 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await CategoryService.MoveCurrentTo(Value);
-    }
-
-    private async Task SetCategory(Category? category)
-    {
-        await SetValue(category);
-        await CategoryService.MoveCurrentTo(category);
-        _filter = "";
-    }
-
-    private async Task ReturnToLast()
-    {
-        var last = await CategoryService.ReturnToLast();
-        await SetValue(last);
+        await CategoryService.Initialize(Value, new Func<Category?, Task>(SetValue));
     }
 
     private async Task SetValue(Category? value)
     {
         Value = value;
         await ValueChanged.InvokeAsync(Value);
+    }
+
+    private async Task MoveTo(Category category)
+    {
+        await CategoryService.MoveTo(category);
+        _filter = "";
+    }
+
+    private void TogleOverlay()
+    {
+        _overlayCss = _overlayCss == ""
+            ? "invisible"
+            : "";
+    }
+
+    private async Task MoveToAdded()
+    {
+        var category = new Category(_categoryModel.Name, Value);     
+        await CategoryService.MoveToAdded(category);
+        ResetOverlay();
+    }
+
+    private void ResetOverlay()
+    {
+        _categoryModel = new CategoryModel();
+        TogleOverlay();
     }
 }

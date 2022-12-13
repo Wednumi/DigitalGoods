@@ -12,9 +12,6 @@ namespace DigitalGoods.Core.Specifications
                 .Include(o => o.Medias)
                 .Include(o => o.OfferChanges)
                 .Include(o => o.Category)
-                    .ThenInclude(c => c!.Parent)
-                .Include(o => o.Category)
-                    .ThenInclude(c => c!.Childs)
                 .Include(o => o.Tags);
         }
     }

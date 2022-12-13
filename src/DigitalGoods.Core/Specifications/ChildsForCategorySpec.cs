@@ -7,7 +7,8 @@ namespace DigitalGoods.Core.Specifications
     {
         public ChildsForCategorySpec(int? parentId)
         {
-            Query.Where(c => c.ParentId == parentId);
+            Query.Where(c => c.ParentId == parentId)
+                .AsNoTracking();
         }
     }
 }
