@@ -10,6 +10,7 @@ namespace DigitalGoods.Infrastructure.ServiceConfiguration.Extensions
             services.AddTransient<OfferService>();
             services.AddTransient<MediaService>();
             services.AddTransient<CategoryService>();
+            services.AddTransient<TagService>();
         }
     }
 }

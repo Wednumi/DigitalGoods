@@ -12,6 +12,6 @@ namespace DigitalGoods.Core.Interfaces
 
         public Task RollBack();
 
-        public string FilePath(Media media);
+        public string GetFullPath(Media media);
     }
 }

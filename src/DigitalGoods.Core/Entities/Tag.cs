@@ -2,19 +2,21 @@
 {
     public class Tag : BaseEntity
     {
-        public string Name { get; private set; } = null!;
+        public string Name { get; set; } = null!;
 
-        public int CategoryId { get; set; }
+        public int? CategoryId { get; set; }
 
-        public Category Category { get; private set; } = null!;
+        public Category? Category { get; set; }
+
+        public ICollection<Offer> Offers { get; set; } = new List<Offer>();
 
         private Tag()
         { }
 
-        public Tag(string name, Category category)
+        public Tag(string name, Category? category)
         {
             Name = name;
-            CategoryId = category.Id;
+            CategoryId = category?.Id;
             Category = category;
         }
     }

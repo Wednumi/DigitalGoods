@@ -40,22 +40,17 @@ namespace DigitalGoods.Infrastructure.Data
         }
 
         private async Task CreateDirectories(string internalPath)
-        {
-            var allFolders = internalPath.Split(@"\").ToList();
-            var allPathes = AllPathes(allFolders);
+        {            
+            var allPathes = AllPathes(internalPath);
             foreach (var path in allPathes)
             {
-                var fullPath = System.IO.Path.Combine(_externalPath, path);
-                if (Directory.Exists(fullPath) is false)
-                {
-                    await Task.Run(() => Directory.CreateDirectory(fullPath));
-                    _createdFolders.Add(fullPath);
-                }
+                await EnsureDirectoryCreated(path);
             }
         }
 
-        private List<string> AllPathes(List<string> folderNames)
+        private List<string> AllPathes(string internalPath)
         {
+            var folderNames = internalPath.Split(@"\").ToList();
             var result = new List<string>();
             for (int i = 1; i < folderNames.Count; i++)
             {
@@ -65,19 +60,39 @@ namespace DigitalGoods.Infrastructure.Data
             return result;
         }
 
+        private async Task EnsureDirectoryCreated(string directoryPath)
+        {
+            var fullPath = System.IO.Path.Combine(_externalPath, directoryPath);
+            if (Directory.Exists(fullPath) is false)
+            {
+                await Task.Run(() => Directory.CreateDirectory(fullPath));
+                _createdFolders.Add(fullPath);
+            }
+        }
+
         public async Task RollBack()
+        {
+            await RollBackFiles();
+            await RollBackDirectories();
+        }
+
+        private async Task RollBackFiles()
         {
             foreach (var path in _addedFiles)
             {
                 await Task.Run(() => File.Delete(path));
             }
-            foreach(var path in _createdFolders)
+        }
+
+        private async Task RollBackDirectories()
+        {
+            foreach (var path in _createdFolders)
             {
                 await Task.Run(() => Directory.Delete(path));
             }
         }
 
-        public string FilePath(Media media)
+        public string GetFullPath(Media media)
         {
             return System.IO.Path.Combine(s_folderName, media.Path);
         }

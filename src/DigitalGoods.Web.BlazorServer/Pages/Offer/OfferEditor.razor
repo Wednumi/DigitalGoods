@@ -32,7 +32,7 @@ else
                     @foreach (var media in _offer.Medias)
                     {
                         <div class="media-container">
-                            <img class="offer-image" src="@FileManager.FilePath(media)">
+                            <img class="offer-image" src="@FileManager.GetFullPath(media)">
                             <i @onclick="() => DeleteMedia(media)" class="delete-image bi bi-dash-circle-fill"></i>
                         </div>
                     }
@@ -75,7 +75,7 @@ else
             </div>
             <div class="form-item">
                 <label>Tags</label>
-                <h3 class="border border-secondary">TO DO</h3>
+                <TagPicker Tags="_offer.Tags" Category="_offerModel.Category"></TagPicker>
             </div>
             <div class="form-item">
                 <label>Receive method</label>
