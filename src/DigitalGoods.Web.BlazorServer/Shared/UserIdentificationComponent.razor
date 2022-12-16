@@ -6,10 +6,10 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await IdentificateUser();
+        await IdentificateUserAsync();
     }
 
-    private async Task IdentificateUser()
+    private async Task IdentificateUserAsync()
     {
         var state = await StateProvider.GetAuthenticationStateAsync();
         CurrentUser = await AccountManager.GetUserByClaimsAsync(state.User);

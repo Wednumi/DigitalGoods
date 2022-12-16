@@ -1,0 +1,52 @@
+﻿@inject MediaService MediaService
+@inject IFileManager FileManager
+
+@if(MediaService.Medias is not null){
+    <InputFile OnChange="@AddFilesAsync" class="form-control mb-1" multiple />
+    <div>
+        @foreach (var media in MediaService.Medias)
+        {
+            <div class="media-container">
+                <img class="offer-image" src="@FileManager.GetFullPath(media)">
+                <i @onclick="() => DeleteMediaAsync(media)" class="delete-image bi bi-dash-circle-fill"></i>
+            </div>
+        }
+    </div>
+}
+else{
+    <LoadingMessage/>
+}
+
+
+@code {
+    [Parameter]
+    public Offer Offer { get; set; } = null!;
+
+    protected async override Task OnInitializedAsync()
+    {
+        MediaService.Initialize(Offer.Medias);
+    }
+
+    private async Task AddFilesAsync(InputFileChangeEventArgs e)
+    {
+        int maxAllowedFiles = 10;
+        int maxSize = 1024 * 1000;
+
+        var results = new List<ActionResult>();
+        foreach (var file in e.GetMultipleFiles(maxAllowedFiles))
+        {
+            var saveAction = async (FileStream fileStream)
+                => await file.OpenReadStream(maxSize).CopyToAsync(fileStream);
+
+            var media = new Media(file.Name, file.ContentType, file.Size, Offer);
+
+            var result = await MediaService.SaveAsync(media, saveAction);
+            results.Add(result);
+        }
+    }
+
+    private async Task DeleteMediaAsync(Media media)
+    {
+        await MediaService.DeleteAsync(media);
+    }
+}

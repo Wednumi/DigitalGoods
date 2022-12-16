@@ -10,9 +10,9 @@
 
         public long Size { get; set; }
 
-        public int? OfferId { get; private set; }
+        public int OfferId { get; private set; }
 
-        public Offer? Offer { get; private set; }
+        public Offer Offer { get; private set; }
 
         public bool IsPreview { get; set; }
 
@@ -25,6 +25,16 @@
             FileName = fileName;
             ContentType = contentType;
             Size = size;
+        }
+
+        public Media(string fileName, string contentType, long size, Offer offer)
+        {
+            IsPreview = false;
+            FileName = fileName;
+            ContentType = contentType;
+            Size = size;
+            Offer = offer;
+            OfferId = offer.Id;
         }
 
         public void SetOffer(Offer offer)

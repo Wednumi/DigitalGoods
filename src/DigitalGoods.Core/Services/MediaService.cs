@@ -4,7 +4,7 @@ using DigitalGoods.Core.Specifications;
 
 namespace DigitalGoods.Core.Services
 {
-    public class MediaService
+    public class MediaService : RollBackableService
     {
         private readonly IRepositoryFactory _repositoryFactory;
 
@@ -14,11 +14,13 @@ namespace DigitalGoods.Core.Services
 
         private readonly PathGenerator _pathGenerator;
 
-        private ICollection<Media> _medias = null!;
-
         private ICollection<Media> _mediasBefore = null!;
 
-        public MediaService(IRepositoryFactory repositoryFactory, IFileManager fileManager)
+        public ICollection<Media> Medias { get; set; } = null!;
+
+        public MediaService(IRepositoryFactory repositoryFactory, IFileManager fileManager, 
+            IRollBackContainer rollBackContainer)
+            : base(rollBackContainer)
         {
             _repositoryFactory = repositoryFactory;
             _mediaRepository = _repositoryFactory.CreateRepository<Media>();
@@ -26,40 +28,40 @@ namespace DigitalGoods.Core.Services
             _pathGenerator = new PathGenerator(fileManager);
         }
 
-        public void SetMedias(ICollection<Media> medias)
+        public void Initialize(ICollection<Media> medias)
         {
-            _medias = medias;
-            _mediasBefore = new List<Media>(_medias);
+            Medias = medias;
+            _mediasBefore = new List<Media>(Medias);
         }
 
-        public async Task<ActionResult> Save(Media media, Func<FileStream, Task> saveAction)
+        public async Task<ActionResult> SaveAsync(Media media, Func<FileStream, Task> saveAction)
         {
             media.Path = _pathGenerator.Generate(media.ContentType);
 
             try
             {
-                await _fileManager.Save(media.Path, saveAction);
+                await _fileManager.SaveAsync(media.Path, saveAction);
                 await _mediaRepository.UpdateAsync(media);
                 return new ActionResult(true);
             }
             catch(Exception ex)
             {
-                await _fileManager.Delete(media.Path);
+                await _fileManager.DeleteAsync(media.Path);
                 return new ActionResult(false, ex.Message);
             }
         }
 
-        public async Task Delete(Media media)
+        public async Task DeleteAsync(Media media)
         {
             await _mediaRepository.DeleteAsync(media);
-            await _fileManager.Delete(media.Path);
+            await _fileManager.DeleteAsync(media.Path);
         }
 
-        public async Task RollBack()
+        protected override async Task RollBackAsync()
         {
-            var added = _medias.Except(_mediasBefore).ToList();
+            var added = Medias.Except(_mediasBefore).ToList();
             await _mediaRepository.DeleteRangeAsync(added);
-            await _fileManager.RollBack();
+            await _fileManager.RollBackAsync();
         }
     }
 }

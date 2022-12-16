@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using DigitalGoods.Core.Attributes;
 using DigitalGoods.Core.Enums;
 
 namespace DigitalGoods.Core.Entities
@@ -17,28 +18,45 @@ namespace DigitalGoods.Core.Entities
 
         public bool Active { get; set; }
 
+        [NoMap]
         public string UserId { get; private set; } = null!;
 
+        [NoMap]
         public User User { get; private set; } = null!;
 
-        public int? CategoryId { get; set; }
+        public int? CategoryId { get; private set; }
 
-        public Category? Category { get; set; }
+        public Category? Category { get; private set; }
 
         public ReceiveMethod? ReceiveMethod { get; set; }
 
-        public ICollection<Tag> Tags { get; set; } = null!;
+        public ICollection<Tag> Tags { get; private set; } = null!;
 
+        [NoMap]
         public ICollection<Media> Medias { get; private set; } = null!;
 
+        [NoMap]
         public ICollection<ActivationCode> ActivationCodes { get; private set; } = null!;
 
+        [NoMap]
         public ICollection<Order> Sales { get; private set; } = null!;
 
+        [NoMap]
         public ICollection<OfferChange> OfferChanges { get; private set; } = null!;
 
-        private Offer() 
+        private Offer()
         { }
+
+        public Offer(string userId)
+        {
+            UserId = userId;
+            Active = false;
+            Tags = new List<Tag>();
+            Medias = new List<Media>();
+            ActivationCodes = new List<ActivationCode>();
+            Sales = new List<Order>();
+            OfferChanges = new List<OfferChange>();
+        }
 
         public Offer(User user)
         {
@@ -52,24 +70,10 @@ namespace DigitalGoods.Core.Entities
             OfferChanges = new List<OfferChange>();
         }
 
-        public Offer GetCopy()
+        public void SetCategory(Category? category)
         {
-            var copy = new Offer();
-            var mapper = GetMapper();
-            return mapper.Map<Offer, Offer>(this, copy);
-        }
-
-        public void Map(Offer offer)
-        {
-            var mapper = GetMapper();
-            mapper.Map<Offer, Offer>(offer, this);
-        }
-
-        private Mapper GetMapper()
-        {
-            var config = new MapperConfiguration(cfg => cfg.CreateMap<Offer, Offer>());
-            var mapper = new Mapper(config);
-            return mapper;
+            Category = category;
+            CategoryId = category?.Id;
         }
     }
 }

@@ -4,41 +4,33 @@ using DigitalGoods.Core.Specifications;
 
 namespace DigitalGoods.Core.Services
 {
-    public class OfferService
+    public class OfferService : RollBackableService
     {
         private readonly IRepositoryFactory _repositoryFactory;
 
         private readonly IRepository<Offer> _offerRepository;
 
-        private readonly IRepository<Category> _categoryRepository;
+        public Offer? _previousOffer { get; set; }
 
-        private readonly MediaService _mediaService;
+        public Offer Offer { get; set; } = null!;
 
-        private Offer? _previousOffer;
-
-        private Offer? _offer;
-
-        public OfferService(IRepositoryFactory repositoryFactory, MediaService mediaService)
+        public OfferService(IRepositoryFactory repositoryFactory, IRollBackContainer rollBackContainer)
+            :base(rollBackContainer)
         {
             _repositoryFactory = repositoryFactory;
             _offerRepository = _repositoryFactory.CreateRepository<Offer>();
-            _categoryRepository = _repositoryFactory.CreateRepository<Category>();
-            _mediaService = mediaService;
         }
 
-        public async Task<Offer> InitializedOffer(User owner, int? offerId)
+        public async Task InitializeAsync(User owner, int? offerId)
         {
-            var retreived = await GetOffer(owner, offerId);
-
-            _previousOffer = retreived?.GetCopy();
-            _offer = retreived ?? new Offer(owner);
-
-            _mediaService.SetMedias(_offer.Medias);
-
-            return _offer;
+            var retrieved = await RetrieveOfferAsync(owner, offerId);
+            _previousOffer = retrieved is not null
+                ? ConfiguredMapper.Map<Offer, Offer>(retrieved)
+                : null;
+            Offer = retrieved ?? new Offer(owner);
         }
 
-        private async Task<Offer?> GetOffer(User owner, int? offerId)
+        private async Task<Offer?> RetrieveOfferAsync(User owner, int? offerId)
         {
             if (offerId.HasValue)
             {
@@ -48,55 +40,30 @@ namespace DigitalGoods.Core.Services
             return null;
         }
 
-        public async Task<ActionResult> Save()
+        public async Task<ActionResult> SaveAsync()
         {
             try
             {
-                await _offerRepository.UpdateAsync(_offer!);
+                await _offerRepository.UpdateAsync(Offer!);
                 return new ActionResult(true);
             }
             catch(Exception e)
             {
-                await _mediaService.RollBack();
                 return new ActionResult(false, e.Message);
             }
         }
 
-        public async Task<ICollection<Offer>> OfferByUser(User user)
-        {
-            var specification = new OffersByUserSpec(user);
-            var offers = await _offerRepository.ListAsync(specification);
-            return offers;
-        }
-
-        public async Task<ActionResult> RegisterMedia(Media media, Func<FileStream, Task> saveAction)
-        {
-            media.SetOffer(_offer!);
-            return await _mediaService.Save(media, saveAction);
-        }
-
-        public async Task Rollback()
-        {
-            await _mediaService.RollBack();
-            await RollBackOffer();
-        }
-
-        private async Task RollBackOffer()
+        protected override async Task RollBackAsync()
         {
             if(_previousOffer is null)
             {
-                await _offerRepository.DeleteAsync(_offer!);
+                await _offerRepository.DeleteAsync(Offer!);
             }
             else
             {
-                _offer!.Map(_previousOffer);
-                await _offerRepository.UpdateAsync(_offer);
+                ConfiguredMapper.Map<Offer, Offer>(_previousOffer, Offer);
+                await _offerRepository.UpdateAsync(Offer);
             }
-        }
-
-        public async Task DeleteMedia(Media media)
-        {
-            await _mediaService.Delete(media);
         }
     }
 }

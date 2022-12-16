@@ -6,11 +6,11 @@ namespace DigitalGoods.Core.Interfaces
     {
         public bool FileExist(string path);
 
-        public Task Save(string path, Func<FileStream, Task> saveAction);
+        public Task SaveAsync(string path, Func<FileStream, Task> saveAction);
 
-        public Task Delete(string path);
+        public Task DeleteAsync(string path);
 
-        public Task RollBack();
+        public Task RollBackAsync();
 
         public string GetFullPath(Media media);
     }

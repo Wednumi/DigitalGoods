@@ -14,8 +14,6 @@ namespace DigitalGoods.Infrastructure.ServiceConfiguration
             services.AddDbAccess(config, connectionStringName);
             services.AddAccountManager();
             services.AddFileManager();
-
-            services.AddCoreServices();
         }
     }
 }

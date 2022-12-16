@@ -1,12 +1,13 @@
 ﻿@page "/offers/list"
 
 @using WednumiComponents.Menu.Items
-@using DigitalGoods.Core.Entities;
-@using DigitalGoods.Core.Services;
+@using DigitalGoods.Core.Entities
+@using DigitalGoods.Core.Services
+@using DigitalGoods.Core.Specifications
 
 @inherits UserIdentificationComponent
 
-@inject OfferService OfferService
+@inject IRepositoryFactory RepositoryFactory
 
 @layout _OffersLayout
 
@@ -39,7 +40,7 @@
                         <td>@offer.Price</td>
                         <td>@offer.Discount</td>
                         <td>TO DO</td>
-                        <td class="edit-button"><MenuItem href="@GetOfferEditLink(offer)">Edit</MenuItem></td>
+                        <td class="edit-button"><MenuItem NavigationForceLoad=true href="@GetOfferEditLink(offer)">Edit</MenuItem></td>
                     </tr>
                 }
             </tbody>
@@ -61,6 +62,8 @@
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        _offers = await OfferService.OfferByUser(CurrentUser);
+        var repository = RepositoryFactory.CreateRepository<Offer>();
+        var specification = new OffersByUserSpec(CurrentUser);
+        _offers = await repository.ListAsync(specification);
     }
 }

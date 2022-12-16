@@ -4,9 +4,9 @@ using System.Collections;
 
 namespace DigitalGoods.Core.Specifications
 {
-    internal class OffersByUserSpec : Specification<Offer>
+    public class OffersByUserSpec : Specification<Offer>
     {
-        internal OffersByUserSpec(User owner)
+        public OffersByUserSpec(User owner)
         {
             Query.Where(o => o.UserId.Equals(owner.Id));
         }

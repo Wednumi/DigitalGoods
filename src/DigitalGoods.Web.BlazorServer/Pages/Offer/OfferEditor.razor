@@ -2,11 +2,13 @@
 @page "/offers/editor"
 
 @using System.ComponentModel.DataAnnotations
+@using  DigitalGoods.Web.BlazorServer.Pages.Offer.Managers
 
 @inherits UserIdentificationComponent
 
 @inject OfferService OfferService
 @inject IFileManager FileManager
+@inject IRollBackContainer RollBackContainer
 
 @layout _OffersLayout
 
@@ -16,7 +18,7 @@
 else
 {
     <div class="flex-fill">
-        <EditForm Model="_offerModel" OnValidSubmit="TrySave">
+        <EditForm Model="_offerModel" OnValidSubmit="TrySaveAsync">
             <DataAnnotationsValidator />
             <div class="form-item">
                 <label>Product name</label>
@@ -27,20 +29,7 @@ else
             </div>
             <div class="form-item">
                 <label>Medias</label>
-                <InputFile OnChange="@AddFiles" class="form-control mb-1" multiple />
-                <div>
-                    @foreach (var media in _offer.Medias)
-                    {
-                        <div class="media-container">
-                            <img class="offer-image" src="@FileManager.GetFullPath(media)">
-                            <i @onclick="() => DeleteMedia(media)" class="delete-image bi bi-dash-circle-fill"></i>
-                        </div>
-                    }
-                    @if (_results.ContainsKey("mediaSet"))
-                    {
-                        <div>@_results["mediaSet"]</div>
-                    }
-                </div>
+                <MediaManager Offer="_offer" />
             </div>
             <div class="d-flex flex-row justify-content-between">
                 <div class="form-item flex-fill pe-2">
@@ -71,11 +60,11 @@ else
             </div>
             <div class="form-item">
                 <label>Category</label>
-                <CategoryPicker @bind-Value="_offerModel.Category" @bind-Value:event="ValueChanged" />
+                <CategoryManager Offer="_offer" />
             </div>
             <div class="form-item">
                 <label>Tags</label>
-                <TagPicker Tags="_offer.Tags" Category="_offerModel.Category"></TagPicker>
+                <TagManager Tags="_offer.Tags" Category="_offer.Category"></TagManager>
             </div>
             <div class="form-item">
                 <label>Receive method</label>
@@ -91,10 +80,10 @@ else
                     <div class="align-self-center">@_results["save"]</div>
                 }
                 <div class="accept">
-                    <InputItem type="submit" value="Accept"></InputItem>
+                    <InputItem href="offers/list" type="submit" value="Accept"></InputItem>
                 </div>
-                <div @onclick="Cancel" class="cancel">
-                    <MenuItem NavigationForceLoad=true href="offers/list">Cancel</MenuItem>
+                <div @onclick="CancelAsync" class="cancel">
+                    <MenuItem href="offers/list">Cancel</MenuItem>
                 </div>
             </div>
         </EditForm>
@@ -114,15 +103,15 @@ else
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-
-        await RetrieveOffer();
-        _offerModel = ModelMapper.Map<Offer, OfferModel>(_offer);
+        await InitializeOfferAsync();
+        _offerModel = ConfiguredMapper.Map<Offer, OfferModel>(_offer);
     }
 
-    private async Task RetrieveOffer()
+    private async Task InitializeOfferAsync()
     {
         var offerId = GetParsedOfferId();
-        _offer = await OfferService.InitializedOffer(CurrentUser, offerId);
+        await OfferService.InitializeAsync(CurrentUser, offerId);
+        _offer = OfferService.Offer;
     }
 
     private int? GetParsedOfferId()
@@ -134,10 +123,10 @@ else
         return null;
     }
 
-    private async Task TrySave()
+    private async Task TrySaveAsync()
     {
-        ModelMapper.Map<OfferModel, Offer>(_offerModel!, _offer);
-        var result = await OfferService.Save();
+        ConfiguredMapper.Map<OfferModel, Offer>(_offerModel!, _offer);
+        var result = await OfferService.SaveAsync();
         SetSaveResult(result);
     }
 
@@ -149,38 +138,7 @@ else
         _results["save"] = saveResult;
     }
 
-    private async Task AddFiles(InputFileChangeEventArgs e)
-    {
-        int maxAllowedFiles = 10;
-        int maxSize = 1024 * 1000;
-
-        var results = new List<ActionResult>();
-        foreach (var file in e.GetMultipleFiles(maxAllowedFiles))
-        {
-            var saveAction = async (FileStream fileStream) 
-                => await file.OpenReadStream(maxSize).CopyToAsync(fileStream);
-
-            var media = new Media(file.Name, file.ContentType, file.Size);
-
-            var result = await OfferService.RegisterMedia(media, saveAction);
-            results.Add(result);
-        }
-        SetFileAddResult(results);
-    }
-
-    private void SetFileAddResult(List<ActionResult> actionResults)
-    {
-        var mediaSetResult = actionResults.Any(r => r.Failed)
-            ? "Adding failed"
-            : "Adding succeeded";
-        _results["mediaSet"] = mediaSetResult;
-    }
-
-    private async Task Cancel(){
-        await OfferService.Rollback();
-    }
-
-    private async Task DeleteMedia(Media media){
-        await OfferService.DeleteMedia(media);
+    private async Task CancelAsync(){
+        await RollBackContainer.RollBack();
     }
 }

@@ -1,14 +1,17 @@
 ﻿using DigitalGoods.Core.Entities;
 using DigitalGoods.Core.Interfaces;
 using DigitalGoods.Core.Specifications;
+using System.Collections.Generic;
 
 namespace DigitalGoods.Core.Services
 {
-    public class CategoryService
+    public class CategoryService : RollBackableService
     {
         private readonly IRepositoryFactory _repositoryFactory;
 
         private readonly IRepository<Category> _repository;
+
+        private List<Category> _added;
 
         public Stack<Category> Parents { get; private set; } 
 
@@ -16,90 +19,113 @@ namespace DigitalGoods.Core.Services
 
         public Category? Current { get; set; }
 
-        public Func<Category?, Task> CurrentChanged { get; set; } = null!;
+        public Action<Category?> CurrentChanged { get; set; } = null!;
 
-        public CategoryService(IRepositoryFactory repositoryFactory)
+        public CategoryService(IRepositoryFactory repositoryFactory, IRollBackContainer rollBackContainer)
+            :base(rollBackContainer)
         {
             _repositoryFactory = repositoryFactory;
             _repository = _repositoryFactory.CreateRepository<Category>();
 
+            _added = new List<Category>();
             Parents = new Stack<Category>();
             Childs = new List<Category>();
         }
 
-        public async Task Initialize(Category? category, Func<Category?, Task> currentChaned)
+        public async Task InitializeAsync(Category? category, Action<Category?> currentChaned)
         {
             CurrentChanged += currentChaned;
-            await ChangeCurrent(category);
-            await SetChilds();
-            await SetParents();
+            ChangeCurrent(category);
+            await SetChildsAsync();
+            await SetParentsAsync();
         }
 
-        private async Task ChangeCurrent(Category? current)
-        {
-            Current = current;
-            await CurrentChanged.Invoke(Current);
-            await SetChilds();
-        } 
-
-        private async Task SetChilds()
+        private async Task SetChildsAsync()
         {
             int? parentId = Current?.Id;
             Childs = await _repository.ListAsync(new ChildsForCategorySpec(parentId));
         }
 
-        private async Task SetParents()
+        private async Task SetParentsAsync()
         {
             if(Current is null)
             {
                 return;
             }
 
-            var parent = await GetParent(Current);
+            var parentList = await GetParentTreeAsync();
+            Parents = new Stack<Category>(parentList);
+        }
+
+        private async Task<List<Category>> GetParentTreeAsync()
+        {
+            var parent = await GetParentAsync(Current!);
+            var list = new List<Category>();
 
             while (parent is not null)
             {
-                Parents.Push(parent);
-                parent = await GetParent(parent);
+                list.Add(parent);
+                parent = await GetParentAsync(parent);
             }
-            Parents.Reverse();
+            list.Reverse();
+
+            return list;
         }
 
-        private async Task<Category?> GetParent(Category category)
+        private async Task<Category?> GetParentAsync(Category category)
         {
             var specification = new CategoryParentSpec(category);
             var parent = await _repository.FirstOrDefaultAsync(specification);
             return parent;
         }
 
-        public async Task MoveTo(Category category)
+        public async Task MoveToAsync(Category category)
         {
             if(Current is not null)
             {
                 Parents.Push(Current);
             }
-            await ChangeCurrent(category);
+            await ChangeCurrentWithChildsAsync(category);
         }
 
-        public async Task ReturnToLast()
+        public async Task ReturnToLastAsync()
         {
             Parents.TryPop(out Category? last);
-            await ChangeCurrent(last);
+            await ChangeCurrentWithChildsAsync(last);
         }
 
-        public async Task MoveToAdded(Category toAdd)
+        public async Task MoveToAddedAsync(Category toAdd)
         {
             await _repository.UpdateAsync(toAdd);
-            await AlterTreeAfterAdding(toAdd);
+            ChangeCurrentAfterAdding(toAdd);
+            _added.Add(toAdd);
         }
 
-        private async Task AlterTreeAfterAdding(Category added)
+        private async Task ChangeCurrentWithChildsAsync(Category? newCurrent)
         {
-            if(Current is not null)
+            ChangeCurrent(newCurrent);
+            await SetChildsAsync();
+        }
+
+        private void ChangeCurrentAfterAdding(Category added)
+        {
+            if (Current is not null)
             {
                 Parents.Push(Current);
             }
-            await ChangeCurrent(added);
+            ChangeCurrent(added);
+            Childs = new List<Category>();
+        }
+
+        private void ChangeCurrent(Category? newCurrent)
+        {
+            Current = newCurrent;
+            CurrentChanged.Invoke(Current);
+        }
+
+        protected override async Task RollBackAsync()
+        {
+            await _repository.DeleteRangeAsync(_added);
         }
     }
 }

@@ -37,7 +37,7 @@
                                 <Content>
                                     <h5 class="account-name">
                                         <i class="icon-aligned bi bi-person-circle"></i>
-                                        <span class="ms-1">@GetUser().Result</span>
+                                        <span class="ms-1">@GetUserAsync().Result</span>
                                     </h5>
                                     <div class="hover-items">
                                         <UnderscoredMenuItem>Settings</UnderscoredMenuItem>
@@ -68,7 +68,7 @@
 
     private string TogglerCssClass => collapseNavMenu ? "bi bi-caret-up-fill" : "bi bi-caret-down-fill";
 
-    private async Task<string> GetUser()
+    private async Task<string> GetUserAsync()
     {
         var state = await StateProvider.GetAuthenticationStateAsync();
         return state.User.Identity!.Name!;

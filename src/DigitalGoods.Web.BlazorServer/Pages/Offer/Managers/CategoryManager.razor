@@ -2,10 +2,10 @@
 
 <div class="wrapper">
     <div class="d-flex flex-row-reverse justify-content-end mb-2">
-        @if (Value is not null)
+        @if (Offer.Category is not null)
         {
             <div class="category-label d-flex">
-                @Value.Name
+                @Offer.Category.Name
             </div>
         }
         @foreach (var category in CategoryService.Parents)
@@ -19,7 +19,7 @@
     <div class="d-flex flex-row category-menu">
         <DropDown>
             <Head>
-                <button class="btn btn-primary me-1">Pick category</button>
+                <button type="button" class="btn btn-primary me-1">Pick category</button>
             </Head>
             <Content>
                 <div class="d-inline-flex">
@@ -33,23 +33,23 @@
                 {
                     @foreach (var category in _filteredCategoryChilds)
                     {
-                        <Item @onclick="() => MoveTo(category)">@category.Name</Item>
+                        <Item @onclick="() => MoveToAsync(category)">@category.Name</Item>
                     }
                 }
             </Content>
         </DropDown>        
         <div class="delete-category-btn mx-1">
-            <Item @onclick="CategoryService.ReturnToLast">
+            <Item @onclick="CategoryService.ReturnToLastAsync">
                 <i class="bi bi-backspace-fill"></i>
             </Item>
         </div>
     </div>
     <div class="overlay @_overlayCss">
-        <EditForm Model="_categoryModel" OnValidSubmit="MoveToAdded">
+        <EditForm Model="_categoryModel" OnValidSubmit="MoveToAddedAsync">
             <DataAnnotationsValidator />
                 <div class="overlay-info">
                     <div class="me-1">Parent category</div>
-                    <input class="form-control" type="text" placeholder="@Value?.Name" readonly />
+                <input class="form-control" type="text" placeholder="@Offer.Category?.Name" readonly />
                 </div>
                 <div class="overlay-info">
                     <div class="me-2">Enter new category</div>
@@ -85,25 +85,16 @@
     private CategoryModel _categoryModel = new CategoryModel();
 
     [Parameter]
-    public Category? Value { get; set; }
-
-    [Parameter]
-    public EventCallback<Category> ValueChanged { get; set; }
+    public Offer Offer { get; set; } = null!;
 
     protected override async Task OnInitializedAsync()
     {
-        await CategoryService.Initialize(Value, new Func<Category?, Task>(SetValue));
+        await CategoryService.InitializeAsync(Offer.Category, Offer.SetCategory);
     }
 
-    private async Task SetValue(Category? value)
+    private async Task MoveToAsync(Category category)
     {
-        Value = value;
-        await ValueChanged.InvokeAsync(Value);
-    }
-
-    private async Task MoveTo(Category category)
-    {
-        await CategoryService.MoveTo(category);
+        await CategoryService.MoveToAsync(category);
         _filter = "";
     }
 
@@ -114,10 +105,10 @@
             : "";
     }
 
-    private async Task MoveToAdded()
+    private async Task MoveToAddedAsync()
     {
-        var category = new Category(_categoryModel.Name, Value);     
-        await CategoryService.MoveToAdded(category);
+        var category = new Category(_categoryModel.Name, Offer.Category);     
+        await CategoryService.MoveToAddedAsync(category);
         ResetOverlay();
     }
 

@@ -17,7 +17,7 @@ namespace DigitalGoods.IntegrationTests.Tests
             };
             var sut = new FileManager();
 
-            sut.Save(path, savingAction).Wait();
+            sut.SaveAsync(path, savingAction).Wait();
 
             var fullPath = Path.Combine(ExtenalPath(), path);
             var textRead = File.ReadAllText(fullPath);
@@ -36,8 +36,8 @@ namespace DigitalGoods.IntegrationTests.Tests
             };
             var sut = new FileManager();
 
-            sut.Save(path, savingAction).Wait();
-            sut.RollBack().Wait();
+            sut.SaveAsync(path, savingAction).Wait();
+            sut.RollBackAsync().Wait();
 
             var directoryClear = Directory.GetDirectories(ExtenalPath()).Count() == 0;
             Assert.True(directoryClear);
@@ -54,12 +54,12 @@ namespace DigitalGoods.IntegrationTests.Tests
                 await Task.Run(() => WriteText(fs, fileText));
             };
             var previousFileManager = new FileManager();
-            previousFileManager.Save(pathToRemain, savingAction).Wait();
+            previousFileManager.SaveAsync(pathToRemain, savingAction).Wait();
             var pathToDelete = @"first-folder\second-folder\third-folder\file-to-delete.txt";
             var sut = new FileManager();
 
-            sut.Save(pathToDelete, savingAction).Wait();
-            sut.RollBack().Wait();
+            sut.SaveAsync(pathToDelete, savingAction).Wait();
+            sut.RollBackAsync().Wait();
 
             var fileToRemainExistance = File.Exists(Path.Combine(ExtenalPath(), pathToRemain));
             Assert.True(fileToRemainExistance);

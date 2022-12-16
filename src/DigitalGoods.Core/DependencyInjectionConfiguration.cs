@@ -1,9 +1,12 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using AutoMapper;
+using DigitalGoods.Core.Extensions;
+using DigitalGoods.Core.Interfaces;
 using DigitalGoods.Core.Services;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace DigitalGoods.Infrastructure.ServiceConfiguration.Extensions
+namespace DigitalGoods.Core
 {
-    public static class ServicesExtensions
+    public static class DependencyInjectionConfiguration
     {
         public static void AddCoreServices(this IServiceCollection services)
         {
@@ -11,6 +14,8 @@ namespace DigitalGoods.Infrastructure.ServiceConfiguration.Extensions
             services.AddTransient<MediaService>();
             services.AddTransient<CategoryService>();
             services.AddTransient<TagService>();
+
+            services.AddScoped<IRollBackContainer, RollBackContainer>();
         }
     }
 }

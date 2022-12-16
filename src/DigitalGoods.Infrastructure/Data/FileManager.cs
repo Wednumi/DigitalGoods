@@ -28,9 +28,9 @@ namespace DigitalGoods.Infrastructure.Data
             return File.Exists(fullPath);
         }
 
-        public async Task Save(string internalPath, Func<FileStream, Task> saveAction)
+        public async Task SaveAsync(string internalPath, Func<FileStream, Task> saveAction)
         {
-            await CreateDirectories(internalPath);
+            await CreateDirectoriesAsync(internalPath);
             string fullPath = System.IO.Path.Combine(_externalPath, internalPath);
 
             await using FileStream fs = new(fullPath, FileMode.Create);
@@ -39,12 +39,12 @@ namespace DigitalGoods.Infrastructure.Data
             _addedFiles.Add(fullPath);
         }
 
-        private async Task CreateDirectories(string internalPath)
+        private async Task CreateDirectoriesAsync(string internalPath)
         {            
             var allPathes = AllPathes(internalPath);
             foreach (var path in allPathes)
             {
-                await EnsureDirectoryCreated(path);
+                await EnsureDirectoryCreatedAsync(path);
             }
         }
 
@@ -60,7 +60,7 @@ namespace DigitalGoods.Infrastructure.Data
             return result;
         }
 
-        private async Task EnsureDirectoryCreated(string directoryPath)
+        private async Task EnsureDirectoryCreatedAsync(string directoryPath)
         {
             var fullPath = System.IO.Path.Combine(_externalPath, directoryPath);
             if (Directory.Exists(fullPath) is false)
@@ -70,26 +70,28 @@ namespace DigitalGoods.Infrastructure.Data
             }
         }
 
-        public async Task RollBack()
+        public async Task RollBackAsync()
         {
-            await RollBackFiles();
-            await RollBackDirectories();
+            await RollBackFilesAsync();
+            await RollBackDirectoriesAsync();
         }
 
-        private async Task RollBackFiles()
+        private async Task RollBackFilesAsync()
         {
             foreach (var path in _addedFiles)
             {
                 await Task.Run(() => File.Delete(path));
             }
+            _addedFiles.Clear();
         }
 
-        private async Task RollBackDirectories()
+        private async Task RollBackDirectoriesAsync()
         {
             foreach (var path in _createdFolders)
             {
                 await Task.Run(() => Directory.Delete(path));
             }
+            _createdFolders.Clear();
         }
 
         public string GetFullPath(Media media)
@@ -97,7 +99,7 @@ namespace DigitalGoods.Infrastructure.Data
             return System.IO.Path.Combine(s_folderName, media.Path);
         }
 
-        public async Task Delete(string path)
+        public async Task DeleteAsync(string path)
         {
             path = Path.Combine(_externalPath, path);
             if (File.Exists(path))

@@ -1,10 +1,12 @@
 using DigitalGoods.Infrastructure.ServiceConfiguration;
+using DigitalGoods.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
+builder.Services.AddCoreServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
 
 var app = builder.Build();
