@@ -1,11 +1,15 @@
-﻿using AutoMapper;
-using DigitalGoods.Core.Attributes;
+﻿using DigitalGoods.Core.Attributes;
 using DigitalGoods.Core.Enums;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace DigitalGoods.Core.Entities
 {
-    public class Offer : BaseEntity
+    public class Offer : BaseEntity, INotifyPropertyChanged
     {
+
+        public event PropertyChangedEventHandler? PropertyChanged;
+
         public string Name { get; set; } = "NO NAME";
 
         public float? Price { get; set; }
@@ -72,8 +76,14 @@ namespace DigitalGoods.Core.Entities
 
         public void SetCategory(Category? category)
         {
-            Category = category;
             CategoryId = category?.Id;
+            Category = category;
+            NotifyPropertyChanged(nameof(Category));
+        }
+ 
+        private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

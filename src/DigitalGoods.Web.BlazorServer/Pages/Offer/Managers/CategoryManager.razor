@@ -19,7 +19,7 @@
     <div class="d-flex flex-row category-menu">
         <DropDown>
             <Head>
-                <button type="button" class="btn btn-primary me-1">Pick category</button>
+                <button class="btn btn-primary me-1">Pick category</button>
             </Head>
             <Content>
                 <div class="d-inline-flex">
@@ -108,7 +108,7 @@
     private async Task MoveToAddedAsync()
     {
         var category = new Category(_categoryModel.Name, Offer.Category);     
-        await CategoryService.MoveToAddedAsync(category);
+        await CategoryService.MoveToCreatedAsync(category);
         ResetOverlay();
     }
 

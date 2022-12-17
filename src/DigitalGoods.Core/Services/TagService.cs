@@ -12,9 +12,9 @@ namespace DigitalGoods.Core.Services
 
         private readonly ICollection<Tag> _createdTags;
 
-        private Category? _category;
+        public Category? Category { get; private set; }
 
-        public ICollection<Tag> Tags = null!;
+        public ICollection<Tag> Tags { get; set; } = null!;
 
         public ICollection<Tag> PossibleTags { get; set; } = null!;
 
@@ -28,9 +28,42 @@ namespace DigitalGoods.Core.Services
 
         public async Task InitializeAsync(ICollection<Tag> tags, Category? category)
         {
-            _category = category;
-            Tags = tags;            
+            Tags = tags;
+            await UpdatePossibleTagsTo(category);
+        }
+
+        public async Task UpdatePossibleTagsTo(Category? category)
+        {
+            IfNoTagsAttachedSet(category);
+            await SetPossibleTags(category);
+        }
+
+        private void IfNoTagsAttachedSet(Category? category)
+        {
+            Category = Tags.Count == 0
+                ? category
+                : GetTagsCategory();
+        }
+
+        private Category? GetTagsCategory()
+        {
+            var categories = Tags.Select(t => t.Category).Distinct().ToList();
+            var result = categories.Count == 1
+                ? categories.First()
+                : throw new Exception("Failure when identifying tags' category");
+            return result;
+        }
+
+        private async Task SetPossibleTags(Category? category)
+        {
             PossibleTags = await _repository.ListAsync(new TagsForCategorySpec(category));
+        }
+
+        public async Task Reset(Category? newCategory)
+        {
+            Tags.Clear();
+            Category = newCategory;
+            await SetPossibleTags(newCategory);
         }
 
         public async Task AddAsync(Tag tag)
@@ -39,10 +72,9 @@ namespace DigitalGoods.Core.Services
             await _repository.SaveChangesAsync();
         }
 
-        public async Task RemoveAsync(Tag tag)
+        public void RemoveAsync(Tag tag)
         {
             Tags.Remove(tag);
-            await _repository.SaveChangesAsync();
         }
 
         public async Task CreateAsync(Tag tag)

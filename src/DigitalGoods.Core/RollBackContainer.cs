@@ -4,17 +4,32 @@ namespace DigitalGoods.Core
 {
     public class RollBackContainer : IRollBackContainer
     {
-        private Func<Task> _rollBacks;
+        private Func<Task>? _rollBacks;
 
         public RollBackContainer()
         { }
 
         public void Add(Func<Task> rollBack)
         {
+            ResetIfExist(rollBack);
             _rollBacks += rollBack;
         }
 
-        public void Clear()
+        private void ResetIfExist(Func<Task> rollBack)
+        {
+            if (AlreadyExist(rollBack))
+            {
+                Clear();
+            }
+        }
+
+        private bool AlreadyExist(Func<Task> rollBack)
+        {
+            var exist = GetDelegates().Where(d => d.Method == rollBack.Method).Any();
+            return exist;
+        }
+
+        private void Clear()
         {
             _rollBacks = null;
         }
@@ -23,7 +38,7 @@ namespace DigitalGoods.Core
         {
             if(GetDelegates().Length > 0)
             {
-                await _rollBacks.Invoke();
+                await _rollBacks!.Invoke();
             }
         }  
         

@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace DigitalGoods.UnitTests
 {
-    public class MediaHandling
+    public class PathGenerating
     {
         [Fact]
         public void Path_generating_works_properly()

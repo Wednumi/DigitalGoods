@@ -1,4 +1,6 @@
-﻿@inject TagService TagService
+﻿@using System.ComponentModel;
+
+@inject TagService TagService
 
 <div class="wrapper">
     <div class="d-flex flex-row-reverse justify-content-end mb-2">
@@ -7,7 +9,7 @@
             <i class="bi bi-caret-right-fill align-self-center"></i>
             <div class="category-label">
                 @tag.Name
-                <i class="bi bi-x-square-fill btn-delete-tag" @onclick="async () => await TagService.RemoveAsync(tag)"></i>
+                <i class="bi bi-x-square-fill btn-delete-tag" @onclick="() => TagService.RemoveAsync(tag)"></i>
             </div>
         }
     </div>
@@ -34,12 +36,12 @@
             </Content>
         </DropDown>
     </div>
-    <div class="overlay @_overlayCss">
-        <EditForm Model="_tagModel" OnValidSubmit="CreateAsync">
+    <div class="overlay @_addOverlayCss">
+        <EditForm Model="_tagModel" OnValidSubmit="CreateTagAsync">
             <DataAnnotationsValidator />
             <div class="overlay-info">
                 <div class="me-1">Category</div>
-                <input class="form-control" type="text" placeholder="@Category?.Name" readonly />
+                <input class="form-control" type="text" placeholder="@Offer.Category?.Name" readonly />
             </div>
             <div class="overlay-info">
                 <div class="me-2">Enter new tag</div>
@@ -55,12 +57,37 @@
             </div>
         </EditForm>
     </div>
+    @if(!IsCategorySuitable()){
+        <div class="overlay reset-overlay">
+            @if (@TagService.Category is null)
+            {
+                <div class="one-line">Clear the category field or</div>
+            }
+            else
+            {
+                <div class="one-line">
+                    Change category to
+                </div>
+                <input class="form-control muted-sign"
+               type="text" placeholder="@TagService.Category.Name"
+               readonly />
+                <div>
+                    or
+                </div>
+            }
+            <div class="submit-buttons">
+                <div class="accept">
+                    <Item @onclick="ResetTags">Reset tags</Item>
+                </div>
+            </div>
+        </div>
+    }
 </div>
 
 @code {
     private string _filter = "";
 
-    private string _overlayCss = "invisible";
+    private string _addOverlayCss = "invisible";
 
     private TagModel _tagModel = null!;
 
@@ -70,34 +97,52 @@
         {
             var filtered = TagService.PossibleTags
                 .Where(t => t.Name.Contains(_filter, StringComparison.OrdinalIgnoreCase));
-            filtered = filtered.Except(Tags);
+            filtered = filtered.Except(TagService.Tags);
             return filtered.ToList();
         }
     }
 
     [Parameter]
-    public Category? Category { get; set; }
-
-    [Parameter]
-    public ICollection<Tag> Tags { get; set; }
+    public Offer Offer { get; set; } = null!;
 
     protected override async Task OnInitializedAsync()
     {
-        _tagModel = new TagModel(Category);
-        await TagService.InitializeAsync(Tags, Category);
+        _tagModel = new TagModel(Offer.Category);
+        await TagService.InitializeAsync(Offer.Tags, Offer.Category);
+        Offer.PropertyChanged += ReRenderIfCategoryChanged;
+    }
+
+    private void ReRenderIfCategoryChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if(e.PropertyName == nameof(Offer.Category))
+        {
+            StateHasChanged();
+            TagService.UpdatePossibleTagsTo(Offer.Category).Wait(); //to refactor
+        }
+    }
+
+    private bool IsCategorySuitable()
+    {
+        return (Offer.Category is null && TagService.Category is null) ||
+        (Offer.Category is not null && TagService.Category is not null && Offer.Category.Equals(TagService.Category));
     }
 
     private void TogleOverlay()
     {
-        _overlayCss = _overlayCss == ""
+        _addOverlayCss = _addOverlayCss == ""
             ? "invisible"
             : "";
     }
 
-    private async Task CreateAsync()
+    private async Task CreateTagAsync()
     {
         var tag = ConfiguredMapper.Map<TagModel, Tag>(_tagModel);
         await TagService.CreateAsync(tag);
         TogleOverlay();
+    }
+
+    private async Task ResetTags()
+    {
+        await TagService.Reset(Offer.Category);
     }
 }

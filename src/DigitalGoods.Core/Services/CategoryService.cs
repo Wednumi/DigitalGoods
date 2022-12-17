@@ -11,7 +11,7 @@ namespace DigitalGoods.Core.Services
 
         private readonly IRepository<Category> _repository;
 
-        private List<Category> _added;
+        private List<Category> _created;
 
         public Stack<Category> Parents { get; private set; } 
 
@@ -27,7 +27,7 @@ namespace DigitalGoods.Core.Services
             _repositoryFactory = repositoryFactory;
             _repository = _repositoryFactory.CreateRepository<Category>();
 
-            _added = new List<Category>();
+            _created = new List<Category>();
             Parents = new Stack<Category>();
             Childs = new List<Category>();
         }
@@ -38,6 +38,12 @@ namespace DigitalGoods.Core.Services
             ChangeCurrent(category);
             await SetChildsAsync();
             await SetParentsAsync();
+        }
+
+        private void ChangeCurrent(Category? newCurrent)
+        {
+            Current = newCurrent;
+            CurrentChanged.Invoke(Current);
         }
 
         private async Task SetChildsAsync()
@@ -88,26 +94,45 @@ namespace DigitalGoods.Core.Services
             await ChangeCurrentWithChildsAsync(category);
         }
 
-        public async Task ReturnToLastAsync()
-        {
-            Parents.TryPop(out Category? last);
-            await ChangeCurrentWithChildsAsync(last);
-        }
-
-        public async Task MoveToAddedAsync(Category toAdd)
-        {
-            await _repository.UpdateAsync(toAdd);
-            ChangeCurrentAfterAdding(toAdd);
-            _added.Add(toAdd);
-        }
-
         private async Task ChangeCurrentWithChildsAsync(Category? newCurrent)
         {
             ChangeCurrent(newCurrent);
             await SetChildsAsync();
         }
 
-        private void ChangeCurrentAfterAdding(Category added)
+        public async Task ReturnToLastAsync()
+        {
+            Parents.TryPop(out Category? last);
+            await ChangeCurrentWithChildsAsync(last);
+        }
+
+        public async Task MoveToCreatedAsync(Category toCreate)
+        {
+            var created = await CreateCategoryAsync(toCreate);
+            ChangeCurrentAfterCreating(created);
+        }
+
+        public async Task<Category> CreateCategoryAsync(Category toCreate)
+        {
+            var sameCategory = await TryFindSameAsync(toCreate);
+            if (sameCategory is null)
+            {
+                await _repository.UpdateAsync(toCreate);
+                _created.Add(toCreate);
+            }
+            else
+            {
+                toCreate = sameCategory;
+            }
+            return toCreate;
+        }
+
+        private async Task<Category?> TryFindSameAsync(Category category)
+        {
+            return await _repository.FirstOrDefaultAsync(new CategoryByNameSpec(category.Name));
+        }
+
+        private void ChangeCurrentAfterCreating(Category added)
         {
             if (Current is not null)
             {
@@ -117,15 +142,25 @@ namespace DigitalGoods.Core.Services
             Childs = new List<Category>();
         }
 
-        private void ChangeCurrent(Category? newCurrent)
-        {
-            Current = newCurrent;
-            CurrentChanged.Invoke(Current);
-        }
-
         protected override async Task RollBackAsync()
         {
-            await _repository.DeleteRangeAsync(_added);
+            if (_created.Count > 0)
+            {
+                foreach (var category in _created)
+                {
+                    if (await CanBeDeletedAsync(category))
+                    {
+                        await _repository.DeleteAsync(category);
+                    }
+                }
+            }
+        }
+
+        private async Task<bool> CanBeDeletedAsync(Category category)
+        {
+            var offerRepository = _repositoryFactory.CreateRepository<Offer>();
+            var offersUsing = await offerRepository.ListAsync(new OffersUsingCategorySpec(category));
+            return offersUsing.Count == 0;
         }
     }
 }
