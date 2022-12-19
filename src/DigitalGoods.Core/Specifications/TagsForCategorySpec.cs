@@ -7,7 +7,8 @@ namespace DigitalGoods.Core.Specifications
     {
         public TagsForCategorySpec(Category? category)
         {
-            Query.Where(t => t.Category.Equals(category));
+            Query.Where(t => t.Category.Equals(category))
+                .AsNoTracking();
         }
     }
 }

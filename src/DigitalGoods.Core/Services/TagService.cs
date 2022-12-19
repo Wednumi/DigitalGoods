@@ -29,11 +29,6 @@ namespace DigitalGoods.Core.Services
         public async Task InitializeAsync(ICollection<Tag> tags, Category? category)
         {
             Tags = tags;
-            await UpdatePossibleTagsTo(category);
-        }
-
-        public async Task UpdatePossibleTagsTo(Category? category)
-        {
             IfNoTagsAttachedSet(category);
             await SetPossibleTags(category);
         }
@@ -72,7 +67,7 @@ namespace DigitalGoods.Core.Services
             await _repository.SaveChangesAsync();
         }
 
-        public void RemoveAsync(Tag tag)
+        public void Remove(Tag tag)
         {
             Tags.Remove(tag);
         }
@@ -99,14 +94,15 @@ namespace DigitalGoods.Core.Services
 
         protected override async Task RollBackAsync()
         {
-            if(_createdTags.Count > 0)
+            if(_createdTags.Count == 0)
             {
-                foreach(var tag in _createdTags)
+                return;
+            }
+            foreach (var tag in _createdTags)
+            {
+                if (await CanBeDeletedAsync(tag))
                 {
-                    if (await CanBeDeletedAsync(tag))
-                    {
-                        await _repository.DeleteAsync(tag);
-                    }
+                    await _repository.DeleteAsync(tag);
                 }
             }
         }
@@ -114,8 +110,8 @@ namespace DigitalGoods.Core.Services
         private async Task<bool> CanBeDeletedAsync(Tag tag)
         {
             var offerRepository = _repositoryFactory.CreateRepository<Offer>();
-            var offersUsing = await offerRepository.ListAsync(new OffersUsingTagSpec(tag));
-            return offersUsing.Count == 0;
+            var offersUsing = await offerRepository.CountAsync(new OffersUsingTagSpec(tag));
+            return offersUsing == 0;
         }
     }
 }

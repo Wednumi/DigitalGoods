@@ -6,10 +6,9 @@
     <div class="d-flex flex-row-reverse justify-content-end mb-2">
         @foreach (var tag in TagService.Tags)
         {
-            <i class="bi bi-caret-right-fill align-self-center"></i>
-            <div class="category-label">
+            <div class="category-label me-2">
                 @tag.Name
-                <i class="bi bi-x-square-fill btn-delete-tag" @onclick="() => TagService.RemoveAsync(tag)"></i>
+                <i class="bi bi-x-square-fill btn-delete-tag" @onclick="() => TagService.Remove(tag)"></i>
             </div>
         }
     </div>
@@ -117,7 +116,7 @@
         if(e.PropertyName == nameof(Offer.Category))
         {
             StateHasChanged();
-            TagService.UpdatePossibleTagsTo(Offer.Category).Wait(); //to refactor
+            //TagService.UpdatePossibleTagsTo(Offer.Category).Wait(); //to refactor
         }
     }
 

@@ -15,12 +15,17 @@
     margin: 0.25rem 0.5rem 0.25rem 0;
 }
 
-.delete-image {
+.buttons {
     position: absolute;
     top: 0.25rem;
     right: 0.25rem;
     font-size: 1.5rem;
+    display: inline-flex;
+}
+
+.buttons i {
     display: flex;
     align-self: start;
     cursor: pointer;
+    margin-left: 0.25rem;
 }

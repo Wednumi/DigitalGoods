@@ -3,12 +3,22 @@
 
 @if(MediaService.Medias is not null){
     <InputFile OnChange="@AddFilesAsync" class="form-control mb-1" multiple />
+    <i class="bi bi-circle-fill text-primary"></i><span class="ms-1 me-3">Preview media</span>
+    <i class="bi bi-circle"></i><span class="ms-1">Descriptive media</span>
     <div>
         @foreach (var media in MediaService.Medias)
         {
             <div class="media-container">
                 <img class="offer-image" src="@FileManager.GetFullPath(media)">
-                <i @onclick="() => DeleteMediaAsync(media)" class="delete-image bi bi-dash-circle-fill"></i>
+                <div class="buttons">
+                    @if(media.IsPreview){
+                        <i @onclick="() => media.IsPreview = false" class="bi bi-circle-fill text-primary"></i>
+                    }
+                    else{
+                        <i @onclick="() => MediaService.SetPreview(media)" class="bi bi-circle"></i>
+                    }
+                    <i @onclick="() => DeleteMediaAsync(media)" class="bi bi-dash-circle-fill"></i>
+                </div>
             </div>
         }
     </div>
@@ -22,7 +32,7 @@ else{
     [Parameter]
     public Offer Offer { get; set; } = null!;
 
-    protected async override Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         MediaService.Initialize(Offer.Medias);
     }

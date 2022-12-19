@@ -1,4 +1,5 @@
-﻿using DigitalGoods.Core.Interfaces;
+﻿using DigitalGoods.Core.Entities;
+using DigitalGoods.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace DigitalGoods.Infrastructure.Data
@@ -12,12 +13,12 @@ namespace DigitalGoods.Infrastructure.Data
             _dbContext = dbContext;
         }
 
-        public IReadRepository<T> CreateReadRepository<T>() where T : class
+        public IReadRepository<T> CreateReadRepository<T>() where T : BaseEntity
         {
             return (IReadRepository<T>)new Repository<T>(_dbContext);
         }
 
-        public IRepository<T> CreateRepository<T>() where T : class
+        public IRepository<T> CreateRepository<T>() where T : BaseEntity
         {
             return new Repository<T>(_dbContext);
         }

@@ -49,7 +49,7 @@ namespace DigitalGoods.Core.Services
         private async Task SetChildsAsync()
         {
             int? parentId = Current?.Id;
-            Childs = await _repository.ListAsync(new ChildsForCategorySpec(parentId));
+            Childs = await _repository.ListAsync(new CategoryChildsSpec(parentId));
         }
 
         private async Task SetParentsAsync()
@@ -109,7 +109,7 @@ namespace DigitalGoods.Core.Services
         public async Task MoveToCreatedAsync(Category toCreate)
         {
             var created = await CreateCategoryAsync(toCreate);
-            ChangeCurrentAfterCreating(created);
+            ChangeTreeAfterCreating(created);
         }
 
         public async Task<Category> CreateCategoryAsync(Category toCreate)
@@ -132,7 +132,7 @@ namespace DigitalGoods.Core.Services
             return await _repository.FirstOrDefaultAsync(new CategoryByNameSpec(category.Name));
         }
 
-        private void ChangeCurrentAfterCreating(Category added)
+        private void ChangeTreeAfterCreating(Category added)
         {
             if (Current is not null)
             {
@@ -144,14 +144,15 @@ namespace DigitalGoods.Core.Services
 
         protected override async Task RollBackAsync()
         {
-            if (_created.Count > 0)
+            if (_created.Count == 0)
             {
-                foreach (var category in _created)
+                return;
+            }
+            foreach (var category in _created)
+            {
+                if (await CanBeDeletedAsync(category))
                 {
-                    if (await CanBeDeletedAsync(category))
-                    {
-                        await _repository.DeleteAsync(category);
-                    }
+                    await _repository.DeleteAsync(category);
                 }
             }
         }
@@ -159,8 +160,8 @@ namespace DigitalGoods.Core.Services
         private async Task<bool> CanBeDeletedAsync(Category category)
         {
             var offerRepository = _repositoryFactory.CreateRepository<Offer>();
-            var offersUsing = await offerRepository.ListAsync(new OffersUsingCategorySpec(category));
-            return offersUsing.Count == 0;
+            var offersUsing = await offerRepository.CountAsync(new OffersUsingCategorySpec(category));
+            return offersUsing == 0;
         }
     }
 }

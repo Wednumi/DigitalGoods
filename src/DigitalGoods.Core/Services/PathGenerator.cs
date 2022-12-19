@@ -3,7 +3,7 @@ using DigitalGoods.Core.Interfaces;
 
 namespace DigitalGoods.Core.Services
 {
-    public class PathGenerator
+    public class PathGenerator : IPathGenerator
     {
         private readonly IFileManager _fileManager;
 

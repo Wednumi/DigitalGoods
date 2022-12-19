@@ -12,20 +12,20 @@ namespace DigitalGoods.Core.Services
 
         private readonly IFileManager _fileManager;
 
-        private readonly PathGenerator _pathGenerator;
+        private readonly IPathGenerator _pathGenerator;
 
         private ICollection<Media> _mediasBefore = null!;
 
         public ICollection<Media> Medias { get; set; } = null!;
 
         public MediaService(IRepositoryFactory repositoryFactory, IFileManager fileManager, 
-            IRollBackContainer rollBackContainer)
+            IPathGenerator pathGenerator, IRollBackContainer rollBackContainer)
             : base(rollBackContainer)
         {
             _repositoryFactory = repositoryFactory;
             _mediaRepository = _repositoryFactory.CreateRepository<Media>();
             _fileManager = fileManager;
-            _pathGenerator = new PathGenerator(fileManager);
+            _pathGenerator = pathGenerator;
         }
 
         public void Initialize(ICollection<Media> medias)
@@ -62,6 +62,20 @@ namespace DigitalGoods.Core.Services
             var added = Medias.Except(_mediasBefore).ToList();
             await _mediaRepository.DeleteRangeAsync(added);
             await _fileManager.RollBackAsync();
+        }
+
+        public void SetPreview(Media media)
+        {
+            ClearPreview();
+            media.IsPreview = true;
+        }
+
+        private void ClearPreview()
+        {
+            foreach(var media in Medias)
+            {
+                media.IsPreview = false;
+            }
         }
     }
 }

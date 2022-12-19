@@ -1,9 +1,11 @@
-﻿namespace DigitalGoods.Core.Interfaces
+﻿using DigitalGoods.Core.Entities;
+
+namespace DigitalGoods.Core.Interfaces
 {
     public interface IRepositoryFactory
     {
-        public IRepository<T> CreateRepository<T>() where T : class;
+        public IRepository<T> CreateRepository<T>() where T : BaseEntity;
 
-        public IReadRepository<T> CreateReadRepository<T>() where T : class;
+        public IReadRepository<T> CreateReadRepository<T>() where T : BaseEntity;
     }
 }

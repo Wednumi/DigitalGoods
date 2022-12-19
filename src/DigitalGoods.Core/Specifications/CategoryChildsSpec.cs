@@ -3,9 +3,9 @@ using DigitalGoods.Core.Entities;
 
 namespace DigitalGoods.Core.Specifications
 {
-    internal class ChildsForCategorySpec : Specification<Category>
+    internal class CategoryChildsSpec : Specification<Category>
     {
-        public ChildsForCategorySpec(int? parentId)
+        public CategoryChildsSpec(int? parentId)
         {
             Query.Where(c => c.ParentId == parentId)
                 .AsNoTracking();

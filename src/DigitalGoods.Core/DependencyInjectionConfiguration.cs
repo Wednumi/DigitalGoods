@@ -14,6 +14,7 @@ namespace DigitalGoods.Core
             services.AddTransient<MediaService>();
             services.AddTransient<CategoryService>();
             services.AddTransient<TagService>();
+            services.AddTransient<IPathGenerator, PathGenerator>();
 
             services.AddScoped<IRollBackContainer, RollBackContainer>();
         }
