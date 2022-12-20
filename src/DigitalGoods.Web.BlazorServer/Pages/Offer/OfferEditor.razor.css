@@ -1,0 +1,37 @@
+﻿.form-container {
+    background-color: var(--main-panel-color);
+    border-radius: 0.5rem;
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.2rem;
+}
+
+.valid-message ::deep{
+    font-size: 1rem;
+}
+
+.form-item{
+    margin-bottom: 0.75rem;
+}
+
+label {
+    margin-bottom: 0.25rem;    
+}
+
+.submit-buttons{
+    display: flex;
+    justify-content: end;
+}
+    .submit-buttons ::deep .item {
+        --hover-brightness: 1.2;
+        border-radius: 0.25rem;
+        color: var(--light-color);
+    }
+        .submit-buttons .accept ::deep .item {
+            --bg-color: var(--accept-color);
+            --hover-color: var(--accept-color);
+        }
+        .submit-buttons .cancel ::deep .item {
+            --bg-color: var(--cancel-color);
+            --hover-color: var(--cancel-color);
+        }

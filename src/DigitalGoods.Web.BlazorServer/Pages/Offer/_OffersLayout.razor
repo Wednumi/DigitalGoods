@@ -1,0 +1,27 @@
+﻿@inherits LayoutComponentBase
+
+@using WednumiComponents.Menu.Items
+
+@layout MainLayout
+
+<AuthorizeView>
+    <Authorized>
+        <div class="layout">
+            <div class="side-bar">
+                <h4 class="bar-head">Your offers</h4>
+                <MenuItem href="offers/list">Catalog</MenuItem>
+                <MenuItem href="offers/sales">Sales</MenuItem>
+            </div>
+            <div class="form-container">
+                @Body
+            </div>
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <NotAuthorizedMessage></NotAuthorizedMessage>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    
+}

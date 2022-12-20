@@ -1,0 +1,120 @@
+﻿@inject CategoryService CategoryService
+
+<div class="wrapper">
+    <div class="d-flex flex-row-reverse justify-content-end mb-2">
+        @if (Offer.Category is not null)
+        {
+            <div class="category-label d-flex">
+                @Offer.Category.Name
+            </div>
+        }
+        @foreach (var category in CategoryService.Parents)
+        {
+            <i class="bi bi-caret-right-fill align-self-center"></i>
+            <div class="category-label d-flex">
+                @category.Name
+            </div>
+        }
+    </div>
+    <div class="d-flex flex-row category-menu">
+        <DropDown>
+            <Head>
+                <button class="btn btn-primary me-1">Pick category</button>
+            </Head>
+            <Content>
+                <div class="d-inline-flex">
+                    <input @bind="_filter" @bind:event="oninput"
+                       placeholder="search" class="form-control" />
+                    <Item @onclick="TogleOverlay">
+                        <i class="bi bi-plus-square-fill"></i>
+                    </Item>
+                </div>
+                @if (CategoryService.Childs is not null)
+                {
+                    @foreach (var category in _filteredCategoryChilds)
+                    {
+                        <Item @onclick="() => MoveToAsync(category)">@category.Name</Item>
+                    }
+                }
+            </Content>
+        </DropDown>        
+        <div class="delete-category-btn mx-1">
+            <Item @onclick="CategoryService.ReturnToLastAsync">
+                <i class="bi bi-backspace-fill"></i>
+            </Item>
+        </div>
+    </div>
+    <div class="overlay @_overlayCss">
+        <EditForm Model="_categoryModel" OnValidSubmit="MoveToAddedAsync">
+            <DataAnnotationsValidator />
+                <div class="overlay-info">
+                    <div class="me-1">Parent category</div>
+                <input class="form-control" type="text" placeholder="@Offer.Category?.Name" readonly />
+                </div>
+                <div class="overlay-info">
+                    <div class="me-2">Enter new category</div>
+                    <InputText @bind-Value="_categoryModel.Name" class="form-control" placeholder="Category name"/>
+                </div>
+                <div class="submit-buttons">
+                    <div class="accept">
+                        <InputItem type="submit" value="Add"></InputItem>
+                    </div>
+                    <div class="close">
+                        <Item @onclick="TogleOverlay">Close</Item>
+                    </div>
+                </div>
+        </EditForm>  
+    </div>
+</div>
+
+@code {
+    private string _filter = "";
+
+    private string _overlayCss = "invisible";
+
+    private List<Category> _filteredCategoryChilds
+    {
+        get
+        {
+            var filtered = CategoryService.Childs
+                .Where(c => c.Name.Contains(_filter, StringComparison.OrdinalIgnoreCase));
+            return filtered.ToList();
+        }
+    }
+
+    private CategoryModel _categoryModel = new CategoryModel();
+
+    [Parameter]
+    public Offer Offer { get; set; } = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await CategoryService.InitializeAsync(Offer.Category, Offer.SetCategory);
+    }
+
+    private async Task MoveToAsync(Category category)
+    {
+        await CategoryService.MoveToAsync(category);
+        _filter = "";
+    }
+
+    private void TogleOverlay()
+    {
+        _overlayCss = _overlayCss == ""
+            ? "invisible"
+            : "";
+    }
+
+    private async Task MoveToAddedAsync()
+    {
+        var category = new Category(_categoryModel.Name, Offer.Category);     
+        await CategoryService.MoveToCreatedAsync(category);
+        ResetOverlay();
+    }
+
+    private void ResetOverlay()
+    {
+        _categoryModel = new CategoryModel();
+        TogleOverlay();
+    }
+}

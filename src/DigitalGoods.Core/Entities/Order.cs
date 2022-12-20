@@ -2,9 +2,9 @@
 {
     public class Order : BaseEntity
     {
-        public int? OfferId { get; private set; }
+        public int OfferId { get; private set; }
 
-        public Offer Offer { get; private set; } = null!;
+        public Offer? Offer { get; private set; } = null!;
 
         public string? BuyerId { get; private set; }
 

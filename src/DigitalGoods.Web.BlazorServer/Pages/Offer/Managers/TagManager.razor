@@ -1,0 +1,147 @@
+﻿@using System.ComponentModel;
+
+@inject TagService TagService
+
+<div class="wrapper">
+    <div class="d-flex flex-row-reverse justify-content-end mb-2">
+        @foreach (var tag in TagService.Tags)
+        {
+            <div class="category-label me-2">
+                @tag.Name
+                <i class="bi bi-x-square-fill btn-delete-tag" @onclick="() => TagService.Remove(tag)"></i>
+            </div>
+        }
+    </div>
+    <div class="d-flex flex-row category-menu">
+        <DropDown>
+            <Head>
+                <button type="button" class="btn btn-primary me-1">Pick tags</button>
+            </Head>
+            <Content>
+                <div class="d-inline-flex">
+                    <input @bind="_filter" @bind:event="oninput"
+                           placeholder="search" class="form-control" />
+                    <Item @onclick="TogleOverlay">
+                        <i class="bi bi-plus-square-fill"></i>
+                    </Item>
+                </div>
+                @if (TagService.PossibleTags is not null)
+                {
+                    @foreach (var tag in _filteredTags)
+                    {
+                        <Item @onclick="() => TagService.AddAsync(tag)">@tag.Name</Item>
+                    }
+                }
+            </Content>
+        </DropDown>
+    </div>
+    <div class="overlay @_addOverlayCss">
+        <EditForm Model="_tagModel" OnValidSubmit="CreateTagAsync">
+            <DataAnnotationsValidator />
+            <div class="overlay-info">
+                <div class="me-1">Category</div>
+                <input class="form-control" type="text" placeholder="@Offer.Category?.Name" readonly />
+            </div>
+            <div class="overlay-info">
+                <div class="me-2">Enter new tag</div>
+                <InputText @bind-Value="_tagModel.Name" class="form-control" placeholder="Tag name" />
+            </div>
+            <div class="submit-buttons">
+                <div class="accept">
+                    <InputItem type="submit" value="Add"></InputItem>
+                </div>
+                <div class="close">
+                    <Item @onclick="TogleOverlay">Close</Item>
+                </div>
+            </div>
+        </EditForm>
+    </div>
+    @if(!IsCategorySuitable()){
+        <div class="overlay reset-overlay">
+            @if (@TagService.Category is null)
+            {
+                <div class="one-line">Clear the category field or</div>
+            }
+            else
+            {
+                <div class="one-line">
+                    Change category to
+                </div>
+                <input class="form-control muted-sign"
+               type="text" placeholder="@TagService.Category.Name"
+               readonly />
+                <div>
+                    or
+                </div>
+            }
+            <div class="submit-buttons">
+                <div class="accept">
+                    <Item @onclick="ResetTags">Reset tags</Item>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private string _filter = "";
+
+    private string _addOverlayCss = "invisible";
+
+    private TagModel _tagModel = null!;
+
+    private List<Tag> _filteredTags
+    {
+        get
+        {
+            var filtered = TagService.PossibleTags
+                .Where(t => t.Name.Contains(_filter, StringComparison.OrdinalIgnoreCase));
+            filtered = filtered.Except(TagService.Tags);
+            return filtered.ToList();
+        }
+    }
+
+    [Parameter]
+    public Offer Offer { get; set; } = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _tagModel = new TagModel(Offer.Category);
+        await TagService.InitializeAsync(Offer.Tags, Offer.Category);
+        Offer.PropertyChanged += ReRenderIfCategoryChanged;
+    }
+
+    private void ReRenderIfCategoryChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if(e.PropertyName == nameof(Offer.Category))
+        {
+            StateHasChanged();
+            //TagService.UpdatePossibleTagsTo(Offer.Category).Wait(); //to refactor
+        }
+    }
+
+    private bool IsCategorySuitable()
+    {
+        return (Offer.Category is null && TagService.Category is null) ||
+        (Offer.Category is not null && TagService.Category is not null && Offer.Category.Equals(TagService.Category));
+    }
+
+    private void TogleOverlay()
+    {
+        _addOverlayCss = _addOverlayCss == ""
+            ? "invisible"
+            : "";
+    }
+
+    private async Task CreateTagAsync()
+    {
+        var tag = ConfiguredMapper.Map<TagModel, Tag>(_tagModel);
+        await TagService.CreateAsync(tag);
+        TogleOverlay();
+    }
+
+    private async Task ResetTags()
+    {
+        await TagService.Reset(Offer.Category);
+    }
+}

@@ -7,6 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="12.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\Wednumi-Blazor-Components\WednumiComponents\WednumiComponents.csproj" />
     <ProjectReference Include="..\DigitalGoods.Core\DigitalGoods.Core.csproj" />
     <ProjectReference Include="..\DigitalGoods.Infrastructure\DigitalGoods.Infrastructure.csproj" />
   </ItemGroup>

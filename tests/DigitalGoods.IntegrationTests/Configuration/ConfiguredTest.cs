@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using DigitalGoods.Infrastructure.DataAccess;
+using DigitalGoods.Core;
 
 namespace DigitalGoods.IntegrationTests.Configuration
 {
@@ -14,6 +15,7 @@ namespace DigitalGoods.IntegrationTests.Configuration
             var config = new ConfigurationBuilder().AddJsonFile("appSettings.json").Build();
 
             var services = new ServiceCollection();
+            services.AddCoreServices();
             services.AddInfrastructureServices(config, connectionStringName: "Tests");
             services.AddHttpContextAccessor();
 

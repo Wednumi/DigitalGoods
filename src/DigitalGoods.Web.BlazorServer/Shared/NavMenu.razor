@@ -1,0 +1,81 @@
+﻿@using WednumiComponents.Menu
+@using WednumiComponents.Menu.Items
+@using DigitalGoods.Web.BlazorServer.Pages.Account
+
+@inject AuthenticationStateProvider StateProvider
+
+<nav class="navbar navbar-expand-md">
+    <div class="container-fluid">
+        <a class="navbar-brand me-auto" href="#">DigitalGoods</a>
+        <button class="navbar-toggler" @onclick=ToggleNavMenu>
+            <i class="@TogglerCssClass"></i>
+        </button>
+        <div class="@CollapseNavCssClass">
+            <div class="navbar-nav mb-2 mb-md-0 ms-auto nav-items">
+                <MenuItem>
+                    <i class="bi bi-search"></i>
+                    <span class="ms-2">Search</span>
+                </MenuItem>
+                <AuthorizeView>
+                    <Authorized>
+                        <MenuItem href="/offers/list">
+                            <i class="icon-aligned bi bi-shop-window"></i>
+                            <span class="ms-2">Offers</span></MenuItem>
+                        <MenuItem href="/">
+                            <i class="icon-aligned bi bi-bag-check"></i>
+                            <span class="ms-2">Orders</span>
+                        </MenuItem>
+                    </Authorized>
+                </AuthorizeView>
+                <AuthorizeView>
+                    <Authorized>
+                        <div class="hover-menu d-flex">
+                            <HoverDrop>
+                                <Head>
+                                    <MenuItem>Account</MenuItem>
+                                </Head>
+                                <Content>
+                                    <h5 class="account-name">
+                                        <i class="icon-aligned bi bi-person-circle"></i>
+                                        <span class="ms-1">@GetUserAsync().Result</span>
+                                    </h5>
+                                    <div class="hover-items">
+                                        <UnderscoredMenuItem>Settings</UnderscoredMenuItem>
+                                        <SignOut>
+                                            <UnderscoredMenuItem>Sign out</UnderscoredMenuItem>
+                                        </SignOut>
+                                    </div>
+                                </Content>
+                            </HoverDrop>
+                        </div>
+                    </Authorized>
+                    <NotAuthorized>
+                        <div class="sign-items">
+                            <MenuItem NavigationForceLoad=true href ="/account/signin">Sign In</MenuItem>
+                            <MenuItem NavigationForceLoad=true href ="/account/register">Sign Up</MenuItem>
+                        </div>
+                    </NotAuthorized>
+                </AuthorizeView>
+            </div>
+        </div>
+    </div>
+</nav>
+
+@code {
+    private bool collapseNavMenu = false;
+
+    private string CollapseNavCssClass => collapseNavMenu ? "navbar-collapse" : "collapse navbar-collapse";
+
+    private string TogglerCssClass => collapseNavMenu ? "bi bi-caret-up-fill" : "bi bi-caret-down-fill";
+
+    private async Task<string> GetUserAsync()
+    {
+        var state = await StateProvider.GetAuthenticationStateAsync();
+        return state.User.Identity!.Name!;
+    }
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}

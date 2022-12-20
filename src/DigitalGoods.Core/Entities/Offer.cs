@@ -1,65 +1,89 @@
-﻿namespace DigitalGoods.Core.Entities
+﻿using DigitalGoods.Core.Attributes;
+using DigitalGoods.Core.Enums;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+
+namespace DigitalGoods.Core.Entities
 {
-    public class Offer : BaseEntity
+    public class Offer : BaseEntity, INotifyPropertyChanged
     {
-        public string Name { get; private set; } = null!;
 
-        public float? Price { get; private set; }
+        public event PropertyChangedEventHandler? PropertyChanged;
 
-        public int? Discount { get; private set; }
+        public string Name { get; set; } = "NO NAME";
 
-        public string? Discription { get; private set; }
+        public float? Price { get; set; }
 
-        public int Amount { get; private set; }
+        public int Discount { get; set; }
 
-        public bool Active { get; private set; }
+        public string? Discription { get; set; }
 
-        public string? UserId { get; private set; }
+        public int Amount { get; set; }
 
+        public bool Active { get; set; }
+
+        [NoMap]
+        public string UserId { get; private set; } = null!;
+
+        [NoMap]
         public User User { get; private set; } = null!;
 
-        public int? SourceId { get; private set; }
+        public int? CategoryId { get; private set; }
 
-        public Source? Source { get; private set; }
+        public Category? Category { get; private set; }
 
-        public int? ReceiveMethodId { get; private set; }
+        public ReceiveMethod? ReceiveMethod { get; set; }
 
-        public ReceiveMethod? ReceiveMethod { get; private set; }
+        public ICollection<Tag> Tags { get; private set; } = null!;
 
-        public ICollection<Tag>? Tags { get; private set; }
+        [NoMap]
+        public ICollection<Media> Medias { get; private set; } = null!;
 
-        public ICollection<Media>? Medias { get; private set; }
-
+        [NoMap]
         public ICollection<ActivationCode> ActivationCodes { get; private set; } = null!;
 
+        [NoMap]
         public ICollection<Order> Sales { get; private set; } = null!;
 
+        [NoMap]
         public ICollection<OfferChange> OfferChanges { get; private set; } = null!;
 
-        private Offer() 
+        private Offer()
         { }
 
-        public Offer(string name, float? price, int? discount, string? discription, 
-            int amount, User user, Source? source, ICollection<Tag>? tags, 
-            ICollection<Media>? medias, ReceiveMethod? receiveMethod)
+        public Offer(string userId)
         {
+            UserId = userId;
             Active = false;
-            Name = name;
-            Price = price;
-            Discount = discount;
-            Discription = discription;
-            Amount = amount;
-            UserId = user.Id;
-            User = user;
-            SourceId = source?.Id;
-            Source = source;
-            Tags = tags;
-            Medias = medias;
+            Tags = new List<Tag>();
+            Medias = new List<Media>();
             ActivationCodes = new List<ActivationCode>();
             Sales = new List<Order>();
             OfferChanges = new List<OfferChange>();
-            ReceiveMethod = receiveMethod;
-            ReceiveMethodId = receiveMethod?.Id;
+        }
+
+        public Offer(User user)
+        {
+            UserId = user.Id;
+            User = user;
+            Active = false;
+            Tags = new List<Tag>();
+            Medias = new List<Media>();
+            ActivationCodes = new List<ActivationCode>();
+            Sales = new List<Order>();
+            OfferChanges = new List<OfferChange>();
+        }
+
+        public void SetCategory(Category? category)
+        {
+            CategoryId = category?.Id;
+            Category = category;
+            NotifyPropertyChanged(nameof(Category));
+        }
+ 
+        private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }

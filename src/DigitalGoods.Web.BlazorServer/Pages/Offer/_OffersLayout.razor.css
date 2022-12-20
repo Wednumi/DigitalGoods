@@ -1,0 +1,42 @@
+﻿.layout {
+    display: flex;
+    flex-direction: row;
+    margin: 1.5rem;
+}
+.bar-head {
+    margin: 0 0.5rem 0.5rem 0.5rem;
+    font-family: var(--head-font);
+    color: var(--highlight-color);
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.side-bar {
+    background-color: var(--side-panel-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    width: 200px;
+    height: 300px;
+    margin-right: 1.5rem;
+    border-radius: 0.5rem;
+    padding-top: 1rem;
+}
+
+    .side-bar ::deep .item {
+        --hover-color: var(--off-element-hover-color);
+        color: var(--light-color);
+        margin: 0 0 0.25rem 0;
+        padding: 0 0.75rem 0 0.75rem;
+        font-size: 1.2rem;
+    }
+
+.form-container {
+    display: flex;
+    background-color: var(--main-panel-color);
+    border-radius: 0.5rem;
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.2rem;
+}

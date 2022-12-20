@@ -1,0 +1,33 @@
+﻿@*@using WednumiComponents.Menu
+@using WednumiComponents.Menu.Containers
+@using WednumiComponents.Menu.Items
+@using DigitalGoods.Web.BlazorServer.Pages.Account
+
+<nav class="navbar navbar-expand-md">
+    <div class="container-fluid">
+        <a class="navbar-brand me-auto" href="#">DigitalGoods</a>
+        <button class="navbar-toggler" @onclick=ToggleNavMenu>
+            <i class="@TogglerCssClass"></i>
+        </button>
+        <div class="@NavMenuCssClass">
+            <MenuContainer>
+            </MenuContainer>
+        </div>
+    </div>
+</nav>
+
+@code {
+    private bool collapseNavMenu = false;
+
+    private string NavMenuCssClass => collapseNavMenu ? "navbar-collapse" : "collapse navbar-collapse";
+
+    private string TogglerCssClass => collapseNavMenu ? "bi bi-caret-up-fill" : "bi bi-caret-down-fill";
+
+    private const string NavItemCss =
+        "font-size: 1.3rem; display: flex; justify-content: center;";
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+}*@

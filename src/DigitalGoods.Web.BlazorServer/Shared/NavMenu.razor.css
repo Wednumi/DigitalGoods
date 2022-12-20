@@ -1,0 +1,89 @@
+.navbar {
+    background-color: var(--element-back-color);
+}
+
+.navbar-toggler {
+    background-color: var(--element-front-color);
+}
+
+.navbar-brand {
+    font-family: "Arial Black", sans-serif;
+    font-size: 1.8rem !important;
+    position: relative;
+    left: 50%;
+    transform: translate(-50%, 0);
+    display: block;
+    color: var(--highlight-color);
+}
+
+.nav-items{
+    display: flex;
+    flex-direction: column;
+}
+
+.nav-items ::deep .item {
+    --hover-color: var(--element-front-color);
+    color: var(--light-color);
+    font-size: 1.3rem;
+    display: flex;
+    justify-content: center;
+    border-radius: 0.25rem;
+    padding: 0.25rem 1rem 0.25rem 1rem;
+}
+.sign-items{
+    display: flex;
+    flex-direction: row;
+}
+.sign-items ::deep .item {
+    --bg-color: var(--element-front-color);
+    --hover-brightness: 1.25;
+    flex: 1;
+}
+
+.hover-menu ::deep .dropdown {
+    flex: 1;
+}
+
+.hover-menu ::deep .dropdown-content {
+    background-color: var(--highlight-color);
+    box-shadow: 0px 4px 6px 0px rgba(0,0,0,0.2);
+    padding: 0.25rem;
+    margin-right: 0.25rem;
+    right: 0;
+}
+
+.hover-items ::deep .item {
+    font-size: 1rem;
+    color: black;
+    padding: 0.25rem;
+    text-align: center;
+}
+
+.account-name {
+    display: inline-flex;
+    align-items: start;
+    margin: 0.5rem 0.5rem 0.25rem 0.5rem;
+}
+
+.icon-aligned{
+    display: flex;
+    align-self: center;
+}
+
+@media screen and (min-width: 768px) {
+    .navbar-brand {
+        font-size: 1.4rem;
+        position: static;
+        left: 0;
+        margin-left: auto;
+        display: flex;
+        transform: translate(0, 0);
+    }
+}
+
+@media screen and (min-width: 768px) {
+    .nav-items {
+        display: flex;
+        flex-direction: row;
+    }
+}
