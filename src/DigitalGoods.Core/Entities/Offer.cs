@@ -85,5 +85,10 @@ namespace DigitalGoods.Core.Entities
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        public Media? GetPreview()
+        {
+            return Medias.FirstOrDefault(m => m.IsPreview is true);
+        }
     }
 }

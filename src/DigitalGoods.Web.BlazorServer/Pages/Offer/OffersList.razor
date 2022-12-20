@@ -1,9 +1,7 @@
 ﻿@page "/offers/list"
 
-@using WednumiComponents.Menu.Items
-@using DigitalGoods.Core.Entities
-@using DigitalGoods.Core.Services
 @using DigitalGoods.Core.Specifications
+@using DigitalGoods.Web.BlazorServer.Pages.Offer.OfferDisplaying;
 
 @inherits UserIdentificationComponent
 
@@ -34,7 +32,11 @@
                 @foreach (var offer in _offers)
                 {
                     <tr>
-                        <td>TO DO</td>
+                        <td>
+                            <div class="image-column">
+                                <OfferPreview Offer="offer" />
+                            </div>
+                        </td>
                         <td>@offer.Name</td>
                         <td>@offer.Amount</td>
                         <td>@offer.Price</td>

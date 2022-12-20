@@ -2,18 +2,20 @@
 @page "/offers/editor"
 
 @using System.ComponentModel.DataAnnotations
-@using  DigitalGoods.Web.BlazorServer.Pages.Offer.Managers
+@using DigitalGoods.Web.BlazorServer.Pages.Offer.Managers
 
 @inherits UserIdentificationComponent
 
 @inject OfferService OfferService
 @inject IFileManager FileManager
 @inject IRollBackContainer RollBackContainer
+@inject NavigationManager NavigationManager
 
 @layout _OffersLayout
 
-@if(_offerModel is null){
-    <LoadingMessage/>
+@if (_offerModel is null)
+{
+    <LoadingMessage />
 }
 else
 {
@@ -76,14 +78,15 @@ else
                 </InputSelect>
             </div>
             <div class="form-item submit-buttons">
-                @if(_results.ContainsKey("save")){
+                @if (_results.ContainsKey("save"))
+                {
                     <div class="align-self-center">@_results["save"]</div>
                 }
                 <div class="accept">
-                    <InputItem href="offers/list" type="submit" value="Accept"></InputItem>
+                    <InputItem type="submit" value="Accept"></InputItem>
                 </div>
                 <div @onclick="CancelAsync" class="cancel">
-                    <MenuItem href="offers/list">Cancel</MenuItem>
+                    <MenuItem>Cancel</MenuItem>
                 </div>
             </div>
         </EditForm>
@@ -96,6 +99,8 @@ else
     private OfferModel? _offerModel;
 
     private Dictionary<string, string> _results = new Dictionary<string, string>();
+
+    private bool _saving = false;
 
     [Parameter]
     public string? InputOfferId { get; set; }
@@ -125,9 +130,13 @@ else
 
     private async Task TrySaveAsync()
     {
+        _saving = true;
+
         ConfiguredMapper.Map<OfferModel, Offer>(_offerModel!, _offer);
         var result = await OfferService.SaveAsync();
+
         SetSaveResult(result);
+        _saving = false;
     }
 
     private void SetSaveResult(ActionResult actionResult)
@@ -138,7 +147,9 @@ else
         _results["save"] = saveResult;
     }
 
-    private async Task CancelAsync(){
+    private async Task CancelAsync()
+    {
         await RollBackContainer.RollBack();
+        NavigationManager.NavigateTo(@"offers/list");
     }
 }
