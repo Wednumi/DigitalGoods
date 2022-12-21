@@ -21,6 +21,7 @@
                 <tr>
                     <th scope="col">Preview</th>
                     <th scope="col">Name</th>
+                    <th scope="col">Receive method</th>
                     <th scope="col">Amount</th>
                     <th scope="col">Price</th>
                     <th scope="col">Discount</th>
@@ -38,10 +39,11 @@
                             </div>
                         </td>
                         <td>@offer.Name</td>
+                        <td>@offer.ReceiveMethod</td>
                         <td>@offer.Amount</td>
                         <td>@offer.Price</td>
                         <td>@offer.Discount</td>
-                        <td>TO DO</td>
+                        <td>@offer.State</td>
                         <td class="edit-button"><MenuItem href="@GetOfferEditLink(offer)">Edit</MenuItem></td>
                     </tr>
                 }

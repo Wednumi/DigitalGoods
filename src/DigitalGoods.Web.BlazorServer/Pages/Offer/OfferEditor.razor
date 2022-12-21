@@ -33,6 +33,19 @@ else
                 <label>Medias</label>
                 <MediaManager Offer="_offer" />
             </div>
+            <div class="form-item">
+                <label>Receive method</label>
+                <InputSelect class="form-select" @bind-Value="_offerModel.ReceiveMethod">
+                    <option value=""></option>
+                    @foreach (var method in Enum.GetValues(typeof(ReceiveMethod)))
+                    {
+                        <option value="@method">@method</option>
+                    }
+                </InputSelect>
+                @if(_offerModel.ReceiveMethod == ReceiveMethod.ActivationCode){
+                    <ActivationCodeManager Offer="_offer" />
+                }
+            </div>
             <div class="d-flex flex-row justify-content-between">
                 <div class="form-item flex-fill pe-2">
                     <label>Price $</label>
@@ -50,7 +63,7 @@ else
                 </div>
                 <div class="form-item flex-fill ps-2">
                     <label>Amount</label>
-                    <InputNumber @bind-Value=_offerModel.Amount class="form-control"></InputNumber>
+                    <InputNumber @bind-Value=_offerModel.Amount class="form-control"/>
                     <div class="valid-message">
                         <ValidationMessage For="@(() => _offerModel.Amount)" />
                     </div>
@@ -67,15 +80,6 @@ else
             <div class="form-item">
                 <label>Tags</label>
                 <TagManager Offer="_offer"></TagManager>
-            </div>
-            <div class="form-item">
-                <label>Receive method</label>
-                <InputSelect class="form-select" @bind-Value="_offerModel.ReceiveMethod">
-                    @foreach (var method in Enum.GetValues(typeof(ReceiveMethod)))
-                    {
-                        <option value="@method">@method</option>
-                    }
-                </InputSelect>
             </div>
             <div class="form-item submit-buttons">
                 @if (_results.ContainsKey("save"))

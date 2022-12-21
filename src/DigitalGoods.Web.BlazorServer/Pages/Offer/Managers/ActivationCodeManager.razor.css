@@ -1,0 +1,21 @@
+﻿.submit-buttons {
+    display: inline-flex;
+    padding: 0;
+}
+
+    .submit-buttons ::deep .item {
+        --hover-brightness: 1.2;
+        border-radius: 0.5rem;
+        color: var(--light-color);
+        padding: 0.5rem;
+    }
+
+    .submit-buttons .accept ::deep .item {
+        --bg-color: var(--accept-color);
+        --hover-color: var(--accept-color);
+    }
+
+    .submit-buttons .close ::deep .item {
+        --bg-color: var(--cancel-color);
+        --hover-color: var(--cancel-color);
+    }

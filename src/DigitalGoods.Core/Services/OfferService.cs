@@ -44,6 +44,7 @@ namespace DigitalGoods.Core.Services
         {
             try
             {
+                Offer.UpdateState();
                 await _offerRepository.UpdateAsync(Offer!);
                 return new ActionResult(true);
             }

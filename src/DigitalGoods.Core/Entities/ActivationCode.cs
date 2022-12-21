@@ -4,7 +4,7 @@
     {
         public string Code { get; private set; } = null!;
 
-        public int? OfferId { get; private set; }
+        public int OfferId { get; private set; }
 
         public Offer Offer { get; private set; } = null!;
 
@@ -13,11 +13,11 @@
         private ActivationCode() 
         { }
 
-        public ActivationCode(string code,  Offer offer)
+        public ActivationCode(string code, Offer offer)
         {
-            Code = code;
-            OfferId = offer.Id;
             Offer = offer;
+            OfferId = offer.Id;
+            Code = code;
             Activated = false;
         }
     }
