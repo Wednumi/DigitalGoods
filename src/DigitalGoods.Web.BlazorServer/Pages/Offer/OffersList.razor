@@ -1,16 +1,16 @@
 ﻿@page "/offers/list"
 
 @using DigitalGoods.Core.Specifications
-@using DigitalGoods.Web.BlazorServer.Pages.Offer.OfferDisplaying;
+@using DigitalGoods.Web.BlazorServer.Pages.Offer.OfferListComponents;
 
 @inherits UserIdentificationComponent
 
-@inject IRepositoryFactory RepositoryFactory
+@inject OfferListEditor OfferListEditor
 
 @layout _OffersLayout
 
 <div class="flex-fill">
-    @if (_offers is null)
+    @if (OfferListEditor.Offers is null)
     {
         <LoadingMessage></LoadingMessage>
     }
@@ -30,7 +30,7 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var offer in _offers)
+                @foreach (var offer in OfferListEditor.Offers)
                 {
                     <tr>
                         <td>
@@ -43,8 +43,19 @@
                         <td>@offer.Amount</td>
                         <td>@offer.Price</td>
                         <td>@offer.Discount</td>
-                        <td>@offer.State</td>
-                        <td class="edit-button"><MenuItem href="@GetOfferEditLink(offer)">Edit</MenuItem></td>
+                        <td class="table-button">
+                            <StateButton Offer="offer" OfferListEditor="OfferListEditor"/>
+                        </td>
+                        <td class="table-button">
+                            <div class="edit-button">
+                                <MenuItem href="@GetOfferEditLink(offer)">Edit</MenuItem>
+                            </div>
+                            <div>
+                                <Item class="bg-danger mt-2" @onclick="() => TryDeleteAsync(offer)">
+                                    <i class="bi bi-trash-fill"/>
+                                </Item>
+                            </div>
+                        </td>
                     </tr>
                 }
             </tbody>
@@ -56,8 +67,6 @@
 </div>
 
 @code {
-    private ICollection<Offer>? _offers;
-
     private string GetOfferEditLink(Offer offer)
     {
         return "offers/editor/" + offer.Id.ToString();
@@ -66,8 +75,11 @@
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
-        var repository = RepositoryFactory.CreateRepository<Offer>();
-        var specification = new OffersByUserSpec(CurrentUser);
-        _offers = await repository.ListAsync(specification);
+        await OfferListEditor.InitialiazeAsync(CurrentUser);
+    }
+
+    private async Task TryDeleteAsync(Offer offer)
+    {
+        await OfferListEditor.TryDeleteAsync(offer);
     }
 }

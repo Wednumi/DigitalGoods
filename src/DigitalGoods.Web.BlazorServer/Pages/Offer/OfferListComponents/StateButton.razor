@@ -1,0 +1,19 @@
+﻿@switch(Offer.State){
+    case OfferState.NotFilled:
+        <div class="text-danger">Not filled</div>
+        break;
+    case OfferState.Active:
+        <Item @onclick="() => OfferListEditor.DeActivateOfferAsync(Offer)" class="bg-primary">Activated</Item>
+        break;
+    case OfferState.DeActivated:
+        <Item @onclick="() => OfferListEditor.ActivateOfferAsync(Offer)" class="bg-secondary">Deactivated</Item>
+        break;
+}
+
+@code {
+    [Parameter]
+    public Offer Offer { get; set; }
+
+    [Parameter]
+    public OfferListEditor OfferListEditor { get; set; }
+}

@@ -10,7 +10,7 @@ namespace DigitalGoods.Infrastructure.DataAccess.Configurations
             builder.HasOne(c => c.Offer)
                 .WithMany(o => o.ActivationCodes)
                 .IsRequired(false)
-                .OnDelete(DeleteBehavior.SetNull);
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

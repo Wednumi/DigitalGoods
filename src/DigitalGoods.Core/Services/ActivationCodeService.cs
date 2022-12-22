@@ -1,5 +1,6 @@
 ﻿using DigitalGoods.Core.Entities;
 using DigitalGoods.Core.Interfaces;
+using DigitalGoods.Core.Specifications;
 
 namespace DigitalGoods.Core.Services
 {

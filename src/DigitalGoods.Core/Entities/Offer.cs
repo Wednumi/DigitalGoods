@@ -99,5 +99,9 @@ namespace DigitalGoods.Core.Entities
                 ? OfferState.Active
                 : newState;
         }
+
+        public void Activate() => State = OfferState.Active;
+
+        public void Deactivate() => State = OfferState.DeActivated;
     }
 }
