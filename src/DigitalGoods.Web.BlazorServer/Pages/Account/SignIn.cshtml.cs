@@ -49,7 +49,7 @@ namespace DigitalGoods.Web.BlazorServer.Pages.Account
 
     public class LoginCredential : Credential
     {
-        [Display(Name = "Remeber Me")]
+        [Display(Name = "Remember Me")]
         public bool RememberMe { get; set; } = false;
     }
 }

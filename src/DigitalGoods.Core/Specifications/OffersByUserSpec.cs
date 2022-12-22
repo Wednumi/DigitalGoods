@@ -8,7 +8,8 @@ namespace DigitalGoods.Core.Specifications
     {
         public OffersByUserSpec(User owner)
         {
-            Query.Where(o => o.UserId.Equals(owner.Id));
+            Query.Where(o => o.UserId.Equals(owner.Id))
+                .Include(o => o.Medias);
         }
     }
 }

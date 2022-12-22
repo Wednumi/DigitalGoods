@@ -7,11 +7,14 @@ namespace DigitalGoods.Core.Entities
 {
     public class Offer : BaseEntity, INotifyPropertyChanged
     {
+        private const string _defaultName = "NO NAME";
 
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        public string Name { get; set; } = "NO NAME";
+        [MustNotBe(null, _defaultName)]
+        public string Name { get; set; } = _defaultName;
 
+        [MustNotBe(new object?[] { null })]
         public float? Price { get; set; }
 
         public int Discount { get; set; }
@@ -19,8 +22,6 @@ namespace DigitalGoods.Core.Entities
         public string? Discription { get; set; }
 
         public int Amount { get; set; }
-
-        public bool Active { get; set; }
 
         [NoMap]
         public string UserId { get; private set; } = null!;
@@ -32,7 +33,10 @@ namespace DigitalGoods.Core.Entities
 
         public Category? Category { get; private set; }
 
+        [MustNotBe(new object?[] {null})]
         public ReceiveMethod? ReceiveMethod { get; set; }
+
+        public OfferState State { get; private set; }
 
         public ICollection<Tag> Tags { get; private set; } = null!;
 
@@ -54,7 +58,7 @@ namespace DigitalGoods.Core.Entities
         public Offer(string userId)
         {
             UserId = userId;
-            Active = false;
+            State = OfferState.NotFilled;
             Tags = new List<Tag>();
             Medias = new List<Media>();
             ActivationCodes = new List<ActivationCode>();
@@ -63,15 +67,9 @@ namespace DigitalGoods.Core.Entities
         }
 
         public Offer(User user)
+            : this(user.Id)
         {
-            UserId = user.Id;
             User = user;
-            Active = false;
-            Tags = new List<Tag>();
-            Medias = new List<Media>();
-            ActivationCodes = new List<ActivationCode>();
-            Sales = new List<Order>();
-            OfferChanges = new List<OfferChange>();
         }
 
         public void SetCategory(Category? category)
@@ -85,5 +83,25 @@ namespace DigitalGoods.Core.Entities
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
+
+        public Media? GetPreview()
+        {
+            return Medias.FirstOrDefault(m => m.IsPreview is true);
+        }
+
+        public void UpdateState()
+        {
+            var filled = ConditionChecker.Check(this);
+            OfferState newState = filled
+                ? OfferState.DeActivated
+                : OfferState.NotFilled;
+            this.State = this.State == OfferState.Active && filled
+                ? OfferState.Active
+                : newState;
+        }
+
+        public void Activate() => State = OfferState.Active;
+
+        public void Deactivate() => State = OfferState.DeActivated;
     }
 }

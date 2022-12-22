@@ -1,0 +1,58 @@
+﻿@inject ActivationCodeService ActivationCodeService
+
+<InputFile OnChange="LoadFileAsync" class="form-control" />
+@if(_codeStrings is not null){
+    <div class="d-inline-flex align-items-center mt-1">
+        <div>
+            Found [@_codeStrings.Length] codes
+        </div>
+        <div class="submit-buttons">
+            <div class="accept">
+                <Item @onclick="Add">Add</Item>
+            </div>
+            <div class="close">
+                <Item @onclick="Reset">Cancel</Item>
+            </div>
+        </div>
+    </div>
+}
+else{
+    <div>Upload a file with activation codes separated by ';' '/' '.' ','</div>
+}
+
+@code {
+    private string[]? _codeStrings;
+
+    [Parameter]
+    public Offer Offer { get; set; }
+
+    private async Task LoadFileAsync(InputFileChangeEventArgs e)
+    {
+        int maxSize = 1024 * 100;
+        var file = e.File;
+        var buffer = new byte[file.Size];
+
+        await file.OpenReadStream(maxSize).ReadAsync(buffer);
+        string fileContent = System.Text.Encoding.UTF8.GetString(buffer);
+
+        SetSplitedToCodes(fileContent);
+    }
+
+    private void SetSplitedToCodes(string input)
+    {
+        _codeStrings = input.Split(';', '/', '.', ',');
+        _codeStrings = _codeStrings.Where(c => c != String.Empty).ToArray();
+    }
+
+    private void Reset()
+    {
+        _codeStrings = null;
+    }
+
+    private async Task Add()
+    {
+        var activationCodes = _codeStrings!.Select(s => new ActivationCode(s, Offer)).ToList();
+        await ActivationCodeService.Add(activationCodes);
+        Reset();
+    }
+}

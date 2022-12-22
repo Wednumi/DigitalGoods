@@ -1,5 +1,6 @@
 ﻿using DigitalGoods.Core.Entities;
 using DigitalGoods.Core.Interfaces;
+using DigitalGoods.Core.ResultReturning;
 using DigitalGoods.Core.Specifications;
 
 namespace DigitalGoods.Core.Services
@@ -44,6 +45,7 @@ namespace DigitalGoods.Core.Services
         {
             try
             {
+                Offer.UpdateState();
                 await _offerRepository.UpdateAsync(Offer!);
                 return new ActionResult(true);
             }

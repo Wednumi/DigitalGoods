@@ -1,10 +1,10 @@
-﻿.add-button{
+﻿.add-button {
     width: 100%;
 }
 
     .add-button ::deep .item {
         background-color: var(--accept-color);
-        --hover-brightness: 0.8;
+        --hover-brightness: 1.25;
         border-bottom-left-radius: 1rem;
         border-bottom-right-radius: 1rem;
         text-align: center;
@@ -13,9 +13,20 @@
         margin-right: 0;
     }
 
-.edit-button ::deep .item {
-    background-color: var(--accept-color);
-    --hover-brightness: 0.8;
+.table-button ::deep .item {
+    --hover-brightness: 1.25;
     border-radius: 0.25rem;
     text-align: center;
+    margin: 0;
+    color: var(--light-color);
+}
+
+.edit-button ::deep .item {
+    background-color: var(--accept-color);
+}
+
+.image-column {
+    display: block;
+    width: 150px;
+    height: 150px;
 }

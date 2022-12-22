@@ -1,5 +1,6 @@
 ﻿using DigitalGoods.Core.Entities;
 using DigitalGoods.Core.Interfaces;
+using DigitalGoods.Core.ResultReturning;
 using DigitalGoods.Core.Specifications;
 
 namespace DigitalGoods.Core.Services
@@ -75,6 +76,14 @@ namespace DigitalGoods.Core.Services
             foreach(var media in Medias)
             {
                 media.IsPreview = false;
+            }
+        }
+
+        public async Task DeleteRangeAsync(ICollection<Media> medias)
+        {
+            foreach (var media in medias)
+            {
+                await DeleteAsync(media);
             }
         }
     }

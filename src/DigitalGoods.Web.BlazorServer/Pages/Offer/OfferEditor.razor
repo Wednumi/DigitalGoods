@@ -2,18 +2,20 @@
 @page "/offers/editor"
 
 @using System.ComponentModel.DataAnnotations
-@using  DigitalGoods.Web.BlazorServer.Pages.Offer.Managers
+@using DigitalGoods.Web.BlazorServer.Pages.Offer.Managers
 
 @inherits UserIdentificationComponent
 
 @inject OfferService OfferService
 @inject IFileManager FileManager
 @inject IRollBackContainer RollBackContainer
+@inject NavigationManager NavigationManager
 
 @layout _OffersLayout
 
-@if(_offerModel is null){
-    <LoadingMessage/>
+@if (_offerModel is null)
+{
+    <LoadingMessage />
 }
 else
 {
@@ -30,6 +32,19 @@ else
             <div class="form-item">
                 <label>Medias</label>
                 <MediaManager Offer="_offer" />
+            </div>
+            <div class="form-item">
+                <label>Receive method</label>
+                <InputSelect class="form-select" @bind-Value="_offerModel.ReceiveMethod">
+                    <option value=""></option>
+                    @foreach (var method in Enum.GetValues(typeof(ReceiveMethod)))
+                    {
+                        <option value="@method">@method</option>
+                    }
+                </InputSelect>
+                @if(_offerModel.ReceiveMethod == ReceiveMethod.ActivationCode){
+                    <ActivationCodeManager Offer="_offer" />
+                }
             </div>
             <div class="d-flex flex-row justify-content-between">
                 <div class="form-item flex-fill pe-2">
@@ -48,7 +63,7 @@ else
                 </div>
                 <div class="form-item flex-fill ps-2">
                     <label>Amount</label>
-                    <InputNumber @bind-Value=_offerModel.Amount class="form-control"></InputNumber>
+                    <InputNumber @bind-Value=_offerModel.Amount class="form-control"/>
                     <div class="valid-message">
                         <ValidationMessage For="@(() => _offerModel.Amount)" />
                     </div>
@@ -66,24 +81,16 @@ else
                 <label>Tags</label>
                 <TagManager Offer="_offer"></TagManager>
             </div>
-            <div class="form-item">
-                <label>Receive method</label>
-                <InputSelect class="form-select" @bind-Value="_offerModel.ReceiveMethod">
-                    @foreach (var method in Enum.GetValues(typeof(ReceiveMethod)))
-                    {
-                        <option value="@method">@method</option>
-                    }
-                </InputSelect>
-            </div>
             <div class="form-item submit-buttons">
-                @if(_results.ContainsKey("save")){
+                @if (_results.ContainsKey("save"))
+                {
                     <div class="align-self-center">@_results["save"]</div>
                 }
                 <div class="accept">
-                    <InputItem href="offers/list" type="submit" value="Accept"></InputItem>
+                    <InputItem type="submit" value="Accept"></InputItem>
                 </div>
                 <div @onclick="CancelAsync" class="cancel">
-                    <MenuItem href="offers/list">Cancel</MenuItem>
+                    <MenuItem>Cancel</MenuItem>
                 </div>
             </div>
         </EditForm>
@@ -96,6 +103,8 @@ else
     private OfferModel? _offerModel;
 
     private Dictionary<string, string> _results = new Dictionary<string, string>();
+
+    private bool _saving = false;
 
     [Parameter]
     public string? InputOfferId { get; set; }
@@ -125,9 +134,13 @@ else
 
     private async Task TrySaveAsync()
     {
+        _saving = true;
+
         ConfiguredMapper.Map<OfferModel, Offer>(_offerModel!, _offer);
         var result = await OfferService.SaveAsync();
+
         SetSaveResult(result);
+        _saving = false;
     }
 
     private void SetSaveResult(ActionResult actionResult)
@@ -138,7 +151,9 @@ else
         _results["save"] = saveResult;
     }
 
-    private async Task CancelAsync(){
+    private async Task CancelAsync()
+    {
         await RollBackContainer.RollBack();
+        NavigationManager.NavigateTo(@"offers/list");
     }
 }

@@ -4,6 +4,7 @@ using DigitalGoods.Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DigitalGoods.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20221221070609_OfferActivePropertyDeleted")]
+    partial class OfferActivePropertyDeleted
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -37,7 +40,7 @@ namespace DigitalGoods.Infrastructure.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("OfferId")
+                    b.Property<int?>("OfferId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
@@ -509,7 +512,7 @@ namespace DigitalGoods.Infrastructure.Migrations
                     b.HasOne("DigitalGoods.Core.Entities.Offer", "Offer")
                         .WithMany("ActivationCodes")
                         .HasForeignKey("OfferId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("Offer");
                 });

@@ -1,0 +1,25 @@
+﻿@inject IFileManager FileManager
+
+<div class="wrapper">
+    @if(_path is null){
+        <i class="bi bi-image"></i>
+    }
+    else{
+        <img src="@_path"/>
+    }
+</div>
+
+@code {
+    private string? _path;
+
+    [Parameter]
+    public Offer? Offer { get; set; }
+
+    protected override void OnInitialized()
+    {
+        var preview = Offer!.GetPreview();
+        _path = preview is not null
+            ? FileManager.GetFullPath(preview)
+            : null;
+    }
+}
