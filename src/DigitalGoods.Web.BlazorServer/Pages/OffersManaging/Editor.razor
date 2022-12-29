@@ -2,7 +2,8 @@
 @page "/offers/editor"
 
 @using System.ComponentModel.DataAnnotations
-@using DigitalGoods.Web.BlazorServer.Pages.Offer.Managers
+@using DigitalGoods.Web.BlazorServer.Pages.OffersManaging.Editors
+@using AutoMapper
 
 @inherits UserIdentificationComponent
 
@@ -10,8 +11,9 @@
 @inject IFileManager FileManager
 @inject IRollBackContainer RollBackContainer
 @inject NavigationManager NavigationManager
+@inject IMapper Mapper
 
-@layout _OffersLayout
+@layout _OfferManagingLayout
 
 @if (_offerModel is null)
 {
@@ -31,7 +33,7 @@ else
             </div>
             <div class="form-item">
                 <label>Medias</label>
-                <MediaManager Offer="_offer" />
+                <MediaEditor Offer="_offer" />
             </div>
             <div class="form-item">
                 <label>Receive method</label>
@@ -43,7 +45,7 @@ else
                     }
                 </InputSelect>
                 @if(_offerModel.ReceiveMethod == ReceiveMethod.ActivationCode){
-                    <ActivationCodeManager Offer="_offer" />
+                    <ActivationCodeLoader Offer="_offer" />
                 }
             </div>
             <div class="d-flex flex-row justify-content-between">
@@ -75,11 +77,11 @@ else
             </div>
             <div class="form-item">
                 <label>Category</label>
-                <CategoryManager Offer="_offer" />
+                <CategoryEditor CategoryTagsRelated="_categoryTagsRelated" />
             </div>
             <div class="form-item">
                 <label>Tags</label>
-                <TagManager Offer="_offer"></TagManager>
+                <TagEditor CategoryTagsRelated="_categoryTagsRelated"></TagEditor>
             </div>
             <div class="form-item submit-buttons">
                 @if (_results.ContainsKey("save"))
@@ -102,9 +104,9 @@ else
 
     private OfferModel? _offerModel;
 
-    private Dictionary<string, string> _results = new Dictionary<string, string>();
+    private CategoryTagsRelated _categoryTagsRelated = null!;
 
-    private bool _saving = false;
+    private Dictionary<string, string> _results = new Dictionary<string, string>();
 
     [Parameter]
     public string? InputOfferId { get; set; }
@@ -113,7 +115,8 @@ else
     {
         await base.OnInitializedAsync();
         await InitializeOfferAsync();
-        _offerModel = ConfiguredMapper.Map<Offer, OfferModel>(_offer);
+        _offerModel = Mapper.Map<OfferModel>(_offer);
+        _categoryTagsRelated = new CategoryTagsRelated(_offer.Category, _offer.Tags);
     }
 
     private async Task InitializeOfferAsync()
@@ -134,13 +137,11 @@ else
 
     private async Task TrySaveAsync()
     {
-        _saving = true;
-
-        ConfiguredMapper.Map<OfferModel, Offer>(_offerModel!, _offer);
+        Mapper.Map<OfferModel, Offer>(_offerModel!, _offer);
+        Mapper.Map<CategoryTagsRelated, Offer>(_categoryTagsRelated, _offer);
         var result = await OfferService.SaveAsync();
 
         SetSaveResult(result);
-        _saving = false;
     }
 
     private void SetSaveResult(ActionResult actionResult)

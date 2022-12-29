@@ -1,5 +1,6 @@
 using DigitalGoods.Infrastructure.ServiceConfiguration;
 using DigitalGoods.Core;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +9,10 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddCoreServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
+
+var coreAssembly = Assembly.Load("DigitalGoods.Core");
+var currentAssembly = Assembly.GetExecutingAssembly();
+builder.Services.AddAutoMapper(coreAssembly, currentAssembly);
 
 var app = builder.Build();
 

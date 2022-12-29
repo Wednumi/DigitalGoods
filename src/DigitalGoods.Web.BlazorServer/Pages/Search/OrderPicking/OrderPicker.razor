@@ -1,0 +1,57 @@
+﻿@using System.Reflection
+@using DigitalGoods.Core.Specifications.Filters
+@using System.Linq.Expressions;
+
+@foreach (var item in Items)
+{
+    <ItemPickForm OrderItem="item" ChangeEvent="ItemSelect" />
+}
+
+@code {
+    private List<OrderItem> Items;
+
+    [Parameter]
+    public OfferFilter Filter { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Items = new List<OrderItem>()
+        {
+            new OrderItem("Name", o => o.Name),
+            new OrderItem("Price", o => o.Price),
+            new OrderItem("Discount price", o => IDataBaseFunctions.FinalPrice((float)o.Price, o.Discount)),
+        };
+    }
+
+    private void ItemSelect(OrderItem item)
+    {
+        if (item.Included is true)
+        {
+            MoveToStart(item);
+        }
+        else
+        {
+            MoveToEnd(item);
+        }
+        StateHasChanged();
+        ChangeFilter();
+    }
+
+    private void MoveToStart(OrderItem item)
+    {
+        Items.Remove(item);
+        Items.Insert(0, item);
+    }
+
+    private void MoveToEnd(OrderItem item)
+    {
+        Items.Remove(item);
+        Items.Add(item);
+    }
+
+    private void ChangeFilter()
+    {
+        var expressions = Items.Where(i => i.Included).Select(i => i.Expression).ToList();
+        Filter.OrderExpressions = expressions;
+    }
+}

@@ -1,0 +1,25 @@
+﻿<div class="d-flex cursor-pointer" @onclick="OnClick">
+    @if (OrderItem.Included)
+    {
+        <i class="bi bi-check-square-fill me-1 text-primary d-flex align-self-center"></i>
+    }
+    else
+    {
+        <i class="bi bi-square me-1 d-flex align-self-center"></i>
+    }
+    <div>@OrderItem.Name</div>
+</div>
+
+@code {
+    [Parameter]
+    public OrderItem OrderItem { get; set; }
+
+    [Parameter]
+    public Action<OrderItem> ChangeEvent { get; set; }
+
+    private void OnClick()
+    {
+        OrderItem.ToggleIncluded();
+        ChangeEvent(OrderItem);
+    }
+}

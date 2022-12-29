@@ -1,12 +1,12 @@
 ﻿using AutoMapper;
-using DigitalGoods.Core.Extensions;
 using DigitalGoods.Core.Interfaces;
 using DigitalGoods.Core.Services;
 using Microsoft.Extensions.DependencyInjection;
+using System.Reflection;
 
 namespace DigitalGoods.Core
 {
-    public static class DependencyInjectionConfiguration
+    public static class ConfigureServices
     {
         public static void AddCoreServices(this IServiceCollection services)
         {

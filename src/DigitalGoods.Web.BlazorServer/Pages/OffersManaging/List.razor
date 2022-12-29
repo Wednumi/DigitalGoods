@@ -1,13 +1,13 @@
 ﻿@page "/offers/list"
 
 @using DigitalGoods.Core.Specifications
-@using DigitalGoods.Web.BlazorServer.Pages.Offer.OfferListComponents;
+@using DigitalGoods.Web.BlazorServer.Pages.OffersManaging.ListComponents
 
 @inherits UserIdentificationComponent
 
 @inject OfferListEditor OfferListEditor
 
-@layout _OffersLayout
+@layout _OfferManagingLayout
 
 <div class="flex-fill">
     @if (OfferListEditor.Offers is null)

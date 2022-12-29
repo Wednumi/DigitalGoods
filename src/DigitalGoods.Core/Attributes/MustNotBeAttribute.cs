@@ -2,11 +2,11 @@
 
 namespace DigitalGoods.Core.Attributes
 {
-    internal class MustNotBeAttribute : Attribute
+    internal class ToActivateNotBeAttribute : Attribute
     {
         public object?[] Condition { get; set; }
 
-        public MustNotBeAttribute(params object?[] condition)
+        public ToActivateNotBeAttribute(params object?[] condition)
         {
             Condition = condition;
         }

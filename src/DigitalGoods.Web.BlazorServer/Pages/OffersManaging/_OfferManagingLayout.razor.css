@@ -1,7 +1,6 @@
 ﻿.layout {
     display: flex;
     flex-direction: row;
-    margin: 1.5rem;
 }
 .bar-head {
     margin: 0 0.5rem 0.5rem 0.5rem;

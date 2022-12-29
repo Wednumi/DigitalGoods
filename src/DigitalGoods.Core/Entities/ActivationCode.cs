@@ -6,7 +6,7 @@
 
         public int OfferId { get; private set; }
 
-        public Offer Offer { get; private set; }
+        public Offer Offer { get; private set; } = null!;
 
         public bool Activated { get; private set; }
 

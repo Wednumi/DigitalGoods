@@ -1,7 +1,6 @@
 ﻿using DigitalGoods.Core.Entities;
 using DigitalGoods.Core.Interfaces;
 using DigitalGoods.Core.Specifications;
-using System.Collections.Generic;
 
 namespace DigitalGoods.Core.Services
 {
@@ -162,6 +161,22 @@ namespace DigitalGoods.Core.Services
             var offerRepository = _repositoryFactory.CreateRepository<Offer>();
             var offersUsing = await offerRepository.CountAsync(new OffersUsingCategorySpec(category));
             return offersUsing == 0;
+        }
+
+        public async Task<ICollection<Category>> AllChilds(Category? category, ICollection<Category>? result = null)
+        {
+            if(category is null)
+            {
+                throw new Exception("Finding childs for null category");
+            }
+            result ??= new List<Category>() { category!};
+            var childs = await _repository.ListAsync(new CategoryChildsSpec(category!.Id));
+            foreach (var child in childs)
+            {
+                result.Add(child);
+                await AllChilds(child, result);
+            }
+            return result;
         }
     }
 }

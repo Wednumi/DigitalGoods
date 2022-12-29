@@ -3,6 +3,7 @@ using System.Reflection;
 using DigitalGoods.Core.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using DigitalGoods.Core.Interfaces;
 
 namespace DigitalGoods.Infrastructure.DataAccess
 {
@@ -45,6 +46,8 @@ namespace DigitalGoods.Infrastructure.DataAccess
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+            modelBuilder.HasDbFunction(() => IDataBaseFunctions.FinalPrice(default, default))
+                .HasName("f_calculate_final_price");
         }
     }
 }

@@ -1,0 +1,108 @@
+﻿@page "/"
+
+@using DigitalGoods.Core.Specifications
+@using DigitalGoods.Core.Specifications.Filters
+@using DigitalGoods.Web.BlazorServer.Pages.OffersManaging.ListComponents
+@using DigitalGoods.Web.BlazorServer.Pages.OffersManaging.Editors
+@using DigitalGoods.Web.BlazorServer.Pages.Search.OrderPicking
+
+@inject IRepositoryFactory RepositoryFactory
+@inject CategoryService CategoryService
+
+<EditForm Model="_filter" OnSubmit="Search">
+    <div class="d-flex flex-row">
+        <div class="side-bar">
+            <div class="filter filter-price">
+                <div>Price</div>
+                <div class="d-inline-flex">
+                    <InputNumber class="form-control input-field" @bind-Value="_filter.BottomPrice" />
+                    <span class="m-1">-</span>
+                    <InputNumber class="form-control input-field" @bind-Value="_filter.TopPrice" />
+                </div>
+            </div>
+            <div class="filter">
+                <CategoryEditor CategoryTagsRelated="_categoryTagsRelated" ReadOnly=true/>
+            </div>
+            <div class="filter">
+                <TagEditor CategoryTagsRelated="_categoryTagsRelated" ReadOnly=true/>
+            </div>
+            <div class="filter">
+                <OrderPicker Filter="_filter"/>
+            </div>
+            <div class="apply-btn mt-2">
+                <InputItem type="submit">Apply</InputItem>
+            </div>
+        </div>
+        <div class="form-container">
+            <div class="d-flex mb-2">
+                <InputText @bind-Value="_filter.Name" class="form-control" />
+            </div>
+            <div>
+                @if(_offers is null){
+                    <LoadingMessage/>
+                }
+                else{
+                    @foreach (var offer in _offers)
+                    {
+                        <div class="offer-container">
+                            <div class="image-container">
+                                <OfferPreview Offer="offer" />
+                            </div>
+                            <div class="info">
+                                @offer.Name
+                                <div class="price">@offer.FinalPrice()$</div>
+                            </div>
+                            @if(offer.Discount != 0){
+                                <div class="discount">
+                                    -@offer.Discount%
+                                </div>
+                            }       
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</EditForm>
+
+
+@code {
+    private OfferFilter _filter = new OfferFilter();
+
+    private ICollection<Offer>? _offers;
+
+    private IRepository<Offer> _repository = null!;
+
+    private CategoryTagsRelated _categoryTagsRelated = null!;
+
+    public Action<Category?> CategoryChanged { get; set; } = (category) => { };
+
+    protected async override Task OnInitializedAsync()
+    {
+        _offers = new List<Offer>();
+        _repository = RepositoryFactory.CreateRepository<Offer>();
+        _categoryTagsRelated = new CategoryTagsRelated(null, new List<Tag>());
+        await Search();
+    }
+
+    private async Task Search()
+    {
+        _offers = null;
+        await SetCategoryFilter();
+        _filter.Tags = _categoryTagsRelated.Tags;
+        var spec = new OfferByFilterSpec(_filter);
+        _offers = await _repository.ListAsync(spec);
+    }
+
+    private async Task SetCategoryFilter()
+    {
+        if (_categoryTagsRelated.Category is not null)
+        {
+            _filter.CategoryTree = await CategoryService.AllChilds(_categoryTagsRelated.Category);
+        }
+        else
+        {
+            _filter.CategoryTree = null;
+        }
+    }
+}
