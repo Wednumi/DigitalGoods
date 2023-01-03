@@ -1,6 +1,6 @@
-﻿namespace DigitalGoods.Core.Interfaces
+﻿namespace DigitalGoods.Core.DbMethods
 {
-    public interface IDataBaseFunctions
+    public interface IDbFunctions
     {
         public static string FinalPrice(float price, int discount)
             => throw new NotSupportedException();

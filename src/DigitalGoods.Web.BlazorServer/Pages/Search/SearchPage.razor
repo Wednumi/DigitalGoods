@@ -35,7 +35,7 @@
         </div>
         <div class="form-container">
             <div class="d-flex mb-2">
-                <InputText @bind-Value="_filter.Name" class="form-control" />
+                <InputText @bind-Value="_filter.Name" class="form-control" placeholder="Enter name or part of it"/>
             </div>
             <div>
                 @if(_offers is null){
@@ -44,20 +44,30 @@
                 else{
                     @foreach (var offer in _offers)
                     {
-                        <div class="offer-container">
-                            <div class="image-container">
-                                <OfferPreview Offer="offer" />
-                            </div>
-                            <div class="info">
-                                @offer.Name
-                                <div class="price">@offer.FinalPrice()$</div>
-                            </div>
-                            @if(offer.Discount != 0){
-                                <div class="discount">
-                                    -@offer.Discount%
+                        <MenuItem href=@OfferLink(offer) class="d-inline-block m-0 p-0">
+                            <div id="@offer.Id" class="offer-container">
+                                <div class="image-container">
+                                    <OfferPreview Offer="offer" />
                                 </div>
-                            }       
-                        </div>
+                                <div class="info">
+                                    @offer.Name
+                                    <div class="price">
+                                        @if(offer.Discount > 0){
+                                            <span class="original-price">
+                                                @offer.Price
+                                            </span>
+                                        }
+                                        @offer.FinalPrice()$
+                                    </div>
+                                </div>
+                                @if (offer.Discount != 0)
+                                {
+                                    <div class="discount">
+                                        -@offer.Discount%
+                                    </div>
+                                }
+                            </div>
+                        </MenuItem>
                     }
                 }
             </div>
@@ -98,11 +108,13 @@
     {
         if (_categoryTagsRelated.Category is not null)
         {
-            _filter.CategoryTree = await CategoryService.AllChilds(_categoryTagsRelated.Category);
+            _filter.CategoryTree = await CategoryService.AllChildsAsync(_categoryTagsRelated.Category);
         }
         else
         {
             _filter.CategoryTree = null;
         }
     }
+
+    private string OfferLink(Offer offer) => $"/offer/{offer.Id.ToString()}";
 }

@@ -1,6 +1,7 @@
 using DigitalGoods.Infrastructure.ServiceConfiguration;
 using DigitalGoods.Core;
 using System.Reflection;
+using DigitalGoods.Web.BlazorServer;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -9,6 +10,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddCoreServices();
 builder.Services.AddInfrastructureServices(builder.Configuration);
+builder.Services.AddTransient<OfferIdParser>();
 
 var coreAssembly = Assembly.Load("DigitalGoods.Core");
 var currentAssembly = Assembly.GetExecutingAssembly();

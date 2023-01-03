@@ -17,6 +17,9 @@ namespace DigitalGoods.Core
             services.AddTransient<ActivationCodeService>();
             services.AddTransient<IPathGenerator, PathGenerator>();
             services.AddTransient<OfferListEditor>();
+            services.AddTransient<OrderService>();
+            services.AddTransient<PaymentManager>();
+            services.AddTransient<PaymentRegistrator>();
 
             services.AddScoped<IRollBackContainer, RollBackContainer>();
         }

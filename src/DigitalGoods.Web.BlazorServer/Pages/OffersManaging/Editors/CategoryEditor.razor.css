@@ -35,6 +35,8 @@
     font-size: 1rem;
     display: flex;
     align-items: center;
+    min-width: 40px;
+    justify-content: center;
 }
 
 .delete-category-btn ::deep .item {

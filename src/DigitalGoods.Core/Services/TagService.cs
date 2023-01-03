@@ -77,7 +77,7 @@ namespace DigitalGoods.Core.Services
             var sameTag = await TryFindSameAsync(tag);
             if(sameTag is null)
             {
-                await _repository.AddAsync(tag);
+                await _repository.UpdateAsync(tag);
                 _createdTags.Add(tag);
             }
             else

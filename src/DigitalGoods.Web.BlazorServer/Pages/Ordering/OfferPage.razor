@@ -1,0 +1,118 @@
+﻿@page "/offer/{InputOfferId}"
+
+@using DigitalGoods.Core.Specifications
+
+@inject OfferIdParser OfferIdParser
+@inject NavigationManager NavigationManager
+@inject CategoryService CategoryService
+
+<div class="page">
+    @if(_offer is null){
+        <LoadingMessage />
+    }
+    else{
+        <div class="d-inline-flex w-100">
+            <MediaWindow Medias="_offer.Medias.ToList()" />
+            <div class="d-flex flex-column ms-5 flex-grow-1">
+                <label class="name-label">
+                    @_offer.Name
+                </label>
+                <div class="info-part d-block">
+                    <a class="btn btn-primary d-inline-flex" href="@OrderLink()">
+                        <i class="bi bi-cart2 me-1"></i>
+                        Order
+                        @if(_offer.Discount > 0){
+                            <span class="original-price ms-1">@_offer.Price</span>
+                        }
+                        @_offer.FinalPrice()$
+                    </a>
+                </div>
+                <div class="d-flex">
+                    @if(_offer.Category is not null){
+                        <div class="info-part col-6">
+                            Category
+                            <div class="d-inline-flex">
+                                @foreach (var category in _categoryTree)
+                                {
+                                    <div class="mb-1 d-inline-flex">
+                                        <div class="category-label d-flex">
+                                            @category.Name
+                                        </div>
+                                        @if (!category.Equals(_categoryTree.Last()))
+                                        {
+                                            <i class="bi bi-caret-right-fill align-self-center"></i>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                    @if(_offer.Tags.Count() > 0){
+                        <div class="info-part col-6">
+                            Tags
+                            <div class="d-inline-flex">
+                                @foreach (var tag in _offer.Tags)
+                                {
+                                    <div class="mb-1 d-inline-flex me-2">
+                                        <div class="category-label d-flex">
+                                            @tag.Name
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="info-part">
+                    Receive method:
+                    <div class="formed-info">
+                        @_offer.ReceiveMethod
+                    </div>
+                </div>
+                <div class="info-part">
+                    Saller:
+                    <div class="formed-info d-inline-flex">
+                        <i class="bi bi-person-circle me-1"></i>
+                        @_offer.User.UserName (TO DO)<i class="bi bi-star-fill mx-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @if(_offer.Discription is not null){
+            <div class="info-part">
+                Discription
+                <div class="discription">
+                    @_offer.Discription
+                </div>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    private Offer _offer;
+
+    private ICollection<Category> _categoryTree;
+
+    [Parameter]
+    public string InputOfferId { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        var retrievedOffer = await OfferIdParser.Parse(InputOfferId);
+        if(retrievedOffer is null)
+        {
+            ReturnToSearch();
+            return;
+        }
+        _offer = retrievedOffer;
+        _categoryTree = await CategoryService.CategoryTreeAsync(_offer.Category);
+    }
+
+    private void ReturnToSearch()
+    {
+        NavigationManager.NavigateTo("");
+    }
+
+    private string OrderLink() => $"/order/{InputOfferId}";
+}

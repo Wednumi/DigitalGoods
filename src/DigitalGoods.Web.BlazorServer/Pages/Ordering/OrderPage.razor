@@ -1,0 +1,107 @@
+﻿@page "/order/{InputOfferId}"
+
+@using DigitalGoods.Web.BlazorServer.Pages.OffersManaging.ListComponents
+@using DigitalGoods.Core.Specifications
+
+@inherits UserIdentificationComponent
+
+@inject OfferIdParser OfferIdParser
+@inject OrderService OrderService
+@inject IRepositoryFactory RepositoryFactory
+
+<AuthorizeView>
+    <Authorized>
+        @if(_offer is null){
+            <LoadingMessage/>
+        }
+        else{
+            <div class="page">
+                <div class="payment-details">
+                    <div>
+                        Choose payment method
+                        <select class="form-select" @bind="_payMethod">
+                            <option value=""></option>
+                            @foreach (var method in Enum.GetValues(typeof(PayMethod)))
+                            {
+                                <option value="@method">@method</option>
+                            }
+                        </select>
+                    </div>
+                    <div>
+                        <PaymentForm Method="_payMethod" SetPaymentService="SetPaymentService"/>
+                    </div>
+                    <div @onclick=AcceptOrder>
+                        <button class="btn btn-primary">Order</button>
+                    </div>
+                </div>
+                <div class="vr"></div>
+                <div class="offer-details">
+                    <div>
+                        @_offer.Name
+                    </div>
+                    <div class="preview-container">
+                        <OfferPreview Offer="_offer" />
+                    </div>
+                    <div>
+                        Saller: @_offer.User.UserName
+                    </div>
+                    <div>
+                        Price: @_offer.Price$
+                    </div>
+                </div>
+            </div>
+        }
+    </Authorized>
+    <NotAuthorized>
+        <LoginRedirect />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    private Offer? _offer;
+
+    private PayMethod? _payMethod;
+
+    private bool _paymentServiceSet = false;
+
+    [Parameter]
+    public string InputOfferId { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await SetOffer();
+    }
+
+    public async Task SetOffer()
+    {
+        var stringParseResult = int.TryParse(InputOfferId, out int parsedId);
+        if (stringParseResult is false)
+        {
+            return;
+        }
+        _offer = await GetOffer(parsedId);
+    }
+
+    private async Task<Offer?> GetOffer(int id)
+    {
+        var repos = RepositoryFactory.CreateRepository<Offer>();
+        return await repos.FirstOrDefaultAsync(new OfferForOrderingSpec(id));
+    }
+
+    private void SetPaymentService(IPaymentService service)
+    {
+        OrderService.SetPaymentService(service);
+        _paymentServiceSet = true;
+    }
+
+    private async Task<bool> AcceptOrder()
+    {
+        if(_paymentServiceSet is false)
+        {
+            return false;
+        }
+        var result = await OrderService.PerformOrderAsync(_offer!, CurrentUser);
+        return result;
+    }
+}

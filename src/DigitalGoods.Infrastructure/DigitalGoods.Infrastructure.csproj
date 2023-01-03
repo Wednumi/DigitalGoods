@@ -8,9 +8,15 @@
 
   <ItemGroup>
     <None Remove="Migrations\20221229123957_FinalPriceFunctionAdd.sql" />
+    <None Remove="Migrations\20230102073238_CodeReservingProcedure.sql" />
+    <None Remove="Migrations\20230102075618_AlterCodeReserveProcDown.sql" />
+    <None Remove="Migrations\20230102075618_AlterCodeReserveProcUp.sql" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Migrations\20230102075618_AlterCodeReserveProcDown.sql" />
+    <EmbeddedResource Include="Migrations\20230102075618_AlterCodeReserveProcUp.sql" />
+    <EmbeddedResource Include="Migrations\20230102073238_CodeReservingProcedure.sql" />
     <EmbeddedResource Include="Migrations\20221229123957_FinalPriceFunctionAdd.sql" />
   </ItemGroup>
 

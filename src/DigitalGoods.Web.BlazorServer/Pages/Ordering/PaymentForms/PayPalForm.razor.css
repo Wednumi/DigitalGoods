@@ -1,0 +1,51 @@
+﻿.overlay {
+    z-index: 1;
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.25rem;
+}
+
+.form {
+    width: 400px;
+    border-radius: 0.5rem;
+    background-color: var(--main-panel-color);
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+    .form div {
+        margin-bottom: 0.5rem;
+    }
+
+.head{
+    font-size: 2rem;
+    display: inline-flex;
+}
+
+.accept-btn ::deep .item {
+    --bg-color: var(--accept-color);
+    --hover-color: var(--accept-color);
+    --hover-brightness: 1.25;
+    border-radius: 0.25rem;
+    text-align: center;
+    margin: 0;
+    color: var(--light-color);
+}
+
+.close-btn{
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 1.25rem;
+    display: flex;
+    cursor: pointer;
+}

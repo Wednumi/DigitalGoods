@@ -2,6 +2,7 @@
     background-color: var(--side-panel-color);
     display: flex;
     flex-direction: column;
+    align-self: start;
     justify-content: start;
     width: 200px;
     min-height: 300px;
@@ -29,7 +30,6 @@
 }
 
 .offer-container {
-    display: inline-block;
     position: relative;
     margin: 0.5rem 1rem 0.5rem 0;
     cursor: pointer;
@@ -104,4 +104,10 @@
     padding: 0.25rem 0.5rem;
     color: var(--light-color);
     background-color: var(--accept-color);
+}
+
+.original-price{
+    text-decoration: line-through;
+    margin-right: 0.25rem;
+    color: darkgray;
 }

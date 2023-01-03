@@ -3,7 +3,7 @@ using System.Reflection;
 using DigitalGoods.Core.Entities;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
-using DigitalGoods.Core.Interfaces;
+using DigitalGoods.Core.DbMethods;
 
 namespace DigitalGoods.Infrastructure.DataAccess
 {
@@ -27,6 +27,8 @@ namespace DigitalGoods.Infrastructure.DataAccess
 
         public DbSet<Comment> Comment { get; set; }
 
+        public DbSet<PaymentRecord> PaymentRecords { get; set; }
+
         public ApplicationContext()
         { }
 
@@ -46,7 +48,7 @@ namespace DigitalGoods.Infrastructure.DataAccess
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
-            modelBuilder.HasDbFunction(() => IDataBaseFunctions.FinalPrice(default, default))
+            modelBuilder.HasDbFunction(() => IDbFunctions.FinalPrice(default, default))
                 .HasName("f_calculate_final_price");
         }
     }

@@ -8,7 +8,9 @@
 
         public Offer Offer { get; private set; } = null!;
 
-        public bool Activated { get; private set; }
+        public int? OrderId { get; private set; }
+
+        public Order? Order { get; set; }
 
         private ActivationCode() 
         { }
@@ -18,7 +20,6 @@
             Offer = offer;
             OfferId = offer.Id;
             Code = code;
-            Activated = false;
         }
     }
 }

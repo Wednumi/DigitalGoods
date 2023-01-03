@@ -1,6 +1,8 @@
 ﻿@using System.Reflection
 @using DigitalGoods.Core.Specifications.Filters
 @using System.Linq.Expressions;
+@using DigitalGoods.Core.Interfaces.PaymentServices;
+@using DigitalGoods.Core.DbMethods;
 
 @foreach (var item in Items)
 {
@@ -19,7 +21,7 @@
         {
             new OrderItem("Name", o => o.Name),
             new OrderItem("Price", o => o.Price),
-            new OrderItem("Discount price", o => IDataBaseFunctions.FinalPrice((float)o.Price, o.Discount)),
+            new OrderItem("Discount price", o => IDbFunctions.FinalPrice((float)o.Price, o.Discount)),
         };
     }
 

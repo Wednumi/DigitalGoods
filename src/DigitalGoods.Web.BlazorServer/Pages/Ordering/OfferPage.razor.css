@@ -1,0 +1,56 @@
+﻿.page {
+    background-color: var(--main-panel-color);
+    border-radius: 0.5rem;
+    width: 100%;
+    padding: 1rem;
+}
+
+.name-label {
+    font-family: var(--head-font);
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.category-label {
+    background-color: var(--off-element-hover-color);
+    color: var(--light-color);
+    border-radius: 0.25rem;
+    padding: 0.5rem 0.25rem 0.5rem 0.25rem;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    min-width: 40px;
+    justify-content: center;
+}
+
+.info-part{
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0.5rem;
+    font-size: 1.25rem;
+}
+
+.original-price {
+    text-decoration: line-through;
+    margin-right: 0.25rem;
+    color: darkgray;
+}
+
+i{
+    display: flex;
+    align-self: center;
+    font-size: 1.25rem;
+}
+
+.discription {
+    font-size: 1rem;
+}
+
+.formed-info {
+    font-size: 1rem;
+    padding: 8px 16px;
+    border-radius: 0.25rem;
+    color: var(--light-color);
+    background-color: #17a2b8;
+    width: 300px;
+}
