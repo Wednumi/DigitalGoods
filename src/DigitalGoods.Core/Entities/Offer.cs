@@ -36,6 +36,9 @@ namespace DigitalGoods.Core.Entities
 
         public OfferState State { get; private set; }
 
+        [NoMap]
+        public float AverageRating { get; set; }
+
         public ICollection<Tag> Tags { get; private set; } = null!;
 
         [NoMap]

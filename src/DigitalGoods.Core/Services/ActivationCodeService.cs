@@ -30,5 +30,11 @@ namespace DigitalGoods.Core.Services
         {
             await _repository.DeleteRangeAsync(_added);
         }
+
+        public async Task<ActivationCode> GetByOrder(Order order)
+        {
+            var code = await _repository.FirstOrDefaultAsync(new ActivationCodeForOrderSpec(order));
+            return code!;
+        }
     }
 }

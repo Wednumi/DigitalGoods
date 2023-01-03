@@ -6,15 +6,15 @@
 
         public Offer? Offer { get; private set; } = null!;
 
-        public string? BuyerId { get; private set; }
+        public string BuyerId { get; private set; }
 
-        public User Buyer { get; private set; } = null!;
+        public User? Buyer { get; private set; } = null!;
 
         public DateTime Date { get; private set; }
 
         public bool ReceiveConfirmed { get; private set; }
 
-        public int? Rate { get; set; }
+        public float? Rate { get; set; }
 
         public ICollection<Comment> Comments { get; private set; } = null!;
 
@@ -28,6 +28,11 @@
             Date = date;
             ReceiveConfirmed = false;
             Comments = new List<Comment>();
+        }
+
+        public void ConfirmReceive()
+        {
+            ReceiveConfirmed = true;
         }
     }
 }

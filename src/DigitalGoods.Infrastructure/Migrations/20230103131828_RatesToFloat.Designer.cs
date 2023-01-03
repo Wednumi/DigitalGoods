@@ -4,6 +4,7 @@ using DigitalGoods.Infrastructure.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DigitalGoods.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    partial class ApplicationContextModelSnapshot : ModelSnapshot
+    [Migration("20230103131828_RatesToFloat")]
+    partial class RatesToFloat
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -46,7 +49,7 @@ namespace DigitalGoods.Infrastructure.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("ActivationCodes", (string)null);
+                    b.ToTable("ActivationCodes");
                 });
 
             modelBuilder.Entity("DigitalGoods.Core.Entities.BankAccount", b =>
@@ -72,7 +75,7 @@ namespace DigitalGoods.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("BankAccounts", (string)null);
+                    b.ToTable("BankAccounts");
                 });
 
             modelBuilder.Entity("DigitalGoods.Core.Entities.Category", b =>
@@ -94,7 +97,7 @@ namespace DigitalGoods.Infrastructure.Migrations
 
                     b.HasIndex("ParentId");
 
-                    b.ToTable("Categories", (string)null);
+                    b.ToTable("Categories");
                 });
 
             modelBuilder.Entity("DigitalGoods.Core.Entities.Comment", b =>
@@ -116,7 +119,7 @@ namespace DigitalGoods.Infrastructure.Migrations
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("Comment", (string)null);
+                    b.ToTable("Comment");
                 });
 
             modelBuilder.Entity("DigitalGoods.Core.Entities.Media", b =>
@@ -152,7 +155,7 @@ namespace DigitalGoods.Infrastructure.Migrations
 
                     b.HasIndex("OfferId");
 
-                    b.ToTable("Medias", (string)null);
+                    b.ToTable("Medias");
                 });
 
             modelBuilder.Entity("DigitalGoods.Core.Entities.Offer", b =>
@@ -201,7 +204,7 @@ namespace DigitalGoods.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Offers", (string)null);
+                    b.ToTable("Offers");
                 });
 
             modelBuilder.Entity("DigitalGoods.Core.Entities.OfferChange", b =>
@@ -231,7 +234,7 @@ namespace DigitalGoods.Infrastructure.Migrations
 
                     b.HasIndex("OfferId");
 
-                    b.ToTable("OfferChanges", (string)null);
+                    b.ToTable("OfferChanges");
                 });
 
             modelBuilder.Entity("DigitalGoods.Core.Entities.Order", b =>
@@ -263,7 +266,7 @@ namespace DigitalGoods.Infrastructure.Migrations
 
                     b.HasIndex("OfferId");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("DigitalGoods.Core.Entities.PaymentRecord", b =>
@@ -297,7 +300,7 @@ namespace DigitalGoods.Infrastructure.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("PaymentRecords", (string)null);
+                    b.ToTable("PaymentRecords");
                 });
 
             modelBuilder.Entity("DigitalGoods.Core.Entities.Tag", b =>
@@ -319,7 +322,7 @@ namespace DigitalGoods.Infrastructure.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.ToTable("Tags", (string)null);
+                    b.ToTable("Tags");
                 });
 
             modelBuilder.Entity("DigitalGoods.Core.Entities.User", b =>
@@ -538,7 +541,7 @@ namespace DigitalGoods.Infrastructure.Migrations
 
                     b.HasIndex("TagsId");
 
-                    b.ToTable("OfferTag", (string)null);
+                    b.ToTable("OfferTag");
                 });
 
             modelBuilder.Entity("DigitalGoods.Core.Entities.ActivationCode", b =>

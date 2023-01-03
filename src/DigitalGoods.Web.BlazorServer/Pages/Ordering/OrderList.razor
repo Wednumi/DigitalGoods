@@ -1,0 +1,83 @@
+﻿@page "/order-list"
+
+@using DigitalGoods.Web.BlazorServer.Pages.OffersManaging.ListComponents
+@using DigitalGoods.Web.BlazorServer.Pages.Ordering.ListComponents
+
+@inherits UserIdentificationComponent
+
+@inject OrderViewingService OrderViewingService
+
+<AuthorizeView>
+    <Authorized>
+        <div class="flex-fill form-container">
+            @if (_orders is null)
+            {
+                <LoadingMessage />
+            }
+            else
+            {
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">Preview</th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Receive method</th>
+                            <th scope="col">Price</th>
+                            <th scope="col">State</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in _orders)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="image-column">
+                                        <OfferPreview Offer="order.Offer" />
+                                    </div>
+                                </td>
+                                <td>@order.Offer.Name</td>
+                                <td>
+                                    <div>
+                                        @order.Offer.ReceiveMethod
+                                    </div>
+                                    <div>
+                                        @if (order.Offer.ReceiveMethod == ReceiveMethod.ActivationCode)
+                                        {
+                                            <ActivationCodeView Order="order" />
+                                        }
+                                    </div>
+                                </td>
+                                <td>@order.Offer.FinalPrice()</td>
+                                <td class="table-button">
+                                    <ConfirmButton Order="order" ConfirmDelegate="ConfirmOrder" />
+                                    @if(order.ReceiveConfirmed){
+                                        <RatingOrder Order="order"/>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </Authorized>
+    <NotAuthorized>
+        <LoginRedirect />
+    </NotAuthorized>
+</AuthorizeView>
+
+@code{
+    private List<Order> _orders;
+
+    protected async override Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        _orders = await OrderViewingService.GetOrdersAsync(CurrentUser);
+    }
+
+    private async Task ConfirmOrder(Order order)
+    {
+        await OrderViewingService.ConfirmReceive(order);
+        StateHasChanged();
+    }
+}

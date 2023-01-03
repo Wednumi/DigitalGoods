@@ -20,6 +20,8 @@ namespace DigitalGoods.Core
             services.AddTransient<OrderService>();
             services.AddTransient<PaymentManager>();
             services.AddTransient<PaymentRegistrator>();
+            services.AddTransient<OrderViewingService>();
+            services.AddTransient<FeedbackService>();
 
             services.AddScoped<IRollBackContainer, RollBackContainer>();
         }

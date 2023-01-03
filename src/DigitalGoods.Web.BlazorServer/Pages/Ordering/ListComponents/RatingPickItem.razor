@@ -1,0 +1,27 @@
+﻿<style>
+    i{
+        cursor: pointer;
+    }
+</style>
+
+<i @onclick="() => UpdateRate(Rating)" class="mx-1 bi bi-star-fill mx-1 @ColorItem()"></i>
+
+@code {
+    [Parameter]
+    public int Rating { get; set; }
+
+    [Parameter]
+    public Func<int, Task> UpdateRate { get; set; }
+
+    [Parameter]
+    public Order Order { get; set; }
+
+    private string ColorItem()
+    {
+        if (Order.Rate >= Rating)
+        {
+            return "text-primary";
+        }
+        return "text-secondary";
+    }
+}

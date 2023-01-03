@@ -1,11 +1,15 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using DigitalGoods.Core.Attributes;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace DigitalGoods.Core.Entities
 {
     public class User : IdentityUser
     {
-        public double MoneyAccount { get; private set; }
+        public double MoneyAccount { get; set; }
+
+        [NoMap]
+        public float? AverageRating { get; set; }
 
         public ICollection<Order> Purchases { get; private set; } = new List<Order>();
 

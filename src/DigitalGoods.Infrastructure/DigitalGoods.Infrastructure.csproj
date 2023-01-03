@@ -11,9 +11,11 @@
     <None Remove="Migrations\20230102073238_CodeReservingProcedure.sql" />
     <None Remove="Migrations\20230102075618_AlterCodeReserveProcDown.sql" />
     <None Remove="Migrations\20230102075618_AlterCodeReserveProcUp.sql" />
+    <None Remove="Migrations\20230103085618_UpdateOfferRateProc.sql" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Migrations\20230103085618_UpdateOfferRateProc.sql" />
     <EmbeddedResource Include="Migrations\20230102075618_AlterCodeReserveProcDown.sql" />
     <EmbeddedResource Include="Migrations\20230102075618_AlterCodeReserveProcUp.sql" />
     <EmbeddedResource Include="Migrations\20230102073238_CodeReservingProcedure.sql" />
