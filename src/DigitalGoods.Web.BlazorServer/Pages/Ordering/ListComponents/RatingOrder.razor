@@ -65,6 +65,10 @@
 
     private async Task SendComment()
     {
+        if(_commentText is null)
+        {
+            return;
+        }
         var comment = new Comment(Order, _commentText);
         await FeedbackService.SendComment(comment);
         _comments.Insert(0, comment);

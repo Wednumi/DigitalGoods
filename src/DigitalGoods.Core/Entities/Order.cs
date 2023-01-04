@@ -25,6 +25,7 @@
         {
             OfferId = offer.Id;
             BuyerId = buyer.Id;
+            Buyer = buyer;
             Date = date;
             ReceiveConfirmed = false;
             Comments = new List<Comment>();

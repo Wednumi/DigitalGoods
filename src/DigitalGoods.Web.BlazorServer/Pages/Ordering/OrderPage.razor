@@ -2,6 +2,7 @@
 
 @using DigitalGoods.Web.BlazorServer.Pages.OffersManaging.ListComponents
 @using DigitalGoods.Core.Specifications
+@using DigitalGoods.Web.BlazorServer.Pages.Ordering.ListComponents
 
 @inherits UserIdentificationComponent
 
@@ -30,9 +31,15 @@
                     <div>
                         <PaymentForm Method="_payMethod" SetPaymentService="SetPaymentService"/>
                     </div>
-                    <div @onclick=AcceptOrder>
-                        <button class="btn btn-primary">Order</button>
+                    @if (_paymentServiceSet){
+                        <div @onclick=AcceptOrderAsync>
+                            <button class="btn btn-primary">Order</button>
+                        </div>
+                    }
+                    <div>
+                        @orderResult
                     </div>
+                    <ReportCreater Order="_order" />
                 </div>
                 <div class="vr"></div>
                 <div class="offer-details">
@@ -64,6 +71,10 @@
 
     private bool _paymentServiceSet = false;
 
+    private string orderResult;
+
+    private Order? _order;
+
     [Parameter]
     public string InputOfferId { get; set; }
 
@@ -93,15 +104,24 @@
     {
         OrderService.SetPaymentService(service);
         _paymentServiceSet = true;
+        StateHasChanged();
     }
 
-    private async Task<bool> AcceptOrder()
+    private async Task AcceptOrderAsync()
     {
         if(_paymentServiceSet is false)
         {
-            return false;
+            SetResult(false);
+            return;
         }
-        var result = await OrderService.PerformOrderAsync(_offer!, CurrentUser);
-        return result;
+        _order = await OrderService.PerformOrderAsync(_offer!, CurrentUser);
+        SetResult(_order is not null);
+    }
+
+    private void SetResult(bool result)
+    {
+        orderResult = result
+            ? "Success. Check your orders"
+            : "Error occured";
     }
 }

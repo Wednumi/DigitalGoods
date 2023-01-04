@@ -24,6 +24,7 @@
                             <th scope="col">Receive method</th>
                             <th scope="col">Price</th>
                             <th scope="col">State</th>
+                            <th scope="col">Report</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -53,6 +54,9 @@
                                     @if(order.ReceiveConfirmed){
                                         <RatingOrder Order="order"/>
                                     }
+                                </td>
+                                <td>
+                                    <ReportCreater Order="order" />
                                 </td>
                             </tr>
                         }

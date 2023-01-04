@@ -29,20 +29,20 @@ namespace DigitalGoods.Core.Services
             _paymentManager.SetPaymentService(paymentService);
         }
 
-        public async Task<bool> PerformOrderAsync(Offer offer, User buyer)
+        public async Task<Order?> PerformOrderAsync(Offer offer, User buyer)
         {
             var reserveResult = await ReserveInAmountAsync(offer);
 
             if (!reserveResult)
             {
-                return false;
+                return null;
             }
 
             var paymentResult = await _paymentManager.TryPerformLoggedTransferAsync(buyer, offer.FinalPrice());
 
             if (paymentResult is false)
             {
-                return false;
+                return null;
             }
 
             var order = new Order(offer, buyer, DateTime.Now);
@@ -52,7 +52,7 @@ namespace DigitalGoods.Core.Services
             {
                 await ReserveActivationCodeAsync(offer.Id, order.Id);
             }
-            return true;
+            return order;
         }
 
         private async Task<bool> ReserveInAmountAsync(Offer offer)

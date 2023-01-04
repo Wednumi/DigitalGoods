@@ -10,6 +10,9 @@
 @layout _OfferManagingLayout
 
 <div class="flex-fill">
+    @if(CurrentUser is not null){
+        <div class="ms-2">Money Account: @CurrentUser.MoneyAccount$</div>
+    }
     @if (OfferListEditor.Offers is null)
     {
         <LoadingMessage></LoadingMessage>

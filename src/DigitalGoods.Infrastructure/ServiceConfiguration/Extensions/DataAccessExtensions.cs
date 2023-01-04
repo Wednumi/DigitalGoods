@@ -42,15 +42,5 @@ namespace DigitalGoods.Infrastructure.ServiceConfiguration.Extensions
 
             services.AddScoped<IAccountManager, IdentityAccountManager>();
         }
-
-        public static void AddFileManager(this IServiceCollection services)
-        {
-            services.AddTransient<IFileManager, FileManager>();
-        }
-
-        public static void AddPaymentServices(this IServiceCollection services)
-        {
-            services.AddTransient<IPayPalService, PayPalService>();
-        }
     }
 }

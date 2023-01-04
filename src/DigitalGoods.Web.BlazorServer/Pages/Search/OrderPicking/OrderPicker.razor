@@ -22,6 +22,7 @@
             new OrderItem("Name", o => o.Name),
             new OrderItem("Price", o => o.Price),
             new OrderItem("Discount price", o => IDbFunctions.FinalPrice((float)o.Price, o.Discount)),
+            new OrderItem("Rating", o => 5 - o.AverageRating),
         };
     }
 
