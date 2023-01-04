@@ -31,6 +31,13 @@ namespace DigitalGoods.Core.Services
 
         public async Task<bool> PerformOrderAsync(Offer offer, User buyer)
         {
+            var reserveResult = await ReserveInAmountAsync(offer);
+
+            if (!reserveResult)
+            {
+                return false;
+            }
+
             var paymentResult = await _paymentManager.TryPerformLoggedTransferAsync(buyer, offer.FinalPrice());
 
             if (paymentResult is false)
@@ -40,14 +47,25 @@ namespace DigitalGoods.Core.Services
 
             var order = new Order(offer, buyer, DateTime.Now);
             await _orderRepository.UpdateAsync(order);
-            offer.Amount--;
-            await _offerRepository.UpdateAsync(offer);
 
             if (offer.ReceiveMethod == ReceiveMethod.ActivationCode)
             {
                 await ReserveActivationCodeAsync(offer.Id, order.Id);
             }
             return true;
+        }
+
+        private async Task<bool> ReserveInAmountAsync(Offer offer)
+        {
+            var dbRecord = await _offerRepository.GetByIdAsync(offer.Id);
+            if(dbRecord!.Amount > 0)
+            {
+                dbRecord!.Amount--;
+                await _offerRepository.UpdateAsync(dbRecord);
+                return true;
+            }
+            return false;
+
         }
 
         private async Task ReserveActivationCodeAsync(int offerId, int orderId)

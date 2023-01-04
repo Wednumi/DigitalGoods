@@ -36,5 +36,10 @@ namespace DigitalGoods.Core.Services
         {
             return await _commentRepository.ListAsync(new CommentsForOrderSpec(order));
         }
+
+        public async Task<List<Comment>> GetComments(Offer offer)
+        {
+            return await _commentRepository.ListAsync(new CommentsForOfferSpec(offer));
+        }
     }
 }

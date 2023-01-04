@@ -5,6 +5,7 @@
 @inject OfferIdParser OfferIdParser
 @inject NavigationManager NavigationManager
 @inject CategoryService CategoryService
+@inject FeedbackService FeedbackService
 
 <div class="page">
     @if(_offer is null){
@@ -18,14 +19,29 @@
                     @_offer.Name
                 </label>
                 <div class="info-part d-block">
-                    <a class="btn btn-primary d-inline-flex" href="@OrderLink()">
-                        <i class="bi bi-cart2 me-1"></i>
-                        Order
-                        @if(_offer.Discount > 0){
-                            <span class="original-price ms-1">@_offer.Price</span>
-                        }
-                        @_offer.FinalPrice()$
-                    </a>
+                    @if (_offer.Amount > 0)
+                    {
+                        <a class="btn btn-primary d-inline-flex" href="@OrderLink()">
+                            <i class="bi bi-cart2 me-1"></i>
+                            Order
+                            @if (_offer.Discount > 0)
+                            {
+                                <span class="original-price ms-1">@_offer.Price</span>
+                            }
+                            @_offer.FinalPrice()$
+                        </a>
+                    }
+                    else{
+                        <button class="btn btn-primary d-inline-flex" disabled>
+                            <i class="bi bi-cart2 me-1"></i>
+                            Order
+                            @if (_offer.Discount > 0)
+                            {
+                                <span class="original-price ms-1">@_offer.Price</span>
+                            }
+                            @_offer.FinalPrice()$
+                        </button>
+                    }
                 </div>
                 <div class="d-flex">
                     @if(_offer.Category is not null){
@@ -73,7 +89,7 @@
                     Saller:
                     <div class="formed-info d-inline-flex">
                         <i class="bi bi-person-circle me-1"></i>
-                        @_offer.User.UserName (TO DO)
+                        @_offer.User.UserName @RoundedUserRating()
                         <i class="bi bi-star-fill mx-1"></i>
                     </div>
                 </div>
@@ -87,6 +103,21 @@
                 </div>
             </div>
         }
+        <div class="feedback"> 
+            <div class="rating d-inline-flex mb-2">
+                Rating: @RoundedOfferRating() <i class="bi bi-star-fill mx-1"></i>
+            </div>
+            @if(_comments is not null){
+                @foreach (var comment in _comments)
+                {
+                    <div class="comment mb-2">
+                        <div class="fw-bold">@comment.Order.Buyer.UserName</div>
+                        @comment.Text
+                    </div>
+                }
+            }
+        </div>
+
     }
 </div>
 
@@ -94,6 +125,8 @@
     private Offer _offer;
 
     private ICollection<Category> _categoryTree;
+
+    private List<Comment> _comments;
 
     [Parameter]
     public string InputOfferId { get; set; }
@@ -108,6 +141,7 @@
         }
         _offer = retrievedOffer;
         _categoryTree = await CategoryService.CategoryTreeAsync(_offer.Category);
+        _comments = await FeedbackService.GetComments(_offer);
     }
 
     private void ReturnToSearch()
@@ -116,4 +150,8 @@
     }
 
     private string OrderLink() => $"/order/{InputOfferId}";
+
+    private double RoundedOfferRating() => Math.Round(_offer.AverageRating, 1);
+
+    private double RoundedUserRating() => Math.Round((float)_offer.User.AverageRating, 1);
 }

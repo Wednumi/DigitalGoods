@@ -54,3 +54,15 @@ i{
     background-color: #17a2b8;
     width: 300px;
 }
+
+.comment {
+    border-radius: 0.25rem;
+    background-color: dodgerblue;
+    font-size: 1rem;
+    color: var(--light-color);
+    padding: 0.25rem 0.5rem;
+}
+
+.rating{
+    font-size; 1.25rem;
+}

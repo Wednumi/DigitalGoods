@@ -12,9 +12,17 @@
     <None Remove="Migrations\20230102075618_AlterCodeReserveProcDown.sql" />
     <None Remove="Migrations\20230102075618_AlterCodeReserveProcUp.sql" />
     <None Remove="Migrations\20230103085618_UpdateOfferRateProc.sql" />
+    <None Remove="Migrations\20230104073307_UpdateRatingAddedUserUpdatingUp.sql" />
+    <None Remove="Migrations\20230104073307_UpdateRatingAddedUserUpdatingUpDown.sql" />
+    <None Remove="Migrations\20230104075343_UpdateRatingFixDown.sql" />
+    <None Remove="Migrations\20230104075343_UpdateRatingFixUp.sql" />
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Migrations\20230104075343_UpdateRatingFixUp.sql" />
+    <EmbeddedResource Include="Migrations\20230104075343_UpdateRatingFixDown.sql" />
+    <EmbeddedResource Include="Migrations\20230104073307_UpdateRatingAddedUserUpdatingUpDown.sql" />
+    <EmbeddedResource Include="Migrations\20230104073307_UpdateRatingAddedUserUpdatingUp.sql" />
     <EmbeddedResource Include="Migrations\20230103085618_UpdateOfferRateProc.sql" />
     <EmbeddedResource Include="Migrations\20230102075618_AlterCodeReserveProcDown.sql" />
     <EmbeddedResource Include="Migrations\20230102075618_AlterCodeReserveProcUp.sql" />
