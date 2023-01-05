@@ -41,5 +41,10 @@ namespace DigitalGoods.Core.Services
         {
             return await _commentRepository.ListAsync(new CommentsForOfferSpec(offer));
         }
+
+        public async Task<int> GetRateCount(Offer offer)
+        {
+            return await _orderRepository.CountAsync(new OrderForRateCount(offer));
+        }
     }
 }

@@ -16,10 +16,18 @@
     <None Remove="Migrations\20230104073307_UpdateRatingAddedUserUpdatingUpDown.sql" />
     <None Remove="Migrations\20230104075343_UpdateRatingFixDown.sql" />
     <None Remove="Migrations\20230104075343_UpdateRatingFixUp.sql" />
+    <None Remove="Migrations\20230105052900_AddMostProfitableOffersFunction.sql" />
+    <None Remove="Migrations\20230105053742_DeleteMostProfitableOffersFunctionDown.sql" />
+    <None Remove="Migrations\20230105085117_WeightedRatingFunc.sql" />
+    <None Remove="Migrations\20230105085917_RatingFix.sql" />
   </ItemGroup>
 
   <ItemGroup>
     <EmbeddedResource Include="Migrations\20230104075343_UpdateRatingFixUp.sql" />
+    <EmbeddedResource Include="Migrations\20230105085917_RatingFix.sql" />
+    <EmbeddedResource Include="Migrations\20230105085117_WeightedRatingFunc.sql" />
+    <EmbeddedResource Include="Migrations\20230105053742_DeleteMostProfitableOffersFunctionDown.sql" />
+    <EmbeddedResource Include="Migrations\20230105052900_AddMostProfitableOffersFunction.sql" />
     <EmbeddedResource Include="Migrations\20230104075343_UpdateRatingFixDown.sql" />
     <EmbeddedResource Include="Migrations\20230104073307_UpdateRatingAddedUserUpdatingUpDown.sql" />
     <EmbeddedResource Include="Migrations\20230104073307_UpdateRatingAddedUserUpdatingUp.sql" />

@@ -106,6 +106,9 @@
         <div class="feedback"> 
             <div class="rating d-inline-flex mb-2">
                 Rating: @RoundedOfferRating() <i class="bi bi-star-fill mx-1"></i>
+                @if(_rateCount is not null){
+                    <div>@_rateCount</div>
+                }
             </div>
             @if(_comments is not null){
                 @foreach (var comment in _comments)
@@ -128,6 +131,8 @@
 
     private List<Comment> _comments;
 
+    private int? _rateCount;
+
     [Parameter]
     public string InputOfferId { get; set; }
 
@@ -142,6 +147,7 @@
         _offer = retrievedOffer;
         _categoryTree = await CategoryService.CategoryTreeAsync(_offer.Category);
         _comments = await FeedbackService.GetComments(_offer);
+        _rateCount = await FeedbackService.GetRateCount(_offer);
     }
 
     private void ReturnToSearch()

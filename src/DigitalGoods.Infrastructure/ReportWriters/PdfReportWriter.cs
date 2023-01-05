@@ -117,12 +117,13 @@ namespace DigitalGoods.Infrastructure.ReportWriters
                 .SetFontSize(20);
             document.Add(header);
 
-            float[] pointColumnWidths = { 150F, 150F, 150F, 150F };
+            float[] pointColumnWidths = { 110F, 110F, 110F, 110F, 110F };
             Table table = new Table(pointColumnWidths);
             table.AddCell("Name");
             table.AddCell("Price");
             table.AddCell("Sold amount");
-            table.AddCell("Total");
+            table.AddCell("Month total");
+            table.AddCell("Month difference");
 
             float userIncome = 0;
             foreach (var offer in offers)
@@ -130,13 +131,28 @@ namespace DigitalGoods.Infrastructure.ReportWriters
                 table.AddCell(offer.Name);
                 table.AddCell(offer.FinalPrice().ToString());
                 table.AddCell(offer.Sales.Count().ToString());
-                float total = offer.FinalPrice() * offer.Sales.Count();
-                userIncome += total;
-                table.AddCell(total.ToString());
+
+                var earliestMonthDate = DateTime.Now - new TimeSpan(days: 30, 0, 0, 0);
+                float currentMothTotal = offer.FinalPrice() 
+                    * offer.Sales.Where(s => s.Date > earliestMonthDate).Count();
+
+                var lastMonthDate = DateTime.Now - new TimeSpan(days: 60, 0, 0, 0);
+                float lastMothTotal = offer.FinalPrice()
+                    * offer.Sales.Where(s => s.Date < earliestMonthDate 
+                    && s.Date > lastMonthDate).Count();
+
+                userIncome += currentMothTotal;
+                table.AddCell(currentMothTotal.ToString());
+
+                var difference = currentMothTotal - lastMothTotal;
+                var differenceString = difference > 0
+                    ? "+" + difference.ToString()
+                    : difference.ToString();
+                table.AddCell(differenceString);
             }
             document.Add(table);
 
-            AddText(document, $"Total income: {userIncome}");
+            AddText(document, $"Total month income: {userIncome}");
      
             document.Close();
 
