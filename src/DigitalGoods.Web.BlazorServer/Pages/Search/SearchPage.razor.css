@@ -11,16 +11,24 @@
     padding: 1rem 0.5rem 0.5rem 0.5rem;
 }
 
-    .side-bar .apply-btn ::deep .item {
+    .side-bar .btn-item ::deep .item {
         margin: 0;
-        color: var(--light-color);
         --hover-brightness: 1.2;
         border-radius: 0.25rem;
-        --bg-color: var(--accept-color);
-        --hover-color: var(--accept-color);
+        color: var(--light-color);
         display: flex;
         width: 100%;
         justify-content: center;
+    }
+
+    .side-bar .apply-btn ::deep .item {        
+        --bg-color: var(--accept-color);
+        --hover-color: var(--accept-color);        
+    }
+
+    .side-bar .reset-btn ::deep .item {
+        --bg-color: var(--cancel-color);
+        --hover-color: var(--cancel-color);
     }
 
 .form-container {

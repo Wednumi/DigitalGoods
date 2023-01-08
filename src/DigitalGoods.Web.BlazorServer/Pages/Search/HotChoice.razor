@@ -1,0 +1,73 @@
+﻿@page "/statistics/hot-choice"
+
+@layout _StatisticsLayout
+
+@using DigitalGoods.Core.Specifications
+@using DigitalGoods.Web.BlazorServer.Pages.OffersManaging.ListComponents
+
+@inject IRepositoryFactory RepositoryFactory
+
+@if (_offers is null)
+{
+    <LoadingMessage />
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Preview</th>
+                <th scope="col">Name</th>
+                <th scope="col">Price</th>
+                <th scope="col">Sales per day</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var offer in _offers)
+            {
+                <tr>
+                    <td>
+                        <div class="image-column">
+                            <OfferPreview Offer="offer" />
+                        </div>
+                    </td>
+                    <td>
+                        @offer.Name
+                    </td>
+                    <td>
+                        @offer.FinalPrice()$
+                    </td>
+                    <td>
+                        @SalesPerWeek(offer)
+                    </td>
+                    <td>
+                        <a href=@OfferLink(offer) class="btn btn-primary">Open</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Offer> _offers;
+
+    protected async override Task OnInitializedAsync()
+    {
+        var repos = RepositoryFactory.CreateRepository<Offer>();
+        _offers = await repos.ListAsync(new OffersHotChoice());
+    }
+
+    private string OfferLink(Offer offer) => $"/offer/{offer.Id}";
+
+    private int SalesPerWeek(Offer offer)
+    {
+        var earliestPossibleDate = DateTime.Now - new TimeSpan(days: 7, 0, 0, 0);
+        var earliestDate = offer.Sales
+            .Where(ord => ord.Date > earliestPossibleDate)
+            .OrderBy(ord => ord.Date).First().Date;
+        var saleDays = (DateTime.Now.Date - earliestDate.Date).Days;
+        return offer.Sales.Where(order => order.Date > earliestPossibleDate).Count() / saleDays;
+    }
+}

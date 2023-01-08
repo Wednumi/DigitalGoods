@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DigitalGoods.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20230105052900_AddMostProfitableOffersFunction")]
-    partial class AddMostProfitableOffersFunction
+    [Migration("20230106121359_WeeklySalesPerDayFunc")]
+    partial class WeeklySalesPerDayFunc
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

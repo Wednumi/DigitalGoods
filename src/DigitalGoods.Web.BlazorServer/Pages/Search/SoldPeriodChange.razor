@@ -1,0 +1,97 @@
+﻿@page "/statistics/sales-dynamics"
+
+@layout _StatisticsLayout
+
+@using DigitalGoods.Core.Specifications
+@using DigitalGoods.Web.BlazorServer.Pages.OffersManaging.ListComponents
+@using System.ComponentModel.DataAnnotations
+@using DigitalGoods.Core.DbMethods.FunctionSpecifications
+
+@inject IRepositoryFactory RepositoryFactory
+
+Order by sales change in period:
+<div class="d-inline-flex">
+    <input @bind=_period type="number" class="form-control" />
+    <button @onclick=Search class="btn btn-primary">Accept</button>
+</div>
+
+@if (_values is null)
+{
+    <LoadingMessage />
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th scope="col">Preview</th>
+                <th scope="col">Name</th>
+                <th scope="col">Price</th>
+                <th scope="col">Sales change %</th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var value in _values)
+            {
+                <tr>
+                    <td>
+                        <div class="image-column">
+                            <OfferPreview Offer="value.offer" />
+                        </div>
+                    </td>
+                    <td>
+                        @value.offer.Name
+                    </td>
+                    <td>
+                        @value.offer.FinalPrice()$
+                    </td>
+                    <td>
+                        @value.change
+                    </td>
+                    <td>
+                        <a href=@OfferLink(value.offer) class="btn btn-primary">Open</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    [Range(1, 365)]
+    private int _period = 1;
+
+    private List<(Offer offer, string change)> _values = new List<(Offer offer, string change)>();
+
+    protected async override Task OnInitializedAsync()
+    {
+        await Search();
+    }
+
+    private async Task Search()
+    {
+        _values.Clear();
+        var repos = RepositoryFactory.CreateRepository<Offer>();
+        var offers = await repos.ListAsync(new OffersPeriodChangeSpec(_period));
+        foreach(var offer in offers)
+        {
+            var change = await Change(offer);
+            _values.Add(new(offer, change));
+        }
+    }
+
+    private async Task<string> Change(Offer offer)
+    {
+        var spec = new SoldPeriodChangeFunc(offer.Id, _period);
+        var repos = RepositoryFactory.CreateRepository<Offer>();
+        var res = (await repos.ExecuteFunctionAsync(spec) - 1) * 100;
+
+        var result = res > 0
+            ? "+" + res.ToString()
+            : res.ToString();
+            return result;
+    }
+
+    private string OfferLink(Offer offer) => $"/offer/{offer.Id}";
+}

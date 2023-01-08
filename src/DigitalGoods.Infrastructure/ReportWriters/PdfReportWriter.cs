@@ -12,7 +12,7 @@ namespace DigitalGoods.Infrastructure.ReportWriters
     {
         private static string _rootPath = @"reports";
 
-        private static string dateToStringFormat = "MM-dd-yyyy";
+        private static string _dateToStringFormat = "MM-dd-yyyy";
 
         private string _externalPath;
 
@@ -44,13 +44,13 @@ namespace DigitalGoods.Infrastructure.ReportWriters
         private void SetInternalPath()
         {
             _internalPath = Path.Combine(_rootPath, 
-                DateTime.Now.ToString(dateToStringFormat));
+                DateTime.Now.ToString(_dateToStringFormat));
         }
 
         private async Task DeleteOutDatedFilesAsync()
         {
             var folders = Directory.GetDirectories(Path.Combine(_externalPath, _rootPath));
-            var currentDateString = DateTime.Now.ToString(dateToStringFormat);
+            var currentDateString = DateTime.Now.ToString(_dateToStringFormat);
             var outDated = folders.Where(f => !f.Contains(currentDateString)).ToList();
             await Task.Run(() => outDated.ForEach(d => Directory.Delete(d, true)));
         }
@@ -71,11 +71,11 @@ namespace DigitalGoods.Infrastructure.ReportWriters
 
             AddText(document, $"Product bought: {order.Offer.Name}");
             AddText(document,$"Paid: {order.Offer.FinalPrice()}$");
-            AddText(document,$"Date: {order.Date.ToString()}");
             AddText(document,$"Buyer: {order.Buyer.UserName}; {order.Buyer.Email}");
             AddText(document, $"Receive method: {order.Offer.ReceiveMethod.ToString()}");
+            AddText(document, $"Date: {order.Date.ToString()}");
 
-            if(order.Offer.ReceiveMethod == Core.Enums.ReceiveMethod.ActivationCode)
+            if (order.Offer.ReceiveMethod == Core.Enums.ReceiveMethod.ActivationCode)
             {
                 var code = await _activationCodeService.GetByOrder(order);
                 AddText(document, $"Activation code: {code.Code}");
@@ -111,9 +111,9 @@ namespace DigitalGoods.Infrastructure.ReportWriters
             var document = GetDocument(fullPath);
             document
                 .SetFontSize(14)
-            .SetMargins(10, 10, 5, 15);
+            .SetMargins(10, 15, 10, 40);
 
-            Paragraph header = new Paragraph($"Sales report")
+            Paragraph header = new Paragraph($"Sales report " + DateTime.Now.ToString(_dateToStringFormat))
                 .SetFontSize(20);
             document.Add(header);
 

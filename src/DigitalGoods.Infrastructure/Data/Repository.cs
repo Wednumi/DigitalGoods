@@ -20,5 +20,11 @@ namespace DigitalGoods.Infrastructure.Data
             var name = procedureSpec.Procedure.Method.Name;
             await _dbContext.Database.ExecuteSqlAsync(procedureSpec.ExecQuery());
         }
+
+        public async Task<FuncResult> ExecuteFunctionAsync<FuncResult>(FunctionSpecification<FuncResult> functionSpec)
+        {
+            var queryable = await Task.Run(() => _dbContext.Database.SqlQuery<FuncResult>(functionSpec.ExecQuery()));
+            return queryable.ToList().First();
+        }
     }
 }

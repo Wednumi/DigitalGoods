@@ -142,7 +142,8 @@
 
     private async Task CreateTagAsync()
     {
-        var tag = Mapper.Map<TagModel, Tag>(_tagModel);
+        _tagModel.Category = CategoryTagsRelated.Category;
+        var tag = Mapper.Map<TagModel, Tag>(_tagModel);      
         await TagService.CreateAsync(tag);
         TogleOverlay();
     }

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DigitalGoods.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20230105053742_DeleteMostProfitableOffersFunction")]
-    partial class DeleteMostProfitableOffersFunction
+    [Migration("20230108144050_f_period_change_Add")]
+    partial class fperiodchangeAdd
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

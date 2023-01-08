@@ -5,20 +5,20 @@
 namespace DigitalGoods.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class DeleteMostProfitableOffersFunction : Migration
+    public partial class WeeklySalesPerDayFunc : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.Sql("DROP FUNCTION f_most_profitable_offers");
+            var sql = MigrationUtility.ReadSql(typeof(WeeklySalesPerDayFunc),
+                "20230106121359_WeeklySalesPerDayFunc.sql");
+            migrationBuilder.Sql(sql);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            var sql = MigrationUtility.ReadSql(typeof(DeleteMostProfitableOffersFunction),
-                "20230105053742_DeleteMostProfitableOffersFunctionDown.sql");
-            migrationBuilder.Sql(sql);
+            migrationBuilder.Sql("DROP FUNCTION f_weekly_sales_per_day");
         }
     }
 }
