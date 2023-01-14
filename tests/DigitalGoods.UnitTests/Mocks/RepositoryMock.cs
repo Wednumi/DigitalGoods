@@ -1,8 +1,9 @@
 ﻿using Ardalis.Specification;
+using DigitalGoods.Core.DbMethods;
 
 namespace DigitalGoods.UnitTests.Mocks
 {
-    public class RepositoryMock<T> : IRepository<T> where T : BaseEntity
+    public class RepositoryMock<T> : IRepository<T> where T : class
     {
         private readonly List<T> _dataBase;
 
@@ -131,6 +132,11 @@ namespace DigitalGoods.UnitTests.Mocks
         }
 
         public Task UpdateRangeAsync(IEnumerable<T> entities, CancellationToken cancellationToken = default)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task ExecuteProcedureAsync(ProcedureSpecification procedureSpec)
         {
             throw new NotImplementedException();
         }

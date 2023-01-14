@@ -1,0 +1,59 @@
+﻿@using DigitalGoods.Core.Interfaces.PaymentServices
+
+@inject IPayPalService PayPalService
+
+<button @onclick=ToggleOverlay class="btn btn-primary">Authorize</button>
+
+<div class="overlay @_overlayCss">
+    <div class="form">
+        <div class="head">
+            <i class="fa-brands fa-paypal d-flex align-self-center me-1"></i>
+            Authorization
+        </div>
+        <div>
+            Login
+            <input class="form-control" @bind=_login/>
+        </div>
+        <div>
+            Password
+            <input type="password" class="form-control" @bind=_login />
+        </div>
+        <div class="accept-btn mt-2 mb-0" @onclick=Accept>
+            <Item>Accept</Item>
+        </div>
+        <i class="bi bi-x-circle-fill close-btn" @onclick=ToggleOverlay/>
+    </div>
+</div>
+
+@code {
+    private string _login = "not implemented";
+
+    private string _password = "not implemented";
+
+    private string _overlayCss = "invisible";
+
+    [Parameter]
+    public Action<IPaymentService> SetPaymentService { get; set; }
+
+    private async Task Accept()
+    {
+        var logResult = await PayPalService.Login(_login, _password);
+        if(logResult)
+        {
+            SetService();
+            ToggleOverlay();
+        }
+    }
+
+    private void SetService()
+    {
+        SetPaymentService(PayPalService);
+    }
+
+    private void ToggleOverlay()
+    {
+        _overlayCss = _overlayCss == "invisible"
+            ? "visible"
+            : "invisible";
+    }
+}

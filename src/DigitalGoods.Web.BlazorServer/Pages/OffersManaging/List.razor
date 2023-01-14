@@ -1,0 +1,88 @@
+﻿@page "/offers/list"
+
+@using DigitalGoods.Core.Specifications
+@using DigitalGoods.Web.BlazorServer.Pages.OffersManaging.ListComponents
+
+@inherits UserIdentificationComponent
+
+@inject OfferListEditor OfferListEditor
+
+@layout _OfferManagingLayout
+
+<div class="flex-fill">
+    @if(CurrentUser is not null){
+        <div class="ms-2">Money Account: @CurrentUser.MoneyAccount$</div>
+    }
+    @if (OfferListEditor.Offers is null)
+    {
+        <LoadingMessage></LoadingMessage>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Preview</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Receive method</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Price</th>
+                    <th scope="col">Discount</th>
+                    <th scope="col">State</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var offer in OfferListEditor.Offers)
+                {
+                    <tr>
+                        <td>
+                            <div class="image-column">
+                                <OfferPreview Offer="offer" />
+                            </div>
+                        </td>
+                        <td>@offer.Name</td>
+                        <td>@offer.ReceiveMethod</td>
+                        <td>@offer.Amount</td>
+                        <td>@offer.Price</td>
+                        <td>@offer.Discount</td>
+                        <td class="table-button">
+                            <StateButton Offer="offer" OfferListEditor="OfferListEditor"/>
+                        </td>
+                        <td class="table-button">
+                            <div class="edit-button">
+                                <MenuItem href="@GetOfferEditLink(offer)">Edit</MenuItem>
+                            </div>
+                            <div>
+                                <Item class="bg-danger mt-2" @onclick="() => TryDeleteAsync(offer)">
+                                    <i class="bi bi-trash-fill"/>
+                                </Item>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    <div class="add-button">
+        <MenuItem href="offers/editor"><i class="bi bi-plus-circle-fill"></i></MenuItem>
+    </div>
+</div>
+
+@code {
+    private string GetOfferEditLink(Offer offer)
+    {
+        return "offers/editor/" + offer.Id.ToString();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await OfferListEditor.InitialiazeAsync(CurrentUser);
+    }
+
+    private async Task TryDeleteAsync(Offer offer)
+    {
+        await OfferListEditor.TryDeleteAsync(offer);
+    }
+}

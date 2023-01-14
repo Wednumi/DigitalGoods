@@ -1,7 +1,9 @@
 ﻿using DigitalGoods.Core.Entities;
 using DigitalGoods.Core.Interfaces;
+using DigitalGoods.Core.Interfaces.PaymentServices;
 using DigitalGoods.Infrastructure.Data;
 using DigitalGoods.Infrastructure.DataAccess;
+using DigitalGoods.Infrastructure.Payment;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -39,11 +41,6 @@ namespace DigitalGoods.Infrastructure.ServiceConfiguration.Extensions
                .AddEntityFrameworkStores<ApplicationContext>();
 
             services.AddScoped<IAccountManager, IdentityAccountManager>();
-        }
-
-        public static void AddFileManager(this IServiceCollection services)
-        {
-            services.AddTransient<IFileManager, FileManager>();
         }
     }
 }

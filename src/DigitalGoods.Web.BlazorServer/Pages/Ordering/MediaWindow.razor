@@ -1,0 +1,33 @@
+﻿@inject IFileManager FileManager
+
+<div class="window">
+    <div class="arrow arrow-left" @onclick="() => MoveIndex(-1)">
+        <i class="bi bi-caret-left-fill"></i>
+    </div>
+    <div class="image">
+         <img src="@FileManager.GetFullPath(Medias[_index])" />
+    </div>
+    <div class="arrow arrow-right" @onclick="() => MoveIndex(1)">
+        <i class="bi bi-caret-right-fill"></i>
+    </div>
+    <div class="media-count bg-primary">
+        @(_index + 1) / @Medias.Count()
+    </div>
+</div>
+
+@code {
+    private int _index = 0;
+
+    [Parameter]
+    public List<Media> Medias { get; set; }
+
+    private void MoveIndex(int value){
+        var newValue = _index + value;
+        _index = InValidRange(newValue)
+            ? newValue
+            : _index;
+    }
+
+    private bool InValidRange(int newValue) =>
+        0 <= newValue && newValue < Medias.Count();
+}

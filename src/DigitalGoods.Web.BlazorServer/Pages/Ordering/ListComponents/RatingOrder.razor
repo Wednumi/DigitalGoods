@@ -1,0 +1,76 @@
+﻿@inject FeedbackService FeedbackService
+
+<button @onclick=ToggleOverlay class="btn btn-primary">Leave rating</button>
+
+<div class="overlay @_overlayCss">
+    <div class="form"> 
+        <div class="rating">
+            <div class="d-inline-flex">
+                <div class="me-1">
+                    Rate product:
+                </div>
+                @for (int i = 1; i <= 5; i++)
+                {
+                    <RatingPickItem Rating="i" Order="Order" UpdateRate="SetRating" />
+                }
+            </div>
+        </div>
+        <div class="comment-panel">
+            <div>Leave comment:</div>
+            <textarea class="form-control" rows="3" @bind=_commentText />
+            <button @onclick=SendComment class="btn btn-primary my-2">Send</button>
+            <div class="comment-list">
+                @if(_comments is not null){
+                    @foreach (var comment in _comments)
+                    {
+                        <div class="comment">
+                            @comment.Text
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+        <i class="bi bi-x-circle-fill close-btn" @onclick=ToggleOverlay />
+    </div>
+</div>
+
+@code {
+    private string _overlayCss = "invisible";
+
+    private string _commentText;
+
+    private List<Comment> _comments;
+
+    [Parameter]
+    public Order Order { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        _comments = await FeedbackService.GetComments(Order);
+    }
+
+    private void ToggleOverlay()
+    {
+        _overlayCss = _overlayCss == "invisible"
+            ? "visible"
+            : "invisible";
+    }
+
+    private async Task SetRating(int rating)
+    {
+        Order.Rate = rating;
+        await FeedbackService.UpdateRatingAsync(Order);
+        StateHasChanged();
+    }
+
+    private async Task SendComment()
+    {
+        if(_commentText is null)
+        {
+            return;
+        }
+        var comment = new Comment(Order, _commentText);
+        await FeedbackService.SendComment(comment);
+        _comments.Insert(0, comment);
+    }
+}

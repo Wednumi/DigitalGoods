@@ -1,0 +1,16 @@
+﻿@switch(Order.ReceiveConfirmed){
+    case false:
+        <button class="btn btn-primary" @onclick="() => ConfirmDelegate(Order)">Confirm receive</button>
+        break;
+    case true:
+        <div class="text-success">Confirmed</div>
+        break;
+}
+
+@code {
+    [Parameter]
+    public Order Order { get; set; }
+
+    [Parameter]
+    public Func<Order, Task> ConfirmDelegate { get; set; }
+}

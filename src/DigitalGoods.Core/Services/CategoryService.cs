@@ -1,7 +1,6 @@
 ﻿using DigitalGoods.Core.Entities;
 using DigitalGoods.Core.Interfaces;
 using DigitalGoods.Core.Specifications;
-using System.Collections.Generic;
 
 namespace DigitalGoods.Core.Services
 {
@@ -59,13 +58,13 @@ namespace DigitalGoods.Core.Services
                 return;
             }
 
-            var parentList = await GetParentTreeAsync();
+            var parentList = await GetParentTreeAsync(Current);
             Parents = new Stack<Category>(parentList);
         }
 
-        private async Task<List<Category>> GetParentTreeAsync()
+        private async Task<List<Category>> GetParentTreeAsync(Category current)
         {
-            var parent = await GetParentAsync(Current!);
+            var parent = await GetParentAsync(current);
             var list = new List<Category>();
 
             while (parent is not null)
@@ -163,5 +162,43 @@ namespace DigitalGoods.Core.Services
             var offersUsing = await offerRepository.CountAsync(new OffersUsingCategorySpec(category));
             return offersUsing == 0;
         }
+
+<<<<<<< HEAD
+        public async Task<ICollection<Category>> AllChildsAsync(Category? category, ICollection<Category>? result = null)
+=======
+        public async Task<ICollection<Category>> AllChilds(Category? category, ICollection<Category>? result = null)
+>>>>>>> 18a5c9aec697eec17ab9ada5a9c7448c6010cd2c
+        {
+            if(category is null)
+            {
+                throw new Exception("Finding childs for null category");
+            }
+            result ??= new List<Category>() { category!};
+            var childs = await _repository.ListAsync(new CategoryChildsSpec(category!.Id));
+            foreach (var child in childs)
+            {
+                result.Add(child);
+<<<<<<< HEAD
+                await AllChildsAsync(child, result);
+            }
+            return result;
+        }
+
+        public async Task<ICollection<Category>> CategoryTreeAsync(Category? category)
+        {
+            if(category is null)
+            {
+                return new List<Category>();
+            }
+            var tree = await GetParentTreeAsync(category);
+            tree.Add(category);
+            return tree;
+        }
+=======
+                await AllChilds(child, result);
+            }
+            return result;
+        }
+>>>>>>> 18a5c9aec697eec17ab9ada5a9c7448c6010cd2c
     }
 }

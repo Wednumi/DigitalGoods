@@ -1,0 +1,68 @@
+﻿@using System.Reflection
+@using DigitalGoods.Core.Specifications.Filters
+@using System.Linq.Expressions;
+<<<<<<< HEAD
+@using DigitalGoods.Core.Interfaces.PaymentServices;
+@using DigitalGoods.Core.DbMethods;
+=======
+>>>>>>> 18a5c9aec697eec17ab9ada5a9c7448c6010cd2c
+
+@foreach (var item in Items)
+{
+    <ItemPickForm OrderItem="item" ChangeEvent="ItemSelect" />
+}
+
+@code {
+    private List<OrderItem> Items;
+
+    [Parameter]
+    public OfferFilter Filter { get; set; }
+
+    protected override void OnInitialized()
+    {
+        Items = new List<OrderItem>()
+        {
+            new OrderItem("Name", o => o.Name),
+            new OrderItem("Price", o => o.Price),
+<<<<<<< HEAD
+            new OrderItem("Discount price", o => IDbFunctions.FinalPrice((float)o.Price, o.Discount)),
+            new OrderItem("Rating", o => 100 - (o.AverageRating) 
+                * Math.Pow(o.Sales.Where(ord => ord.Rate != null).Count(), 0.3)),
+=======
+            new OrderItem("Discount price", o => IDataBaseFunctions.FinalPrice((float)o.Price, o.Discount)),
+>>>>>>> 18a5c9aec697eec17ab9ada5a9c7448c6010cd2c
+        };
+    }
+
+    private void ItemSelect(OrderItem item)
+    {
+        if (item.Included is true)
+        {
+            MoveToStart(item);
+        }
+        else
+        {
+            MoveToEnd(item);
+        }
+        StateHasChanged();
+        ChangeFilter();
+    }
+
+    private void MoveToStart(OrderItem item)
+    {
+        Items.Remove(item);
+        Items.Insert(0, item);
+    }
+
+    private void MoveToEnd(OrderItem item)
+    {
+        Items.Remove(item);
+        Items.Add(item);
+    }
+
+    private void ChangeFilter()
+    {
+        var expressions = Items.Where(i => i.Included).Select(i => i.Expression).ToList();
+        Filter.OrderExpressions = expressions;
+    }
+}
