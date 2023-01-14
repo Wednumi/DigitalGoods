@@ -163,7 +163,11 @@ namespace DigitalGoods.Core.Services
             return offersUsing == 0;
         }
 
+<<<<<<< HEAD
         public async Task<ICollection<Category>> AllChildsAsync(Category? category, ICollection<Category>? result = null)
+=======
+        public async Task<ICollection<Category>> AllChilds(Category? category, ICollection<Category>? result = null)
+>>>>>>> 18a5c9aec697eec17ab9ada5a9c7448c6010cd2c
         {
             if(category is null)
             {
@@ -174,6 +178,7 @@ namespace DigitalGoods.Core.Services
             foreach (var child in childs)
             {
                 result.Add(child);
+<<<<<<< HEAD
                 await AllChildsAsync(child, result);
             }
             return result;
@@ -189,5 +194,11 @@ namespace DigitalGoods.Core.Services
             tree.Add(category);
             return tree;
         }
+=======
+                await AllChilds(child, result);
+            }
+            return result;
+        }
+>>>>>>> 18a5c9aec697eec17ab9ada5a9c7448c6010cd2c
     }
 }

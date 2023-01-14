@@ -2,7 +2,10 @@
     background-color: var(--side-panel-color);
     display: flex;
     flex-direction: column;
+<<<<<<< HEAD
     align-self: start;
+=======
+>>>>>>> 18a5c9aec697eec17ab9ada5a9c7448c6010cd2c
     justify-content: start;
     width: 200px;
     min-height: 300px;
@@ -11,16 +14,27 @@
     padding: 1rem 0.5rem 0.5rem 0.5rem;
 }
 
+<<<<<<< HEAD
     .side-bar .btn-item ::deep .item {
         margin: 0;
         --hover-brightness: 1.2;
         border-radius: 0.25rem;
         color: var(--light-color);
+=======
+    .side-bar .apply-btn ::deep .item {
+        margin: 0;
+        color: var(--light-color);
+        --hover-brightness: 1.2;
+        border-radius: 0.25rem;
+        --bg-color: var(--accept-color);
+        --hover-color: var(--accept-color);
+>>>>>>> 18a5c9aec697eec17ab9ada5a9c7448c6010cd2c
         display: flex;
         width: 100%;
         justify-content: center;
     }
 
+<<<<<<< HEAD
     .side-bar .apply-btn ::deep .item {        
         --bg-color: var(--accept-color);
         --hover-color: var(--accept-color);        
@@ -31,6 +45,8 @@
         --hover-color: var(--cancel-color);
     }
 
+=======
+>>>>>>> 18a5c9aec697eec17ab9ada5a9c7448c6010cd2c
 .form-container {
     display: flex;
     flex-direction: column;
@@ -38,6 +54,10 @@
 }
 
 .offer-container {
+<<<<<<< HEAD
+=======
+    display: inline-block;
+>>>>>>> 18a5c9aec697eec17ab9ada5a9c7448c6010cd2c
     position: relative;
     margin: 0.5rem 1rem 0.5rem 0;
     cursor: pointer;
@@ -112,6 +132,7 @@
     padding: 0.25rem 0.5rem;
     color: var(--light-color);
     background-color: var(--accept-color);
+<<<<<<< HEAD
 }
 
 .original-price{
@@ -127,4 +148,6 @@
     border-radius: 0.25rem;
     background-color: var(--light-color);
     padding: 0.25rem 0.5rem;
+=======
+>>>>>>> 18a5c9aec697eec17ab9ada5a9c7448c6010cd2c
 }

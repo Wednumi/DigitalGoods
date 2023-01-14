@@ -1,7 +1,10 @@
 ﻿@page "/"
 
+<<<<<<< HEAD
 @layout _SearchLayout
 
+=======
+>>>>>>> 18a5c9aec697eec17ab9ada5a9c7448c6010cd2c
 @using DigitalGoods.Core.Specifications
 @using DigitalGoods.Core.Specifications.Filters
 @using DigitalGoods.Web.BlazorServer.Pages.OffersManaging.ListComponents
@@ -31,6 +34,7 @@
             <div class="filter">
                 <OrderPicker Filter="_filter"/>
             </div>
+<<<<<<< HEAD
             <div class="btn-item mt-2">
                 <div class="apply-btn mb-2">
                     <InputItem type="submit">Apply</InputItem>
@@ -38,11 +42,19 @@
                 <div class="reset-btn">
                     <Item @onclick=ResetFilters>Reset</Item>
                 </div> 
+=======
+            <div class="apply-btn mt-2">
+                <InputItem type="submit">Apply</InputItem>
+>>>>>>> 18a5c9aec697eec17ab9ada5a9c7448c6010cd2c
             </div>
         </div>
         <div class="form-container">
             <div class="d-flex mb-2">
+<<<<<<< HEAD
                 <InputText @bind-Value="_filter.Name" class="form-control" placeholder="Enter name or part of it"/>
+=======
+                <InputText @bind-Value="_filter.Name" class="form-control" />
+>>>>>>> 18a5c9aec697eec17ab9ada5a9c7448c6010cd2c
             </div>
             <div>
                 @if(_offers is null){
@@ -51,6 +63,7 @@
                 else{
                     @foreach (var offer in _offers)
                     {
+<<<<<<< HEAD
                         <MenuItem href=@OfferLink(offer) class="d-inline-block m-0 p-0">
                             <div id="@offer.Id" class="offer-container">
                                 <div class="image-container">
@@ -78,6 +91,22 @@
                                 }
                             </div>
                         </MenuItem>
+=======
+                        <div class="offer-container">
+                            <div class="image-container">
+                                <OfferPreview Offer="offer" />
+                            </div>
+                            <div class="info">
+                                @offer.Name
+                                <div class="price">@offer.FinalPrice()$</div>
+                            </div>
+                            @if(offer.Discount != 0){
+                                <div class="discount">
+                                    -@offer.Discount%
+                                </div>
+                            }       
+                        </div>
+>>>>>>> 18a5c9aec697eec17ab9ada5a9c7448c6010cd2c
                     }
                 }
             </div>
@@ -118,13 +147,18 @@
     {
         if (_categoryTagsRelated.Category is not null)
         {
+<<<<<<< HEAD
             _filter.CategoryTree = await CategoryService.AllChildsAsync(_categoryTagsRelated.Category);
+=======
+            _filter.CategoryTree = await CategoryService.AllChilds(_categoryTagsRelated.Category);
+>>>>>>> 18a5c9aec697eec17ab9ada5a9c7448c6010cd2c
         }
         else
         {
             _filter.CategoryTree = null;
         }
     }
+<<<<<<< HEAD
 
     private string OfferLink(Offer offer) => $"/offer/{offer.Id.ToString()}";
 
@@ -133,4 +167,6 @@
         _filter = new OfferFilter();
         await Search();
     }
+=======
+>>>>>>> 18a5c9aec697eec17ab9ada5a9c7448c6010cd2c
 }

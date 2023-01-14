@@ -31,9 +31,9 @@ namespace DigitalGoods.Core.Services
 
         public async Task<Order?> PerformOrderAsync(Offer offer, User buyer)
         {
-            var reserveResult = await ReserveInAmountAsync(offer);
+            var decreaseResult = await DecreaseAmountAsync(offer);
 
-            if (!reserveResult)
+            if (!decreaseResult)
             {
                 return null;
             }
@@ -42,6 +42,7 @@ namespace DigitalGoods.Core.Services
 
             if (paymentResult is false)
             {
+                await PreviousAmountAsync(offer);
                 return null;
             }
 
@@ -55,7 +56,7 @@ namespace DigitalGoods.Core.Services
             return order;
         }
 
-        private async Task<bool> ReserveInAmountAsync(Offer offer)
+        private async Task<bool> DecreaseAmountAsync(Offer offer)
         {
             var dbRecord = await _offerRepository.GetByIdAsync(offer.Id);
             if(dbRecord!.Amount > 0)
@@ -65,7 +66,13 @@ namespace DigitalGoods.Core.Services
                 return true;
             }
             return false;
+        }
 
+        private async Task PreviousAmountAsync(Offer offer)
+        {
+            var dbRecord = await _offerRepository.GetByIdAsync(offer.Id);
+            dbRecord!.Amount++;
+            await _offerRepository.UpdateAsync(dbRecord);
         }
 
         private async Task ReserveActivationCodeAsync(int offerId, int orderId)

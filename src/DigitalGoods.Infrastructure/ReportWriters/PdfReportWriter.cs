@@ -73,13 +73,14 @@ namespace DigitalGoods.Infrastructure.ReportWriters
             AddText(document,$"Paid: {order.Offer.FinalPrice()}$");
             AddText(document,$"Buyer: {order.Buyer.UserName}; {order.Buyer.Email}");
             AddText(document, $"Receive method: {order.Offer.ReceiveMethod.ToString()}");
-            AddText(document, $"Date: {order.Date.ToString()}");
 
             if (order.Offer.ReceiveMethod == Core.Enums.ReceiveMethod.ActivationCode)
             {
                 var code = await _activationCodeService.GetByOrder(order);
                 AddText(document, $"Activation code: {code.Code}");
             }
+
+            AddText(document, $"Date: {order.Date.ToString()}");
             document.Close();
 
             return filePath;
