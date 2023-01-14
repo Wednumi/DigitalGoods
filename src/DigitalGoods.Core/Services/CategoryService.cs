@@ -1,7 +1,6 @@
 ﻿using DigitalGoods.Core.Entities;
 using DigitalGoods.Core.Interfaces;
 using DigitalGoods.Core.Specifications;
-using System.Collections.Generic;
 
 namespace DigitalGoods.Core.Services
 {
@@ -59,13 +58,13 @@ namespace DigitalGoods.Core.Services
                 return;
             }
 
-            var parentList = await GetParentTreeAsync();
+            var parentList = await GetParentTreeAsync(Current);
             Parents = new Stack<Category>(parentList);
         }
 
-        private async Task<List<Category>> GetParentTreeAsync()
+        private async Task<List<Category>> GetParentTreeAsync(Category current)
         {
-            var parent = await GetParentAsync(Current!);
+            var parent = await GetParentAsync(current);
             var list = new List<Category>();
 
             while (parent is not null)
@@ -162,6 +161,33 @@ namespace DigitalGoods.Core.Services
             var offerRepository = _repositoryFactory.CreateRepository<Offer>();
             var offersUsing = await offerRepository.CountAsync(new OffersUsingCategorySpec(category));
             return offersUsing == 0;
+        }
+
+        public async Task<ICollection<Category>> AllChildsAsync(Category? category, ICollection<Category>? result = null)
+        {
+            if(category is null)
+            {
+                throw new Exception("Finding childs for null category");
+            }
+            result ??= new List<Category>() { category!};
+            var childs = await _repository.ListAsync(new CategoryChildsSpec(category!.Id));
+            foreach (var child in childs)
+            {
+                result.Add(child);
+                await AllChildsAsync(child, result);
+            }
+            return result;
+        }
+
+        public async Task<ICollection<Category>> CategoryTreeAsync(Category? category)
+        {
+            if(category is null)
+            {
+                return new List<Category>();
+            }
+            var tree = await GetParentTreeAsync(category);
+            tree.Add(category);
+            return tree;
         }
     }
 }

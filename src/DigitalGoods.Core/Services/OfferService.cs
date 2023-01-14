@@ -2,6 +2,7 @@
 using DigitalGoods.Core.Interfaces;
 using DigitalGoods.Core.ResultReturning;
 using DigitalGoods.Core.Specifications;
+using AutoMapper;
 
 namespace DigitalGoods.Core.Services
 {
@@ -11,22 +12,26 @@ namespace DigitalGoods.Core.Services
 
         private readonly IRepository<Offer> _offerRepository;
 
+        private readonly IMapper _mapper;
+
         public Offer? _previousOffer { get; set; }
 
         public Offer Offer { get; set; } = null!;
 
-        public OfferService(IRepositoryFactory repositoryFactory, IRollBackContainer rollBackContainer)
-            :base(rollBackContainer)
+        public OfferService(IRepositoryFactory repositoryFactory, IRollBackContainer rollBackContainer,
+            IMapper mapper)
+            : base(rollBackContainer)
         {
             _repositoryFactory = repositoryFactory;
             _offerRepository = _repositoryFactory.CreateRepository<Offer>();
+            _mapper = mapper;
         }
 
         public async Task InitializeAsync(User owner, int? offerId)
         {
             var retrieved = await RetrieveOfferAsync(owner, offerId);
             _previousOffer = retrieved is not null
-                ? ConfiguredMapper.Map<Offer, Offer>(retrieved)
+                ? _mapper.Map<Offer, Offer>(retrieved)
                 : null;
             Offer = retrieved ?? new Offer(owner);
         }
@@ -63,7 +68,7 @@ namespace DigitalGoods.Core.Services
             }
             else
             {
-                ConfiguredMapper.Map<Offer, Offer>(_previousOffer, Offer);
+                _mapper.Map<Offer, Offer>(_previousOffer, Offer);
                 await _offerRepository.UpdateAsync(Offer);
             }
         }

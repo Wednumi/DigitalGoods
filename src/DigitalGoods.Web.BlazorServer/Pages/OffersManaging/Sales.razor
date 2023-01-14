@@ -1,0 +1,50 @@
+﻿@page "/offers/sales"
+
+@layout _OfferManagingLayout
+
+@using DigitalGoods.Core.Specifications
+
+@inherits UserIdentificationComponent
+
+@inject IReportWriter ReportWriter
+@inject IRepositoryFactory RepositoryFactory
+
+<div class="d-flex flex-column">
+    <div>
+        <button @onclick=GenerateReport class="btn btn-secondary mb-2">Generate report</button>
+    </div>
+    @if (_reportInProcess)
+    {
+        <div>Loading...</div>
+    }
+    @if (_reportLink is not null)
+    {
+        <a class="btn btn-primary" href="@_reportLink" download="report.pdf">
+            <i class="bi bi-download me-1"></i> Load
+        </a>
+    }
+</div>
+
+
+@code {
+    private bool _reportInProcess = false;
+
+    private string _reportLink;
+
+    private async Task GenerateReport()
+    {
+        _reportInProcess = true;
+        var sales = await GetOffers();
+        _reportLink = await ReportWriter.GenerateSalesReport(sales);
+        _reportInProcess = false;
+    }
+
+    private async Task<List<Offer>> GetOffers()
+    {
+        var repos = RepositoryFactory.CreateRepository<Offer>();
+        return await repos.ListAsync(new OfferForReportSpec(CurrentUser));
+
+    }
+}
+
+

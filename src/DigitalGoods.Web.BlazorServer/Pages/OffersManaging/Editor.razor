@@ -1,0 +1,160 @@
+﻿@page "/offers/editor/{InputOfferId}"
+@page "/offers/editor"
+
+@using System.ComponentModel.DataAnnotations
+@using DigitalGoods.Web.BlazorServer.Pages.OffersManaging.Editors
+@using AutoMapper
+
+@inherits UserIdentificationComponent
+
+@inject OfferService OfferService
+@inject IFileManager FileManager
+@inject IRollBackContainer RollBackContainer
+@inject NavigationManager NavigationManager
+@inject IMapper Mapper
+
+@layout _OfferManagingLayout
+
+@if (_offerModel is null)
+{
+    <LoadingMessage />
+}
+else
+{
+    <div class="flex-fill">
+        <EditForm Model="_offerModel" OnValidSubmit="TrySaveAsync">
+            <DataAnnotationsValidator />
+            <div class="form-item">
+                <label>Product name</label>
+                <InputText @bind-Value=_offerModel.Name class="form-control" placeholder="Enter name"></InputText>
+                <div class="valid-message">
+                    <ValidationMessage For="@(() => _offerModel.Name)" />
+                </div>
+            </div>
+            <div class="form-item">
+                <label>Medias</label>
+                <MediaEditor Offer="_offer" />
+            </div>
+            <div class="form-item">
+                <label>Receive method</label>
+                <InputSelect class="form-select" @bind-Value="_offerModel.ReceiveMethod">
+                    <option value=""></option>
+                    @foreach (var method in Enum.GetValues(typeof(ReceiveMethod)))
+                    {
+                        <option value="@method">@method</option>
+                    }
+                </InputSelect>
+                @if(_offerModel.ReceiveMethod == ReceiveMethod.ActivationCode){
+                    <ActivationCodeLoader Offer="_offer" />
+                }
+            </div>
+            <div class="d-flex flex-row justify-content-between">
+                <div class="form-item flex-fill pe-2">
+                    <label>Price $</label>
+                    <InputNumber @bind-Value=_offerModel.Price class="form-control" placeholder="Enter Price"></InputNumber>
+                    <div class="valid-message">
+                        <ValidationMessage For="@(() => _offerModel.Price)" />
+                    </div>
+                </div>
+                <div class="form-item flex-fill ps-2">
+                    <label>Discount %</label>
+                    <InputNumber @bind-Value=_offerModel.Discount class="form-control"></InputNumber>
+                    <div class="valid-message">
+                        <ValidationMessage For="@(() => _offerModel.Discount)" />
+                    </div>
+                </div>
+                <div class="form-item flex-fill ps-2">
+                    <label>Amount</label>
+                    <InputNumber @bind-Value=_offerModel.Amount class="form-control"/>
+                    <div class="valid-message">
+                        <ValidationMessage For="@(() => _offerModel.Amount)" />
+                    </div>
+                </div>
+            </div>
+            <div class="form-item">
+                <label>Discription</label>
+                <InputTextArea @bind-Value=_offerModel.Discription class="form-control"></InputTextArea>
+            </div>
+            <div class="form-item">
+                <label>Category</label>
+                <CategoryEditor CategoryTagsRelated="_categoryTagsRelated" />
+            </div>
+            <div class="form-item">
+                <label>Tags</label>
+                <TagEditor CategoryTagsRelated="_categoryTagsRelated"></TagEditor>
+            </div>
+            <div class="form-item submit-buttons">
+                @if (_results.ContainsKey("save"))
+                {
+                    <div class="align-self-center">@_results["save"]</div>
+                }
+                <div class="accept">
+                    <InputItem type="submit" value="Accept"></InputItem>
+                </div>
+                <div @onclick="CancelAsync" class="cancel">
+                    <MenuItem>Cancel</MenuItem>
+                </div>
+            </div>
+        </EditForm>
+    </div>
+}
+
+@code {
+    private Offer _offer = null!;
+
+    private OfferModel? _offerModel;
+
+    private CategoryTagsRelated _categoryTagsRelated = null!;
+
+    private Dictionary<string, string> _results = new Dictionary<string, string>();
+
+    [Parameter]
+    public string? InputOfferId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+        await InitializeOfferAsync();
+        _offerModel = Mapper.Map<OfferModel>(_offer);
+        _categoryTagsRelated = new CategoryTagsRelated(_offer.Category, _offer.Tags);
+    }
+
+    private async Task InitializeOfferAsync()
+    {
+        var offerId = GetParsedOfferId();
+        await OfferService.InitializeAsync(CurrentUser, offerId);
+        _offer = OfferService.Offer;
+    }
+
+    private int? GetParsedOfferId()
+    {
+        if (int.TryParse(InputOfferId, out int offerId))
+        {
+            return offerId;
+        }
+        return null;
+    }
+
+    private async Task TrySaveAsync()
+    {
+        Mapper.Map<OfferModel, Offer>(_offerModel!, _offer);
+        Mapper.Map<CategoryTagsRelated, Offer>(_categoryTagsRelated, _offer);
+        var result = await OfferService.SaveAsync();
+
+        SetSaveResult(result);
+    }
+
+    private void SetSaveResult(ActionResult actionResult)
+    {
+        var saveResult = actionResult.Success
+            ? "Successfully saved"
+            : "Saving failed";
+        _results["save"] = saveResult;
+    }
+
+    private async Task CancelAsync()
+    {
+        await RollBackContainer.RollBack();
+        NavigationManager.NavigateTo(@"offers/list");
+    }
+}

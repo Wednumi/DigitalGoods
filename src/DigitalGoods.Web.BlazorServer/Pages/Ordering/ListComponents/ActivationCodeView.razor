@@ -1,0 +1,19 @@
+﻿@inject ActivationCodeService ActivationCodeService
+
+@if(_code is not null){
+    <div>
+        @_code.Code
+    </div>
+}
+
+@code {
+    private ActivationCode _code;
+
+    [Parameter]
+    public Order Order { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        _code = await ActivationCodeService.GetByOrder(Order);
+    }
+}

@@ -21,14 +21,14 @@ namespace DigitalGoods.Core
 
         private static bool CheckProperty(PropertyInfo propertyInfo, object instance)
         {
-            var conditionAttribute = propertyInfo.GetCustomAttribute(typeof(MustNotBeAttribute));
+            var conditionAttribute = propertyInfo.GetCustomAttribute(typeof(ToActivateNotBeAttribute));
             if(conditionAttribute is null)
             {
                 return true;
             }
 
-            var condition = typeof(MustNotBeAttribute)
-                .GetProperty(nameof(MustNotBeAttribute.Condition));
+            var condition = typeof(ToActivateNotBeAttribute)
+                .GetProperty(nameof(ToActivateNotBeAttribute.Condition));
             var conditionValues = (object?[])condition!.GetValue(conditionAttribute)!;
 
             var propertyValue = propertyInfo.GetValue(instance);

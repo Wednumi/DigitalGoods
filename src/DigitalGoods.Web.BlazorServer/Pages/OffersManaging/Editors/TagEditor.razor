@@ -1,0 +1,155 @@
+﻿@using System.ComponentModel
+@using AutoMapper
+
+@inject TagService TagService
+@inject IMapper Mapper
+
+<div class="wrapper">
+    <div class="d-flex flex-row-reverse justify-content-end mb-2 flex-wrap">
+        @foreach (var tag in TagService.Tags)
+        {
+            <div class="category-label me-2 mb-1">
+                @tag.Name
+                <i class="bi bi-x-square-fill btn-delete-tag" @onclick="() => TagService.Remove(tag)"></i>
+            </div>
+        }
+    </div>
+    <div class="d-flex flex-row category-menu">
+        <DropDown>
+            <Head>
+                <button type="button" class="btn btn-primary me-1 w-100">Pick tags</button>
+            </Head>
+            <Content>
+                <div class="d-inline-flex">
+                    <input @bind="_filter" @bind:event="oninput"
+                           placeholder="search" class="form-control" />
+                    @if(!ReadOnly){
+                        <Item @onclick="TogleOverlay">
+                            <i class="bi bi-plus-square-fill"></i>
+                        </Item>
+                    }
+                </div>
+                @if (TagService.PossibleTags is not null)
+                {
+                    @foreach (var tag in _filteredTags)
+                    {
+                        <Item @onclick="() => TagService.AddAsync(tag)">@tag.Name</Item>
+                    }
+                }
+            </Content>
+        </DropDown>
+        @if(ReadOnly){
+            <div class="reset-btn ms-2 d-flex">
+                <Item @onclick="ResetTags">
+                    <i class="bi bi-arrow-repeat"></i>
+                </Item>
+            </div>
+        }
+    </div>
+    <div class="overlay @_addOverlayCss">
+        <EditForm Model="_tagModel" OnValidSubmit="CreateTagAsync">
+            <DataAnnotationsValidator />
+            <div class="overlay-info">
+                <div class="me-1">Category</div>
+                <input class="form-control" type="text" placeholder="@CategoryTagsRelated.Category?.Name" readonly />
+            </div>
+            <div class="overlay-info">
+                <div class="me-2">Enter new tag</div>
+                <InputText @bind-Value="_tagModel.Name" class="form-control" placeholder="Tag name" />
+            </div>
+            <div class="submit-buttons">
+                <div class="accept">
+                    <InputItem type="submit" value="Add"></InputItem>
+                </div>
+                <div class="close">
+                    <Item @onclick="TogleOverlay">Close</Item>
+                </div>
+            </div>
+        </EditForm>
+    </div>
+    @if(!IsCategorySuitable() && !ReadOnly){
+        <div class="overlay reset-overlay">
+            @if (@TagService.Category is null)
+            {
+                <div class="one-line">Clear the category field or</div>
+            }
+            else
+            {
+                <div class="one-line">
+                    Change category to
+                </div>
+                <input class="form-control muted-sign"
+               type="text" placeholder="@TagService.Category.Name"
+               readonly />
+                <div>
+                    or
+                </div>
+            }
+            <div class="submit-buttons">
+                <div class="accept">
+                    <Item @onclick="ResetTags">Reset tags</Item>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private string _filter = "";
+
+    private string _addOverlayCss = "invisible";
+
+    private TagModel _tagModel = null!;
+
+    private List<Tag> _filteredTags
+    {
+        get
+        {
+            var filtered = TagService.PossibleTags
+                .Where(t => t.Name.Contains(_filter, StringComparison.OrdinalIgnoreCase));
+            filtered = filtered.Except(TagService.Tags);
+            return filtered.ToList();
+        }
+    }
+
+    [Parameter]
+    public bool ReadOnly { get; set; } = false;
+
+    [Parameter]
+    public CategoryTagsRelated CategoryTagsRelated { get; set; } = null!;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _tagModel = new TagModel(CategoryTagsRelated.Category);
+        await TagService.InitializeAsync(CategoryTagsRelated.Tags, CategoryTagsRelated.Category);
+        CategoryTagsRelated.CategoryChanged += (category) => StateHasChanged();
+    }
+
+    private bool IsCategorySuitable()
+    {
+        return (CategoryTagsRelated.Category is null && TagService.Category is null) ||
+        (CategoryTagsRelated.Category is not null 
+            && TagService.Category is not null 
+            && CategoryTagsRelated.Category.Equals(TagService.Category));
+    }
+
+    private void TogleOverlay()
+    {
+        _addOverlayCss = _addOverlayCss == ""
+            ? "invisible"
+            : "";
+    }
+
+    private async Task CreateTagAsync()
+    {
+        _tagModel.Category = CategoryTagsRelated.Category;
+        var tag = Mapper.Map<TagModel, Tag>(_tagModel);      
+        await TagService.CreateAsync(tag);
+        TogleOverlay();
+    }
+
+    private async Task ResetTags()
+    {
+        await TagService.Reset(CategoryTagsRelated.Category);
+    }
+}

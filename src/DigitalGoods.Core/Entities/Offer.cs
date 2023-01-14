@@ -5,16 +5,14 @@ using System.Runtime.CompilerServices;
 
 namespace DigitalGoods.Core.Entities
 {
-    public class Offer : BaseEntity, INotifyPropertyChanged
+    public class Offer : BaseEntity
     {
         private const string _defaultName = "NO NAME";
 
-        public event PropertyChangedEventHandler? PropertyChanged;
-
-        [MustNotBe(null, _defaultName)]
+        [ToActivateNotBe(null, _defaultName)]
         public string Name { get; set; } = _defaultName;
 
-        [MustNotBe(new object?[] { null })]
+        [ToActivateNotBe(new object?[] { null })]
         public float? Price { get; set; }
 
         public int Discount { get; set; }
@@ -33,10 +31,13 @@ namespace DigitalGoods.Core.Entities
 
         public Category? Category { get; private set; }
 
-        [MustNotBe(new object?[] {null})]
+        [ToActivateNotBe(new object?[] {null})]
         public ReceiveMethod? ReceiveMethod { get; set; }
 
         public OfferState State { get; private set; }
+
+        [NoMap]
+        public float AverageRating { get; set; }
 
         public ICollection<Tag> Tags { get; private set; } = null!;
 
@@ -76,12 +77,6 @@ namespace DigitalGoods.Core.Entities
         {
             CategoryId = category?.Id;
             Category = category;
-            NotifyPropertyChanged(nameof(Category));
-        }
- 
-        private void NotifyPropertyChanged([CallerMemberName] String propertyName = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
         public Media? GetPreview()
@@ -103,5 +98,14 @@ namespace DigitalGoods.Core.Entities
         public void Activate() => State = OfferState.Active;
 
         public void Deactivate() => State = OfferState.DeActivated;
+
+        public float FinalPrice()
+        {
+            if(Price is null)
+            {
+                return 0;
+            }
+            return (float)Price * (100 - Discount) / 100;
+        }
     }
 }

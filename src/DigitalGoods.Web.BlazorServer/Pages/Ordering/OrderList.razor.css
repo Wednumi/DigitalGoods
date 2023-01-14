@@ -1,0 +1,22 @@
+﻿.form-container {
+    display: flex;
+    background-color: var(--main-panel-color);
+    border-radius: 0.5rem;
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.2rem;
+}
+
+.table-button ::deep .item {
+    --hover-brightness: 1.25;
+    border-radius: 0.25rem;
+    text-align: center;
+    margin: 0;
+    color: var(--light-color);
+}
+
+.image-column {
+    display: block;
+    width: 150px;
+    height: 150px;
+}

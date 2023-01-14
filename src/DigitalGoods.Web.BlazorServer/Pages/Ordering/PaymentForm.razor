@@ -1,0 +1,14 @@
+﻿@using DigitalGoods.Core.Enums
+@using DigitalGoods.Web.BlazorServer.Pages.Ordering.PaymentForms
+
+@if(Method == PayMethod.PayPal){
+    <PayPalForm SetPaymentService="SetPaymentService"/>
+}
+
+@code {
+    [Parameter]
+    public PayMethod? Method { get; set; }
+
+    [Parameter]
+    public Action<IPaymentService> SetPaymentService { get; set; }
+}

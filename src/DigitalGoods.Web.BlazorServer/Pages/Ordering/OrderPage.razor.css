@@ -1,0 +1,35 @@
+﻿.page {
+    background-color: var(--main-panel-color);
+    border-radius: 0.5rem;
+    width: 100%;
+    padding: 1rem;
+    display: flex;
+    font-size: 1.25rem;
+}
+
+.payment-details{
+    width: 66%;
+    padding-right: 1rem;
+}
+
+    .payment-details div {
+        margin-bottom: 0.5rem;
+    }
+
+.offer-details{
+    width: 34%;
+    padding-left: 1rem;
+}
+
+    .offer-details div{
+        margin-bottom: 0.5rem;
+    }
+
+.vr {
+    height: 300px;
+}
+
+.preview-container{
+    width: 150px;
+    height: 150px;
+}

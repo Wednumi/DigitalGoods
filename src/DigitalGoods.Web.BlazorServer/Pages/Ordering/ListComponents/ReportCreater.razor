@@ -1,0 +1,37 @@
+﻿@inject IReportWriter ReportWriter
+
+@if (Order is not null)
+{
+    <div>
+        <button @onclick=GenerateReport class="btn btn-secondary mb-2">Generate report</button>
+    </div>
+}
+@if (_reportInProcess)
+{
+    <div>Loading...</div>
+}
+@if (_reportLink is not null)
+{
+    <a class="btn btn-primary" href="@_reportLink" download="report.pdf">
+        <i class="bi bi-download me-1"></i> Load
+    </a>
+}
+
+@code {
+    private bool _reportInProcess = false;
+
+    private string _reportLink;
+
+    [Parameter]
+    public Order Order { get; set; }
+
+    private async Task GenerateReport()
+    {
+        if (Order is not null)
+        {
+            _reportInProcess = true;
+            _reportLink = await ReportWriter.GenerateOrderReport(Order);
+            _reportInProcess = false;
+        }
+    }
+}

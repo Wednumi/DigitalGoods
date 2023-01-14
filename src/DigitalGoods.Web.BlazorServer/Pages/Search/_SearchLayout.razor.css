@@ -1,0 +1,14 @@
+﻿.min-nav {
+    display: inline-flex;
+    width: 100%;
+    background-color: var(--side-panel-color);
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+    .min-nav ::deep .item {
+        --hover-color: var(--element-front-color);
+        color: var(--light-color);
+        --hover-brightness: 1.25;
+        border-radius: 0.25rem;
+    }

@@ -7,9 +7,42 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Migrations\20221229123957_FinalPriceFunctionAdd.sql" />
+    <None Remove="Migrations\20230102073238_CodeReservingProcedure.sql" />
+    <None Remove="Migrations\20230102075618_AlterCodeReserveProcDown.sql" />
+    <None Remove="Migrations\20230102075618_AlterCodeReserveProcUp.sql" />
+    <None Remove="Migrations\20230103085618_UpdateOfferRateProc.sql" />
+    <None Remove="Migrations\20230104073307_UpdateRatingAddedUserUpdatingUp.sql" />
+    <None Remove="Migrations\20230104073307_UpdateRatingAddedUserUpdatingUpDown.sql" />
+    <None Remove="Migrations\20230104075343_UpdateRatingFixDown.sql" />
+    <None Remove="Migrations\20230104075343_UpdateRatingFixUp.sql" />
+    <None Remove="Migrations\20230105085117_WeightedRatingFunc.sql" />
+    <None Remove="Migrations\20230105085917_RatingFix.sql" />
+    <None Remove="Migrations\20230106121359_WeeklySalesPerDayFunc.sql" />
+    <None Remove="Migrations\20230108144050_f_period_change_Add.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\20230104075343_UpdateRatingFixUp.sql" />
+    <EmbeddedResource Include="Migrations\20230108144050_f_period_change_Add.sql" />
+    <EmbeddedResource Include="Migrations\20230106121359_WeeklySalesPerDayFunc.sql" />
+    <EmbeddedResource Include="Migrations\20230105085917_RatingFix.sql" />
+    <EmbeddedResource Include="Migrations\20230105085117_WeightedRatingFunc.sql" />
+    <EmbeddedResource Include="Migrations\20230104075343_UpdateRatingFixDown.sql" />
+    <EmbeddedResource Include="Migrations\20230104073307_UpdateRatingAddedUserUpdatingUpDown.sql" />
+    <EmbeddedResource Include="Migrations\20230104073307_UpdateRatingAddedUserUpdatingUp.sql" />
+    <EmbeddedResource Include="Migrations\20230103085618_UpdateOfferRateProc.sql" />
+    <EmbeddedResource Include="Migrations\20230102075618_AlterCodeReserveProcDown.sql" />
+    <EmbeddedResource Include="Migrations\20230102075618_AlterCodeReserveProcUp.sql" />
+    <EmbeddedResource Include="Migrations\20230102073238_CodeReservingProcedure.sql" />
+    <EmbeddedResource Include="Migrations\20221229123957_FinalPriceFunctionAdd.sql" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Ardalis.Specification.EntityFrameworkCore" Version="6.1.0" />
+    <PackageReference Include="itext7" Version="7.2.4" />
     <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.11" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.12" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="7.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.0">

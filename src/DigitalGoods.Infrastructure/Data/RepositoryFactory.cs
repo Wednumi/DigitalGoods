@@ -13,12 +13,12 @@ namespace DigitalGoods.Infrastructure.Data
             _dbContext = dbContext;
         }
 
-        public IReadRepository<T> CreateReadRepository<T>() where T : BaseEntity
+        public IReadRepository<T> CreateReadRepository<T>() where T : class
         {
             return (IReadRepository<T>)new Repository<T>(_dbContext);
         }
 
-        public IRepository<T> CreateRepository<T>() where T : BaseEntity
+        public IRepository<T> CreateRepository<T>() where T : class
         {
             return new Repository<T>(_dbContext);
         }
