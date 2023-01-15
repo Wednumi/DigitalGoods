@@ -1,37 +1,4 @@
-﻿.side-bar {
-    background-color: var(--side-panel-color);
-    display: flex;
-    flex-direction: column;
-    align-self: start;
-    justify-content: start;
-    width: 200px;
-    min-height: 300px;
-    margin-right: 1.5rem;
-    border-radius: 0.5rem;
-    padding: 1rem 0.5rem 0.5rem 0.5rem;
-}
-
-    .side-bar .btn-item ::deep .item {
-        margin: 0;
-        --hover-brightness: 1.2;
-        border-radius: 0.25rem;
-        color: var(--light-color);
-        display: flex;
-        width: 100%;
-        justify-content: center;
-    }
-
-    .side-bar .apply-btn ::deep .item {        
-        --bg-color: var(--accept-color);
-        --hover-color: var(--accept-color);        
-    }
-
-    .side-bar .reset-btn ::deep .item {
-        --bg-color: var(--cancel-color);
-        --hover-color: var(--cancel-color);
-    }
-
-.form-container {
+﻿.form-container {
     display: flex;
     flex-direction: column;
     width: 100%;

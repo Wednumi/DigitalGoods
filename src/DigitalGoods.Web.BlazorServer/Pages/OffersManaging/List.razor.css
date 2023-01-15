@@ -1,28 +1,10 @@
-﻿.add-button {
-    width: 100%;
-}
-
-    .add-button ::deep .item {
-        background-color: var(--accept-color);
-        --hover-brightness: 1.25;
-        border-bottom-left-radius: 1rem;
-        border-bottom-right-radius: 1rem;
-        text-align: center;
-        font-size: 1.2rem;
-        margin-left: 0;
-        margin-right: 0;
-    }
-
-.table-button ::deep .item {
-    --hover-brightness: 1.25;
-    border-radius: 0.25rem;
+﻿.item-add ::deep .item {
+    border-bottom-left-radius: 1rem !important;
+    border-bottom-right-radius: 1rem !important;
     text-align: center;
-    margin: 0;
-    color: var(--light-color);
-}
-
-.edit-button ::deep .item {
-    background-color: var(--accept-color);
+    font-size: 1.2rem;
+    margin-left: 0;
+    margin-right: 0;
 }
 
 .image-column {

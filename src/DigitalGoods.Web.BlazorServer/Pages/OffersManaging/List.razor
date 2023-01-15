@@ -46,15 +46,15 @@
                         <td>@offer.Amount</td>
                         <td>@offer.Price</td>
                         <td>@offer.Discount</td>
-                        <td class="table-button">
+                        <td class="item-btn">
                             <StateButton Offer="offer" OfferListEditor="OfferListEditor"/>
                         </td>
-                        <td class="table-button">
-                            <div class="edit-button">
+                        <td class="item-btn">
+                            <div class="item-accept">
                                 <MenuItem href="@GetOfferEditLink(offer)">Edit</MenuItem>
                             </div>
-                            <div>
-                                <Item class="bg-danger mt-2" @onclick="() => TryDeleteAsync(offer)">
+                            <div class="item-warning">
+                                <Item class="mt-2" @onclick="() => TryDeleteAsync(offer)">
                                     <i class="bi bi-trash-fill"/>
                                 </Item>
                             </div>
@@ -64,7 +64,7 @@
             </tbody>
         </table>
     }
-    <div class="add-button">
+    <div class="item-btn item-accept item-add">
         <MenuItem href="offers/editor"><i class="bi bi-plus-circle-fill"></i></MenuItem>
     </div>
 </div>

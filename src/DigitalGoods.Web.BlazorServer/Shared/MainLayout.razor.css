@@ -1,9 +1,52 @@
+main {
+    flex: 1;
+}
+
 .page {
     position: relative;
     display: flex;
     flex-direction: column;
 }
 
-main {
-    flex: 1;
+::deep .item-btn .item {
+    margin: 0;
+    --hover-brightness: 1.2;
+    border-radius: 0.25rem;
+    color: var(--light-color);
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+}
+
+::deep .item-accept .item {
+    --bg-color: var(--accept-color);
+    --hover-color: var(--accept-color);
+}
+
+::deep .item-warning .item {
+    --bg-color: var(--cancel-color);
+    --hover-color: var(--cancel-color);
+}
+
+::deep .side-bar {
+    background-color: var(--side-panel-color);
+    display: flex;
+    flex-direction: column;
+    align-self: start;
+    justify-content: start;
+    width: 200px;
+    min-height: 300px;
+    margin-right: 1.5rem;
+    border-radius: 0.5rem;
+    padding: 1rem 0.5rem 0.5rem 0.5rem;
+}
+
+::deep .light-rounded-container {
+    display: flex;
+    background-color: var(--main-panel-color);
+    border-radius: 0.5rem;
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.2rem;
 }

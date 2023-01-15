@@ -26,16 +26,6 @@
         margin-bottom: 0.5rem;
     }
 
-.accept-btn ::deep .item {
-    --bg-color: var(--accept-color);
-    --hover-color: var(--accept-color);
-    --hover-brightness: 1.25;
-    border-radius: 0.25rem;
-    text-align: center;
-    margin: 0;
-    color: var(--light-color);
-}
-
 .close-btn{
     position: absolute;
     top: 5px;

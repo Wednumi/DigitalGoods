@@ -47,7 +47,7 @@
         }
     </div>
     <div class="overlay @_addOverlayCss">
-        <EditForm Model="_tagModel" OnValidSubmit="CreateTagAsync">
+        <EditForm class="d-inline-flex" Model="_tagModel" OnValidSubmit="CreateTagAsync">
             <DataAnnotationsValidator />
             <div class="overlay-info">
                 <div class="me-1">Category</div>
@@ -57,11 +57,11 @@
                 <div class="me-2">Enter new tag</div>
                 <InputText @bind-Value="_tagModel.Name" class="form-control" placeholder="Tag name" />
             </div>
-            <div class="submit-buttons">
-                <div class="accept">
+            <div class="item-btn d-flex flex-row">
+                <div class="item-accept d-flex align-items-stretch">
                     <InputItem type="submit" value="Add"></InputItem>
                 </div>
-                <div class="close">
+                <div class="item-warning d-flex align-items-stretch ms-3">
                     <Item @onclick="TogleOverlay">Close</Item>
                 </div>
             </div>

@@ -83,15 +83,15 @@ else
                 <label>Tags</label>
                 <TagEditor CategoryTagsRelated="_categoryTagsRelated"></TagEditor>
             </div>
-            <div class="form-item submit-buttons">
+            <div class="form-item item-btn submit-buttons">
                 @if (_results.ContainsKey("save"))
                 {
                     <div class="align-self-center">@_results["save"]</div>
                 }
-                <div class="accept">
+                <div class="item-accept mx-2">
                     <InputItem type="submit" value="Accept"></InputItem>
                 </div>
-                <div @onclick="CancelAsync" class="cancel">
+                <div @onclick="CancelAsync" class="item-warning">
                     <MenuItem>Cancel</MenuItem>
                 </div>
             </div>

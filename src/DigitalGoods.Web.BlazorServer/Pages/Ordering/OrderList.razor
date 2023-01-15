@@ -9,7 +9,7 @@
 
 <AuthorizeView>
     <Authorized>
-        <div class="flex-fill form-container">
+        <div class="flex-fill light-rounded-container">
             @if (_orders is null)
             {
                 <LoadingMessage />
@@ -49,7 +49,7 @@
                                     </div>
                                 </td>
                                 <td>@order.Offer.FinalPrice()</td>
-                                <td class="table-button">
+                                <td class="item-btn">
                                     <ConfirmButton Order="order" ConfirmDelegate="ConfirmOrder" />
                                     @if(order.ReceiveConfirmed){
                                         <RatingOrder Order="order"/>

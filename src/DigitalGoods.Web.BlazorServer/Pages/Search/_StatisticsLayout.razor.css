@@ -1,6 +1,5 @@
-﻿.page {
-    background-color: var(--main-panel-color);
-    border-radius: 0.5rem;
-    width: 100%;
-    padding: 1rem;
+﻿::deep .image-column {
+    display: block;
+    width: 150px;
+    height: 150px;
 }
