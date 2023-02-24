@@ -77,11 +77,11 @@ else
             </div>
             <div class="form-item">
                 <label>Category</label>
-                <CategoryEditor CategoryTagsRelated="_categoryTagsRelated" />
+                <CategoryEditor CategoryTagsRelation="_categoryTagsRelated" />
             </div>
             <div class="form-item">
                 <label>Tags</label>
-                <TagEditor CategoryTagsRelated="_categoryTagsRelated"></TagEditor>
+                <TagEditor CategoryTagsRelation="_categoryTagsRelated"></TagEditor>
             </div>
             <div class="form-item item-btn submit-buttons">
                 @if (_results.ContainsKey("save"))
@@ -104,7 +104,7 @@ else
 
     private OfferModel? _offerModel;
 
-    private CategoryTagsRelated _categoryTagsRelated = null!;
+    private CategoryTagsRelation _categoryTagsRelated = null!;
 
     private Dictionary<string, string> _results = new Dictionary<string, string>();
 
@@ -116,7 +116,7 @@ else
         await base.OnInitializedAsync();
         await InitializeOfferAsync();
         _offerModel = Mapper.Map<OfferModel>(_offer);
-        _categoryTagsRelated = new CategoryTagsRelated(_offer.Category, _offer.Tags);
+        _categoryTagsRelated = new CategoryTagsRelation(_offer.Category, _offer.Tags);
     }
 
     private async Task InitializeOfferAsync()
@@ -138,7 +138,7 @@ else
     private async Task TrySaveAsync()
     {
         Mapper.Map<OfferModel, Offer>(_offerModel!, _offer);
-        Mapper.Map<CategoryTagsRelated, Offer>(_categoryTagsRelated, _offer);
+        Mapper.Map<CategoryTagsRelation, Offer>(_categoryTagsRelated, _offer);
         var result = await OfferService.SaveAsync();
 
         SetSaveResult(result);

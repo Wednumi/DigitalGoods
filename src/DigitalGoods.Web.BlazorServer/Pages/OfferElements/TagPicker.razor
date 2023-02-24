@@ -1,0 +1,35 @@
+﻿@using DigitalGoods.Core.Services.TagServices
+
+@inject PossibleTagsViewer PossibleTagsViewer
+
+<DropDown>
+    <Head>
+        <button type="button" class="btn btn-primary me-1 w-100">Pick tags</button>
+    </Head>
+    <Content>
+        <PickList Collection="_possibleTags" NamePropExpression="t => t.Name" PickAction="Pick" />
+    </Content>
+</DropDown>
+
+@code {
+    private List<Tag> _possibleTags;
+
+    [Parameter]
+    public CategoryTagsRelation CategoryTagsRelation { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await SetPossibleTags(CategoryTagsRelation.Category);
+        CategoryTagsRelation.CategoryChanged += SetPossibleTags;
+    }
+
+    private async Task SetPossibleTags(Category? category)
+    {
+        _possibleTags = await PossibleTagsViewer.PossibleTags(category);
+    }
+
+    private void Pick(Tag tag)
+    {
+        CategoryTagsRelation.Tags.Add(tag);
+    }
+}

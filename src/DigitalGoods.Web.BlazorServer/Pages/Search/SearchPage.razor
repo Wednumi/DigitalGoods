@@ -1,15 +1,19 @@
-﻿@page "/"
+﻿@attribute [Route(Path)]
 
 @layout _SearchLayout
 
 @using DigitalGoods.Core.Specifications
 @using DigitalGoods.Core.Specifications.Filters
+@using DigitalGoods.Core.Services.CategoryServices
 @using DigitalGoods.Web.BlazorServer.Pages.OffersManaging.ListComponents
 @using DigitalGoods.Web.BlazorServer.Pages.OffersManaging.Editors
 @using DigitalGoods.Web.BlazorServer.Pages.Search.OrderPicking
+@using DigitalGoods.Web.BlazorServer.Pages.OfferElements
+@using DigitalGoods.Web.BlazorServer.Pages.Search.Components
 
 @inject IRepositoryFactory RepositoryFactory
-@inject CategoryService CategoryService
+@inject CategoryChildsViewer CategoryChildsViewer
+@inject NavigationManager NavigationManager
 
 <EditForm Model="_filter" OnSubmit="Search">
     <div class="d-flex flex-row">
@@ -23,10 +27,10 @@
                 </div>
             </div>
             <div class="filter">
-                <CategoryEditor CategoryTagsRelated="_categoryTagsRelated" ReadOnly=true/>
+                <CategoryPicker CategoryTagsRelation="_categoryTagsRelation" />
             </div>
             <div class="filter">
-                <TagEditor CategoryTagsRelated="_categoryTagsRelated" ReadOnly=true/>
+                @*<TagEditor CategoryTagsRelation="_categoryTagsRelated" ReadOnly=true />*@
             </div>
             <div class="filter">
                 <OrderPicker Filter="_filter"/>
@@ -93,15 +97,17 @@
 
     private IRepository<Offer> _repository = null!;
 
-    private CategoryTagsRelated _categoryTagsRelated = null!;
+    private CategoryTagsRelation _categoryTagsRelation = null!;
 
     public Action<Category?> CategoryChanged { get; set; } = (category) => { };
+
+    public const string Path = @"/";
 
     protected async override Task OnInitializedAsync()
     {
         _offers = new List<Offer>();
         _repository = RepositoryFactory.CreateRepository<Offer>();
-        _categoryTagsRelated = new CategoryTagsRelated(null, new List<Tag>());
+        _categoryTagsRelation = new CategoryTagsRelation(null, new List<Tag>());
         await Search();
     }
 
@@ -109,16 +115,16 @@
     {
         _offers = null;
         await SetCategoryFilter();
-        _filter.Tags = _categoryTagsRelated.Tags;
+        _filter.Tags = _categoryTagsRelation.Tags;
         var spec = new OfferByFilterSpec(_filter);
         _offers = await _repository.ListAsync(spec);
     }
 
     private async Task SetCategoryFilter()
     {
-        if (_categoryTagsRelated.Category is not null)
+        if (_categoryTagsRelation.Category is not null)
         {
-            _filter.CategoryTree = await CategoryService.AllChildsAsync(_categoryTagsRelated.Category);
+            _filter.CategoryTree = await CategoryChildsViewer.AllChildsAsync(_categoryTagsRelation.Category);
         }
         else
         {
@@ -128,9 +134,8 @@
 
     private string OfferLink(Offer offer) => $"/offer/{offer.Id.ToString()}";
 
-    private async Task ResetFilters()
+    private void ResetFilters()
     {
-        _filter = new OfferFilter();
-        await Search();
+        NavigationManager.NavigateTo(Path, true);
     }
 }

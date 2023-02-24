@@ -29,6 +29,17 @@ main {
     --hover-color: var(--cancel-color);
 }
 
+::deep .item-secondary .item {
+    display: flex;
+    align-items: center;
+    --bg-color: #EFBCD5;
+    --hover-color: #EFBCD5;
+    --hover-brightness: 1.25;
+    margin: 0;
+    border-radius: 0.25rem;
+    padding: 0 0.25rem;
+}
+
 ::deep .side-bar {
     background-color: var(--side-panel-color);
     display: flex;
@@ -49,4 +60,36 @@ main {
     width: 100%;
     padding: 1rem;
     font-size: 1.2rem;
+}
+
+::deep .close-btn {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    font-size: 1.25rem;
+    display: flex;
+    cursor: pointer;
+    color: var(--light-color);
+}
+
+::deep .overlay-info {
+    font-size: 1rem;
+    display: inline-flex;
+    border-radius: 0.5rem;
+    background-color: #B8F2E6;
+    margin-right: 1.5rem;
+    padding: 0.5rem;
+    white-space: nowrap;
+}
+
+::deep .off-element-pill {
+    background-color: var(--off-element-hover-color);
+    color: var(--light-color);
+    border-radius: 0.25rem;
+    padding: 0.5rem 0.25rem;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    min-width: 40px;
+    justify-content: center;
 }

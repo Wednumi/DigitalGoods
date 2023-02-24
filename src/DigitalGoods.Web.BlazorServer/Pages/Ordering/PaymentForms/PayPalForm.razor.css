@@ -30,12 +30,3 @@
     font-size: 2rem;
     display: inline-flex;
 }
-
-.close-btn{
-    position: absolute;
-    top: 5px;
-    right: 5px;
-    font-size: 1.25rem;
-    display: flex;
-    cursor: pointer;
-}

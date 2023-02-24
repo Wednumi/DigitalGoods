@@ -1,0 +1,55 @@
+﻿@using DigitalGoods.Core.Services.CategoryServices
+
+@inject CategoryTreeViewer CategoryTreeViewer
+
+<div class="d-inline-flex mb-2">
+    @if (CategoryTreeViewer.CategoryTree.ToList().Any()){
+        <div class="me-2 d-flex flex-row-reverse">
+            @foreach (var category in CategoryTreeViewer.CategoryTree.ToList())
+            {
+                <div class="d-inline-flex">
+                    <div class="off-element-pill d-flex">
+                        @category.Name
+                    </div>
+                    @if (!category.Equals(CategoryTagsRelation.Category))
+                    {
+                        <i class="bi bi-caret-right-fill align-self-center"></i>
+                    }
+                </div>
+            }
+        </div>
+        <div class="item-secondary d-flex">
+            <Item @onclick="SetLastAsync">
+                <i class="bi bi-backspace-fill"></i>
+            </Item>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public CategoryTagsRelation CategoryTagsRelation { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        await CategoryTreeViewer.InitializeAsync(CategoryTagsRelation.Category);
+        CategoryTagsRelation.CategoryChanged += MoveTo;
+    }
+
+    private Task MoveTo(Category? category)
+    {
+        if(category is not null)
+        {
+            CategoryTreeViewer.Push(category);
+        }
+        StateHasChanged();
+        return Task.CompletedTask;
+    }
+
+    private async Task SetLastAsync()
+    {
+        var previous = CategoryTreeViewer.PopPrevious();
+        await CategoryTagsRelation.SetCategory(previous);
+        StateHasChanged();
+    }
+}

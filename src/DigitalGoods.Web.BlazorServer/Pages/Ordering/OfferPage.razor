@@ -4,7 +4,6 @@
 
 @inject OfferIdParser OfferIdParser
 @inject NavigationManager NavigationManager
-@inject CategoryService CategoryService
 @inject FeedbackService FeedbackService
 
 <div class="page">
@@ -145,7 +144,8 @@
             return;
         }
         _offer = retrievedOffer;
-        _categoryTree = await CategoryService.CategoryTreeAsync(_offer.Category);
+        throw new NotImplementedException();
+        //_categoryTree = await CategoryService.CategoryTreeAsync(_offer.Category);
         _comments = await FeedbackService.GetComments(_offer);
         _rateCount = await FeedbackService.GetRateCount(_offer);
     }

@@ -1,0 +1,14 @@
+﻿<div class="d-flex flex-row-reverse justify-content-end mb-2 flex-wrap">
+    @foreach (var tag in CategoryTagsRelation.Tags)
+    {
+        <div class="off-element-pill me-2 mb-1">
+            @tag.Name
+            <i class="bi bi-x-square-fill btn-delete-tag" @onclick="() => CategoryTagsRelation.Tags.Remove(tag)"></i>
+        </div>
+    }
+</div>
+
+@code {
+    [Parameter]
+    public CategoryTagsRelation CategoryTagsRelation { get; set; }
+}

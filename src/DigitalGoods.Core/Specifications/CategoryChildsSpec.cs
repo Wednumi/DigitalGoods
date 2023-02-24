@@ -5,8 +5,9 @@ namespace DigitalGoods.Core.Specifications
 {
     internal class CategoryChildsSpec : Specification<Category>
     {
-        public CategoryChildsSpec(int? parentId)
+        public CategoryChildsSpec(Category? parent)
         {
+            int? parentId = parent?.Id;
             Query.Where(c => c.ParentId == parentId)
                 .AsNoTracking();
         }

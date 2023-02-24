@@ -1,0 +1,41 @@
+﻿@using DigitalGoods.Core.Services.CategoryServices
+
+@inject CategoryCreator CategoryCreator
+
+<EditForm Model="_categoryModel" OnValidSubmit="SetCreatedAsync" class="d-inline-flex">
+    <DataAnnotationsValidator />
+    <div class="overlay-info">
+        <div class="me-1 my-auto">Parent category</div>
+        <input class="form-control" type="text" placeholder="@CategoryTagsRelation.Category?.Name" readonly />
+    </div>
+    <div class="overlay-info">
+        <div class="me-2 my-auto">Enter new category</div>
+        <InputText @bind-Value="_categoryModel.Name" class="form-control" placeholder="Category name" />
+    </div>
+    <div class="item-btn d-flex flex-row">
+        <div class="item-accept d-flex align-items-stretch">
+            <InputItem class="px-2" type="submit" value="Add"></InputItem>
+        </div>
+    </div>
+</EditForm>
+
+@code {
+    private CategoryModel _categoryModel = new CategoryModel();
+
+    [Parameter]
+    public CategoryTagsRelation CategoryTagsRelation { get; set; }
+
+    private async Task SetCreatedAsync()
+    {
+        var created = await Create();
+        await CategoryTagsRelation.SetCategory(created);
+        _categoryModel = new CategoryModel();
+    }
+
+    private async Task<Category> Create()
+    {
+        var category = new Category(_categoryModel.Name, CategoryTagsRelation.Category);
+        await CategoryCreator.CreateCategoryAsync(category);
+        return category;
+    }
+}

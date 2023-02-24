@@ -1,0 +1,11 @@
+﻿@using DigitalGoods.Web.BlazorServer.Pages.OfferElements
+
+<div class="d-flex flex-column">
+    <CategoryList CategoryTagsRelation="CategoryTagsRelation" />
+    <CategoryChildPicker CategoryTagsRelation="CategoryTagsRelation" />
+</div>
+
+@code {
+    [Parameter]
+    public CategoryTagsRelation CategoryTagsRelation { get; set; } = null!;
+}

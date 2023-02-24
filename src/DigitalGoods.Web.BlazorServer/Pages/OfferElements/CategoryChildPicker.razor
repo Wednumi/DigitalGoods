@@ -1,0 +1,37 @@
+﻿@using DigitalGoods.Core.Services.CategoryServices
+@using System.Reflection
+
+@inject CategoryChildsViewer CategoryChildsViewer
+
+<DropDown>
+    <Head>
+        <button type="button" class="btn btn-primary me-1 w-100">Pick category</button>
+    </Head>
+    <Content>
+        <PickList Collection="_childs" NamePropExpression="c => c.Name" PickActionAsync="PickAsync"/>
+    </Content>
+</DropDown>
+
+@code {
+    private List<Category> _childs;
+
+    [Parameter]
+    public CategoryTagsRelation CategoryTagsRelation { get; set; }
+
+    protected async override Task OnInitializedAsync()
+    {
+        await SetChildsAsync(CategoryTagsRelation.Category);
+        CategoryTagsRelation.CategoryChanged += SetChildsAsync;
+    }
+
+    private async Task PickAsync(Category category)
+    {
+        await CategoryTagsRelation.SetCategory(category);
+    }
+
+    private async Task SetChildsAsync(Category? category)
+    {
+        _childs = await CategoryChildsViewer.ChildsForAsync(category);
+        StateHasChanged();
+    }
+}

@@ -11,7 +11,7 @@ namespace DigitalGoods.Core.MapperProfiles
         {
             CreateMap<OfferModel, Offer>().IgnoreNoMap();
             CreateMap<Offer, OfferModel>().IgnoreNoMap();
-            CreateMap<CategoryTagsRelated, Offer>().IgnoreNoMap();
+            CreateMap<CategoryTagsRelation, Offer>().IgnoreNoMap();
             CreateMap<TagModel, Tag>().IgnoreNoMap();
         }
     }
